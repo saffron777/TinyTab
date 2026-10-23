@@ -1,24 +1,65 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { MenuBar } from './MenuBar'
+import { Toolbar } from './Toolbar'
+import { StatusBar } from './StatusBar'
+import { WorksheetView } from '../worksheet/WorksheetView'
+import { SessionPane } from '../session/SessionPane'
+import { ProjectManager } from '../project/ProjectManager'
+import { ChartView } from '../charts/ChartView'
+import { AnalysisDialog, CommandDialog, HelpDialog } from '../dialogs/Dialogs'
+import { useProjectStore } from '../store/projectStore'
+import '../theme/app.css'
 
-/**
- * Shell mínimo de la etapa 0: verifica el arranque de Electron, el tema y la
- * tipografía. La interfaz completa se incorpora en las etapas posteriores.
- */
 export function App(): React.JSX.Element {
-  const [ready] = useState(true)
+  const dialog = useProjectStore((state) => state.dialog)
+  const undo = useProjectStore((state) => state.undo)
+  const redo = useProjectStore((state) => state.redo)
+  const saveProject = useProjectStore((state) => state.saveProject)
+  const project = useProjectStore((state) => state.project)
+  const selectedGraphId = useProjectStore((state) => state.selectedGraphId)
+  const selectedGraph = selectedGraphId ? project.graphs.find((graph) => graph.id === selectedGraphId) : project.graphs[project.graphs.length - 1]
+
+  useEffect(() => {
+    const handler = (event: KeyboardEvent): void => {
+      const control = event.ctrlKey || event.metaKey
+      if (!control) return
+      const key = event.key.toLowerCase()
+      if (key === 'z') {
+        event.preventDefault()
+        undo()
+      } else if (key === 'y') {
+        event.preventDefault()
+        redo()
+      } else if (key === 's') {
+        event.preventDefault()
+        void saveProject()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [undo, redo, saveProject])
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <nav style={{ background: 'var(--tt-chrome)', borderBottom: '1px solid var(--tt-border-light)', padding: '3px 8px' }}>
-        TinyTab Statistical Software
-      </nav>
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexDirection: 'column' }}>
-        <h1 style={{ margin: 0, color: 'var(--tt-accent)' }}>TinyTab</h1>
-        <p>Software estadístico libre — GPL-3.0-or-later</p>
-        <p style={{ color: 'var(--tt-text-muted)' }}>{ready ? 'Entorno Electron + React + TypeScript listo.' : 'Inicializando…'}</p>
-      </main>
-      <footer style={{ background: 'var(--tt-chrome)', borderTop: '1px solid var(--tt-border-light)', padding: '2px 8px', color: 'var(--tt-text-muted)' }}>
-        Etapa 0 — estructura del proyecto
-      </footer>
+    <div className="app-shell">
+      <MenuBar />
+      <Toolbar />
+      <div className="app-body">
+        <ProjectManager />
+        <div className="main-area">
+          <div className="worksheet-area">
+            <WorksheetView />
+          </div>
+          <div className="bottom-area">
+            <SessionPane />
+            <ChartView graph={selectedGraph} />
+          </div>
+        </div>
+      </div>
+      <StatusBar />
+      {dialog.kind === 'analysis' && <AnalysisDialog analysisId={dialog.analysisId} />}
+      {dialog.kind === 'command' && <CommandDialog />}
+      {dialog.kind === 'help' && <HelpDialog />}
+      {dialog.kind === 'about' && <HelpDialog about />}
     </div>
   )
 }
