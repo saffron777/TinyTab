@@ -101,3 +101,19 @@ Set-Content node_modules\electron\path.txt "electron.exe" -NoNewline
 ```
 
 Después, comprobar con `node -e "console.log(require('electron'))"` y volver a `npm run dev`.
+
+### `EPERM`/`EBUSY` al empaquetar (`win-unpacked.tmp`)
+
+En algunas unidades (por ejemplo `E:`) o con antivirus/indexador activos, electron-builder falla al
+renombrar `release\win-unpacked.tmp` porque un proceso mantiene abierto un archivo temporal
+(`resources\default_app.asar`). El script `npm run package` ya lo evita: compila y empaqueta en la
+carpeta temporal del sistema y **sólo copia los instaladores finales** a `release\`.
+
+Si el problema persistiere al copiar:
+
+```powershell
+# Cerrar la app y cualquier explorador de Windows abierto en E:\TinyTab\release
+# Añadir exclusión de Windows Defender (PowerShell como administrador):
+Add-MpPreference -ExclusionPath "E:\TinyTab"
+Add-MpPreference -ExclusionPath "$env:LOCALAPPDATA\electron-builder\Cache"
+```

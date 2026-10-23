@@ -28,8 +28,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "verify": "node scripts/verify.mjs",
-    "package": "electron-vite build && electron-builder --win --x64",
-    "package:dir": "electron-vite build && electron-builder --win --x64 --dir"
+    "package": "node scripts/package.mjs",
+    "package:dir": "node scripts/package.mjs --dir"
   },
   "dependencies": {
     "react": "19.3.1",
