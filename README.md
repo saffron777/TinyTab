@@ -78,3 +78,26 @@ commit. Los commits siguen Conventional Commits y el historial se organiza por e
 ## Licencia
 
 GPL-3.0-or-later. Texto completo en [LICENSE](LICENSE). Avisos de terceros en [NOTICE](NOTICE).
+
+## Solución de problemas
+
+### `Error: Electron uninstall`
+
+Significa que el paquete `electron` está instalado pero su binario no se descargó (falta
+`node_modules/electron/dist` y `node_modules/electron/path.txt`, normalmente porque el
+`postinstall` se omitió o falló por red/proxy). Soluciones, en orden:
+
+```powershell
+# 1) Reintentar la descarga del binario
+npm rebuild electron
+
+# 2) Forzar el instalador oficial
+node node_modules/electron/install.js
+
+# 3) Sin red: copiar la carpeta dist desde otra instalación de Electron 45
+#    y crear el archivo de ruta:
+robocopy "C:\ruta\a\electron\dist" "node_modules\electron\dist" /E
+Set-Content node_modules\electron\path.txt "electron.exe" -NoNewline
+```
+
+Después, comprobar con `node -e "console.log(require('electron'))"` y volver a `npm run dev`.
