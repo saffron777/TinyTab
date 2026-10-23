@@ -1,0 +1,34 @@
+TinyTab Statistical Software
+Copyright (C) 2026 TinyTab contributors
+
+Este programa es software libre: puedes redistribuirlo y/o modificarlo bajo los términos de la
+GNU General Public License tal y como la publica la Free Software Foundation, en su versión 3
+o (a tu elección) cualquier versión posterior.
+
+Este programa se distribuye con la esperanza de que sea útil, pero SIN NINGUNA GARANTÍA;
+ni siquiera la garantía implícita de COMERCIABILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR.
+Consulta la GNU General Public License para más detalles.
+
+Deberías haber recibido una copia de la GNU General Public License junto con este programa.
+Si no es así, consulta <https://www.gnu.org/licenses/>.
+
+---
+
+AVISO DE NO AFILIACIÓN
+
+TinyTab no está afiliado, patrocinado ni respaldado por Minitab, LLC. "Minitab" es una marca
+registrada de su titular. TinyTab no incluye ni copia binarios, código, iconos, textos, datos de
+ejemplo ni otros recursos del producto Minitab; la interfaz es una recreación original inspirada
+en la usabilidad de las aplicaciones estadísticas de escritorio.
+
+---
+
+COMPONENTES DE TERCEROS (licencias permisivas compatibles con GPLv3)
+
+- Electron (MIT)
+- React y React DOM (MIT)
+- Zustand (MIT)
+- Vite, Vitest, Playwright, ESLint, Prettier, TypeScript (MIT / Apache-2.0)
+- jsdom (MIT)
+
+Consulta los archivos LICENSE de cada paquete en node_modules para el texto completo.

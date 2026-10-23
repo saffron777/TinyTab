@@ -1,0 +1,102 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--tt-font);
+  font-size: var(--tt-font-size);
+  color: var(--tt-text);
+  background: var(--tt-chrome);
+  overflow: hidden;
+  user-select: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-menubar {
+  display: flex;
+  align-items: center;
+  height: var(--tt-menubar-height);
+  background: var(--tt-chrome);
+  border-bottom: 1px solid var(--tt-border-light);
+  padding: 0 4px;
+  gap: 2px;
+}
+
+.menu-item {
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 2px 8px;
+  border-radius: 2px;
+  cursor: default;
+}
+
+.menu-item:hover:not(:disabled) {
+  background: var(--tt-accent-soft);
+  border-color: var(--tt-border-light);
+}
+
+.menu-item:disabled {
+  color: var(--tt-text-muted);
+  opacity: 0.8;
+}
+
+.app-workspace {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  padding: 8px;
+}
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--tt-panel);
+  border: 1px solid var(--tt-border-light);
+  color: var(--tt-text-muted);
+}
+
+.placeholder h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--tt-text);
+  margin: 0;
+}
+
+.placeholder p {
+  margin: 0;
+}
+
+.app-statusbar {
+  height: var(--tt-statusbar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  background: var(--tt-chrome);
+  border-top: 1px solid var(--tt-border-light);
+  color: var(--tt-text-muted);
+}

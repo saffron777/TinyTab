@@ -1,0 +1,26 @@
+appId: org.tinytab.statistical
+productName: TinyTab Statistical Software
+copyright: Copyright (C) 2026 TinyTab contributors — GPL-3.0-or-later
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**
+  - package.json
+  - '!**/*.map'
+asar: true
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  artifactName: ${productName}-${version}-${arch}.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: TinyTab Statistical Software
+portable:
+  artifactName: TinyTab-Portable-${version}.${ext}

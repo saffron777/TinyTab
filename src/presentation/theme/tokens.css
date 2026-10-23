@@ -1,0 +1,22 @@
+:root {
+  --tt-chrome: #f0f0f0;
+  --tt-toolbar: #e9e9e9;
+  --tt-panel: #f7f7f7;
+  --tt-border: #a0a0a0;
+  --tt-border-light: #d4d4d4;
+  --tt-text: #1e1e1e;
+  --tt-text-muted: #555555;
+  --tt-accent: #0a6e9e;
+  --tt-accent-soft: #cfe6f5;
+  --tt-selection: #cfe6f5;
+  --tt-header-bg: #e3e3e3;
+  --tt-grid-line: #e0e0e0;
+  --tt-row-header: #ececec;
+  --tt-session-bg: #ffffff;
+  --tt-mono: 'Cascadia Mono', 'Consolas', 'Courier New', monospace;
+  --tt-font: 'Segoe UI', Tahoma, 'Trebuchet MS', sans-serif;
+  --tt-font-size: 12px;
+  --tt-menubar-height: 24px;
+  --tt-toolbar-height: 30px;
+  --tt-statusbar-height: 22px;
+}
