@@ -1335,5 +1335,8 @@ Todo se configura por entorno (`StatisticEngine__Limits__MaxNumericValues`, …)
 
 ## 11. Cliente HTTP de Visual Studio / Rider
 
-En `examples/statisticengine.http` hay una colección lista para ejecutar desde el editor
-(REST Client de Visual Studio 2022/2026, JetBrains HTTP Client o VS Code).
+En `examples/` hay dos colecciones listas para ejecutar:
+
+- `statisticengine.http`: REST Client de Visual Studio 2022/2026, JetBrains o VS Code.
+- `StatisticEngine.postman_collection.json`: colección Postman v2.1 con todos los endpoints,
+  los 60 análisis y las 21 distribuciones (evaluate y sample), con tests automáticos.

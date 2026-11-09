@@ -61,6 +61,10 @@ Probes y documentación:
 
 - **[API.md](API.md)**: guía completa con ejemplos ejecutables de los 9 endpoints, los 60 análisis
   y las 21 distribuciones (generada desde el propio servicio).
+- **[examples/StatisticEngine.postman_collection.json](examples/StatisticEngine.postman_collection.json)**:
+  colección **Postman v2.1** con 128 peticiones (descubrimiento, catálogo, los 60 análisis por
+  categoría, las 21 distribuciones × `evaluate`/`sample`, errores y un flujo encadenado) y tests
+  automáticos en cada una. Importar con *File → Import* y ajustar la variable `baseUrl`.
 - **[examples/statisticengine.http](examples/statisticengine.http)**: colección lista para el
   REST Client de Visual Studio / JetBrains HTTP Client / VS Code.
 

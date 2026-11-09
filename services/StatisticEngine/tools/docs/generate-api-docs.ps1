@@ -16,7 +16,8 @@
 [CmdletBinding()]
 param(
     [string]$BaseUrl = "http://localhost:5080",
-    [string]$OutputPath = (Join-Path $PSScriptRoot "..\..\API.md")
+    [string]$OutputPath = (Join-Path $PSScriptRoot "..\..\API.md"),
+    [string]$PostmanPath = (Join-Path $PSScriptRoot "..\..\examples\StatisticEngine.postman_collection.json")
 )
 
 $ErrorActionPreference = "Stop"
@@ -233,6 +234,7 @@ foreach ($analysis in $catalog.analyses) {
         }
         $probes[$analysis.id] = [pscustomobject]@{
             Status  = $response.StatusCode
+            Code    = $null
             Json    = $json
             Summary = $sectionSummary
             Charts  = @($payload.charts).Count
@@ -243,7 +245,7 @@ foreach ($analysis in $catalog.analyses) {
         $detail = $_.ErrorDetails.Message
         $code = 'ERROR'
         if ($detail) { $code = ($detail | ConvertFrom-Json).code }
-        $probes[$analysis.id] = [pscustomobject]@{ Status = $_.Exception.Response.StatusCode.value__; Json = $json; Summary = "error $code"; Charts = 0; Rows = 0 }
+        $probes[$analysis.id] = [pscustomobject]@{ Status = $_.Exception.Response.StatusCode.value__; Code = $code; Json = $json; Summary = "error $code"; Charts = 0; Rows = 0 }
         Write-Warning "$($analysis.id): $code"
     }
 }
@@ -569,8 +571,11 @@ Todo se configura por entorno (`StatisticEngine__Limits__MaxNumericValues`, …)
 
 ## 11. Cliente HTTP de Visual Studio / Rider
 
-En `examples/statisticengine.http` hay una colección lista para ejecutar desde el editor
-(REST Client de Visual Studio 2022/2026, JetBrains HTTP Client o VS Code).
+En `examples/` hay dos colecciones listas para ejecutar:
+
+- `statisticengine.http`: REST Client de Visual Studio 2022/2026, JetBrains o VS Code.
+- `StatisticEngine.postman_collection.json`: colección Postman v2.1 con todos los endpoints,
+  los 60 análisis y las 21 distribuciones (evaluate y sample), con tests automáticos.
 '@
 
 $markdown = ($out -join [Environment]::NewLine) + [Environment]::NewLine
@@ -686,9 +691,248 @@ $httpDirectory = Split-Path -Parent $httpPath
 if (-not (Test-Path $httpDirectory)) { New-Item -ItemType Directory -Force -Path $httpDirectory | Out-Null }
 [System.IO.File]::WriteAllText($httpPath, (($http -join [Environment]::NewLine) + [Environment]::NewLine), [System.Text.UTF8Encoding]::new($false))
 
+# ---------------------------------------------------------------- colección Postman v2.1
+function New-PostmanRequest {
+    param(
+        [string]$Name,
+        [string]$Method,
+        [string]$Url,
+        [string]$Description,
+        [string]$JsonBody,
+        [string[]]$Tests
+    )
+    $request = [ordered]@{ method = $Method; url = $Url }
+    if ($JsonBody) {
+        $request.header = @([ordered]@{ key = 'Content-Type'; value = 'application/json' })
+        $request.body = [ordered]@{
+            mode    = 'raw'
+            raw     = $JsonBody
+            options = [ordered]@{ raw = [ordered]@{ language = 'json' } }
+        }
+    }
+    if ($Description) { $request.description = $Description }
+    $item = [ordered]@{ name = $Name; request = $request }
+    if ($Tests -and $Tests.Count -gt 0) {
+        $item.event = @([ordered]@{
+                listen = 'test'
+                script = [ordered]@{ type = 'text/javascript'; exec = @($Tests) }
+            })
+    }
+    return $item
+}
+
+$postmanItems = [System.Collections.Generic.List[object]]::new()
+
+# 00 · Descubrimiento
+$discovery = [System.Collections.Generic.List[object]]::new()
+$discovery.Add((New-PostmanRequest -Name 'Página de inicio (HTML con enlaces)' -Method 'GET' -Url '{{baseUrl}}/' -Description 'Página navegable con enlaces a la documentación, el catálogo y la salud.' -Tests @(
+            "pm.test('200 y HTML', () => { pm.response.to.have.status(200); pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html'); });",
+            "pm.test('enlaza a Scalar y al catálogo', () => { const html = pm.response.text(); pm.expect(html).to.include('scalar/v1'); pm.expect(html).to.include('/api/v1/analyses'); });"
+        )))
+$discovery.Add((New-PostmanRequest -Name 'Inventario de rutas' -Method 'GET' -Url '{{baseUrl}}/api/v1/endpoints' -Description 'Rutas realmente publicadas, leídas del enrutador.' -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('incluye la ejecución de análisis', () => { const rutas = pm.response.json().endpoints; pm.expect(rutas.some(r => r.path === '/api/v1/analyses/{id}/run')).to.be.true; });"
+        )))
+$discovery.Add((New-PostmanRequest -Name 'Metadatos y límites' -Method 'GET' -Url '{{baseUrl}}/api/v1/meta' -Description 'Versión del motor, baseline de paridad y límites efectivos.' -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('versión del motor', () => pm.expect(pm.response.json().engine.version).to.eql('1.0.0'));"
+        )))
+$discovery.Add((New-PostmanRequest -Name 'Contrato OpenAPI' -Method 'GET' -Url '{{baseUrl}}/openapi/v1.json' -Description 'Documento OpenAPI 3.1 con las 9 rutas de la API.' -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('contiene las rutas de la API', () => { const paths = Object.keys(pm.response.json().paths); pm.expect(paths).to.include('/api/v1/analyses/{id}/run'); });"
+        )))
+$discovery.Add((New-PostmanRequest -Name 'Salud: liveness' -Method 'GET' -Url '{{baseUrl}}/health/live' -Tests @(
+            "pm.test('200 y estado Healthy', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().status).to.eql('Healthy'); });"
+        )))
+$discovery.Add((New-PostmanRequest -Name 'Salud: readiness (autotest numérico)' -Method 'GET' -Url '{{baseUrl}}/health/ready' -Tests @(
+            "pm.test('200 y estado Healthy', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().status).to.eql('Healthy'); });",
+            "pm.test('ejecuta el autotest del motor', () => { const checks = pm.response.json().checks; pm.expect(checks.some(c => c.name === 'engine-self-test')).to.be.true; });"
+        )))
+$postmanItems.Add([ordered]@{ name = '00 · Descubrimiento'; item = @($discovery) })
+
+# 01 · Catálogo
+$catalogItems = [System.Collections.Generic.List[object]]::new()
+$catalogItems.Add((New-PostmanRequest -Name 'Catálogo completo (60 análisis)' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses' -Description 'Definiciones con columnas, parámetros y opciones.' -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const body = pm.response.json();",
+            "pm.test('60 análisis y 15 categorías', () => { pm.expect(body.analyses).to.have.lengthOf(60); pm.expect(body.categories).to.have.lengthOf(15); });",
+            "pm.collectionVariables.set('totalAnalisis', String(body.analyses.length));"
+        )))
+$catalogItems.Add((New-PostmanRequest -Name 'Catálogo filtrado por categoría' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses?category=ANOVA' -Description 'Filtro por categoría; byCategory se filtra igual.' -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('3 análisis de ANOVA y una categoría', () => { const body = pm.response.json(); pm.expect(body.analyses).to.have.lengthOf(3); pm.expect(body.byCategory).to.have.lengthOf(1); });"
+        )))
+$catalogItems.Add((New-PostmanRequest -Name 'Definición de un análisis' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses/capability' -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('declara lsl y usl', () => { const keys = pm.response.json().params.map(p => p.key); pm.expect(keys).to.include('lsl'); pm.expect(keys).to.include('usl'); });"
+        )))
+$catalogItems.Add((New-PostmanRequest -Name 'Definición con columnas múltiples' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses/multivariate-pca' -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('la columna x es múltiple', () => pm.expect(pm.response.json().numericColumns[0].multiple).to.be.true);"
+        )))
+$postmanItems.Add([ordered]@{ name = '01 · Catálogo'; item = @($catalogItems) })
+
+# 02 · Análisis (una petición por análisis, agrupadas por categoría)
+$analysisFolders = [System.Collections.Generic.List[object]]::new()
+foreach ($group in $catalog.byCategory) {
+    $items = [System.Collections.Generic.List[object]]::new()
+    foreach ($id in $group.ids) {
+        $analysis = $catalog.analyses | Where-Object { $_.id -eq $id }
+        $probe = $probes[$id]
+        if ($probe.Status -eq 200) {
+            $tests = @(
+                "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('id del análisis', () => pm.expect(body.id).to.eql('$id'));",
+                "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+            )
+        }
+        else {
+            $tests = @(
+                "pm.test('error de dominio heredado del motor', () => pm.response.to.have.status($($probe.Status)));",
+                "pm.test('código $($probe.Code)', () => pm.expect(pm.response.json().code).to.eql('$($probe.Code)'));"
+            )
+        }
+        $description = "$($analysis.description)`n`nCategoría: $($analysis.category).`nEntradas: " +
+            ((@($analysis.numericColumns) + @($analysis.textColumns) + @($analysis.params)) |
+                ForEach-Object { $_.key }) -join ', '
+        $items.Add((New-PostmanRequest -Name "$($analysis.label) · $id" -Method 'POST' -Url "{{baseUrl}}/api/v1/analyses/$id/run" -Description $description -JsonBody $probe.Json -Tests $tests))
+    }
+    $analysisFolders.Add([ordered]@{ name = $group.category; item = @($items) })
+}
+$postmanItems.Add([ordered]@{ name = '02 · Análisis (60)'; item = @($analysisFolders) })
+
+# 03 · Distribuciones
+$distributionItems = [System.Collections.Generic.List[object]]::new()
+$distributionItems.Add((New-PostmanRequest -Name 'Catálogo de distribuciones (21)' -Method 'GET' -Url '{{baseUrl}}/api/v1/distributions' -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.test('21 distribuciones', () => pm.expect(pm.response.json().distributions).to.have.lengthOf(21));"
+        )))
+foreach ($id in @('normal', 'binomial', 'weibull')) {
+    $distribution = $distributions.distributions | Where-Object { $_.id -eq $id }
+    $distributionItems.Add((New-PostmanRequest -Name "Metadatos · $($distribution.label) ($id)" -Method 'GET' -Url "{{baseUrl}}/api/v1/distributions/$id" -Tests @(
+                "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                "pm.test('declara id y parámetros', () => { const body = pm.response.json(); pm.expect(body.id).to.eql('$id'); pm.expect(body.params.length).to.be.above(0); });"
+            )))
+}
+
+$evaluateItems = [System.Collections.Generic.List[object]]::new()
+foreach ($distribution in $distributions.distributions) {
+    $probe = $distributionProbes[$distribution.id]
+    $evaluateItems.Add((New-PostmanRequest -Name "$($distribution.label) · $($distribution.id)" -Method 'POST' -Url "{{baseUrl}}/api/v1/distributions/$($distribution.id)/evaluate" -Description "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]." -JsonBody $probe.Json -Tests @(
+                "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+            )))
+}
+$distributionItems.Add([ordered]@{ name = 'Evaluar (21)'; item = @($evaluateItems) })
+
+$sampleItems = [System.Collections.Generic.List[object]]::new()
+foreach ($distribution in $distributions.distributions) {
+    $parameters = [ordered]@{}
+    foreach ($parameter in $distribution.params) { $parameters[$parameter.key] = $parameter.defaultValue }
+    $sampleBody = ([ordered]@{ params = $parameters; count = 5; seed = 20261023 } | ConvertTo-Json -Depth 5 -Compress)
+    $sampleItems.Add((New-PostmanRequest -Name "$($distribution.label) · $($distribution.id)" -Method 'POST' -Url "{{baseUrl}}/api/v1/distributions/$($distribution.id)/sample" -Description 'Muestreo determinista: la misma semilla produce la misma serie.' -JsonBody $sampleBody -Tests @(
+                "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+            )))
+}
+$distributionItems.Add([ordered]@{ name = 'Muestrear (21)'; item = @($sampleItems) })
+$postmanItems.Add([ordered]@{ name = '03 · Distribuciones (21)'; item = @($distributionItems) })
+
+# 04 · Errores
+$errorItems = [System.Collections.Generic.List[object]]::new()
+$errorItems.Add((New-PostmanRequest -Name '404 · análisis inexistente' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses/no-existe' -Tests @(
+            "pm.test('404 NOT_FOUND', () => { pm.response.to.have.status(404); pm.expect(pm.response.json().code).to.eql('NOT_FOUND'); });"
+        )))
+$errorItems.Add((New-PostmanRequest -Name '404 · distribución inexistente' -Method 'GET' -Url '{{baseUrl}}/api/v1/distributions/no-existe' -Tests @(
+            "pm.test('404 NOT_FOUND', () => { pm.response.to.have.status(404); pm.expect(pm.response.json().code).to.eql('NOT_FOUND'); });"
+        )))
+$errorItems.Add((New-PostmanRequest -Name '422 · dato insuficiente' -Method 'POST' -Url '{{baseUrl}}/api/v1/analyses/one-sample-t/run' -Description 'Un solo valor: el motor exige al menos 2 observaciones.' -JsonBody '{"numeric":{"x":[5]}}' -Tests @(
+            "pm.test('422 INSUFFICIENT_DATA', () => { pm.response.to.have.status(422); const body = pm.response.json(); pm.expect(body.code).to.eql('INSUFFICIENT_DATA'); pm.expect(body.analysisId).to.eql('one-sample-t'); });"
+        )))
+$errorItems.Add((New-PostmanRequest -Name '400 · parámetro inválido (sigma = 0)' -Method 'POST' -Url '{{baseUrl}}/api/v1/distributions/normal/evaluate' -JsonBody '{"params":{"sigma":0},"x":[0]}' -Tests @(
+            "pm.test('400 INVALID_PARAMETER', () => { pm.response.to.have.status(400); pm.expect(pm.response.json().code).to.eql('INVALID_PARAMETER'); });"
+        )))
+$errorItems.Add((New-PostmanRequest -Name 'Validar sin ejecutar (siempre 200)' -Method 'POST' -Url '{{baseUrl}}/api/v1/analyses/one-sample-t/validate' -JsonBody '{"numeric":{"x":[]}}' -Tests @(
+            "pm.test('200 con valid=false', () => { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.valid).to.be.false; pm.expect(body.error.code).to.eql('INSUFFICIENT_DATA'); });"
+        )))
+$postmanItems.Add([ordered]@{ name = '04 · Errores y validación'; item = @($errorItems) })
+
+# 05 · Flujo encadenado
+$describeBody = '{"numeric":{"x":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2]},"params":{"confidence":0.95}}'
+$flowItems = [System.Collections.Generic.List[object]]::new()
+$flowItems.Add((New-PostmanRequest -Name '1 · Descubrir el catálogo' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses' -Tests @(
+            "pm.test('60 análisis y 15 categorías', () => { pm.expect(pm.response.json().analyses).to.have.lengthOf(60); });",
+            "pm.collectionVariables.set('totalAnalisis', String(pm.response.json().analyses.length));"
+        )))
+$flowItems.Add((New-PostmanRequest -Name '2 · Validar la entrada' -Method 'POST' -Url '{{baseUrl}}/api/v1/analyses/describe/validate' -JsonBody $describeBody -Tests @(
+            "pm.test('válida', () => pm.expect(pm.response.json().valid).to.be.true);"
+        )))
+$flowItems.Add((New-PostmanRequest -Name '3 · Ejecutar el análisis' -Method 'POST' -Url '{{baseUrl}}/api/v1/analyses/describe/run' -JsonBody $describeBody -Tests @(
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const body = pm.response.json();",
+            "pm.test('N = 10 en la primera fila', () => pm.expect(body.sections[0].rows[0][1]).to.eql('10'));",
+            "pm.collectionVariables.set('nDescriptivo', String(body.sections[0].rows[0][1]));"
+        )))
+$flowItems.Add((New-PostmanRequest -Name '4 · Mismo cálculo como texto de sesión' -Method 'POST' -Url '{{baseUrl}}/api/v1/analyses/describe/run?format=text' -JsonBody $describeBody -Tests @(
+            "pm.test('text/plain', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('text/plain'));",
+            "pm.test('contiene la tabla de sesión', () => pm.expect(pm.response.text()).to.include('Resumen'));"
+        )))
+$flowItems.Add((New-PostmanRequest -Name '5 · Cuantil normal(0,1) al 97,5 %' -Method 'POST' -Url '{{baseUrl}}/api/v1/distributions/normal/evaluate' -JsonBody '{"params":{"mu":0,"sigma":1},"x":[0],"probabilities":[0.975]}' -Tests @(
+            "const body = pm.response.json();",
+            "pm.test('inversa ≈ 1.959963984540054', () => pm.expect(body.invCdf[0]).to.be.closeTo(1.959963984540054, 1e-9));",
+            "pm.collectionVariables.set('cuantil975', String(body.invCdf[0]));"
+        )))
+$flowItems.Add((New-PostmanRequest -Name '6 · Muestrear normal(0,1) con semilla' -Method 'POST' -Url '{{baseUrl}}/api/v1/distributions/normal/sample' -JsonBody '{"params":{"mu":0,"sigma":1},"count":5,"seed":20261023}' -Tests @(
+            "const values = pm.response.json().values;",
+            "pm.test('5 muestras', () => pm.expect(values).to.have.lengthOf(5));",
+            "pm.collectionVariables.set('muestraA', JSON.stringify(values));"
+        )))
+$flowItems.Add((New-PostmanRequest -Name '7 · Repetir: debe ser idéntico' -Method 'POST' -Url '{{baseUrl}}/api/v1/distributions/normal/sample' -JsonBody '{"params":{"mu":0,"sigma":1},"count":5,"seed":20261023}' -Tests @(
+            "pm.test('determinista con la misma semilla', () => pm.expect(JSON.stringify(pm.response.json().values)).to.eql(pm.collectionVariables.get('muestraA')));"
+        )))
+$postmanItems.Add([ordered]@{ name = '05 · Flujo completo (encadenado)'; item = @($flowItems) })
+
+$collectionDescription = @'
+Colección completa del microservicio **StatisticEngine**: catálogo y ejecución de los 60 análisis,
+las 21 distribuciones (evaluación y muestreo), descubrimiento (página de inicio, inventario de rutas,
+OpenAPI, salud), errores de dominio y un flujo encadenado.
+
+Variables: `baseUrl` (http://localhost:5080 o https://localhost:54236 con el perfil de Visual Studio)
+y `apiKey` (solo si se activa `StatisticEngine:Auth:ApiKey`; añádela como cabecera `X-Api-Key`).
+
+Cada petición incluye tests automáticos: códigos HTTP, forma de la respuesta, número de análisis y
+distribuciones, cuantiles esperados y determinismo del muestreo.
+'@
+
+$collection = [ordered]@{
+    info     = [ordered]@{
+        _postman_id = '5f0d9b52-6f2b-4f8b-9d1a-2b7c3e4f5a60'
+        name        = 'StatisticEngine API'
+        description = $collectionDescription
+        schema      = 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
+    }
+    auth     = [ordered]@{ type = 'noauth' }
+    variable = @(
+        [ordered]@{ key = 'baseUrl'; value = 'http://localhost:5080'; type = 'string' },
+        [ordered]@{ key = 'apiKey'; value = ''; type = 'string' },
+        [ordered]@{ key = 'muestraA'; value = ''; type = 'string' }
+    )
+    item     = @($postmanItems)
+}
+
+$postmanDirectory = Split-Path -Parent $PostmanPath
+if (-not (Test-Path $postmanDirectory)) { New-Item -ItemType Directory -Force -Path $postmanDirectory | Out-Null }
+$postmanJson = $collection | ConvertTo-Json -Depth 30
+[System.IO.File]::WriteAllText($PostmanPath, $postmanJson, [System.Text.UTF8Encoding]::new($false))
+
 $failed = ($probes.Values | Where-Object { $_.Status -ge 400 }).Count
 Write-Host "API.md generado: $OutputPath"
 Write-Host "Colección .http: $httpPath"
+Write-Host "Colección Postman: $PostmanPath"
 Write-Host "  análisis: $($probes.Count) (con error: $failed)"
 Write-Host "  distribuciones: $($distributionProbes.Count)"
 Write-Host "  líneas: $((Get-Content $OutputPath).Count)"

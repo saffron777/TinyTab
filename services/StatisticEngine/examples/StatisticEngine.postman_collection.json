@@ -1,0 +1,4530 @@
+{
+  "info": {
+    "_postman_id": "5f0d9b52-6f2b-4f8b-9d1a-2b7c3e4f5a60",
+    "name": "StatisticEngine API",
+    "description": "Colección completa del microservicio **StatisticEngine**: catálogo y ejecución de los 60 análisis,\nlas 21 distribuciones (evaluación y muestreo), descubrimiento (página de inicio, inventario de rutas,\nOpenAPI, salud), errores de dominio y un flujo encadenado.\n\nVariables: `baseUrl` (http://localhost:5080 o https://localhost:54236 con el perfil de Visual Studio)\ny `apiKey` (solo si se activa `StatisticEngine:Auth:ApiKey`; añádela como cabecera `X-Api-Key`).\n\nCada petición incluye tests automáticos: códigos HTTP, forma de la respuesta, número de análisis y\ndistribuciones, cuantiles esperados y determinismo del muestreo.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5080",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "muestraA",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 · Descubrimiento",
+      "item": [
+        {
+          "name": "Página de inicio (HTML con enlaces)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/",
+            "description": "Página navegable con enlaces a la documentación, el catálogo y la salud."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y HTML', () => { pm.response.to.have.status(200); pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html'); });",
+                  "pm.test('enlaza a Scalar y al catálogo', () => { const html = pm.response.text(); pm.expect(html).to.include('scalar/v1'); pm.expect(html).to.include('/api/v1/analyses'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inventario de rutas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/endpoints",
+            "description": "Rutas realmente publicadas, leídas del enrutador."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('incluye la ejecución de análisis', () => { const rutas = pm.response.json().endpoints; pm.expect(rutas.some(r => r.path === '/api/v1/analyses/{id}/run')).to.be.true; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Metadatos y límites",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/meta",
+            "description": "Versión del motor, baseline de paridad y límites efectivos."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('versión del motor', () => pm.expect(pm.response.json().engine.version).to.eql('1.0.0'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Contrato OpenAPI",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/openapi/v1.json",
+            "description": "Documento OpenAPI 3.1 con las 9 rutas de la API."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('contiene las rutas de la API', () => { const paths = Object.keys(pm.response.json().paths); pm.expect(paths).to.include('/api/v1/analyses/{id}/run'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Salud: liveness",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health/live"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y estado Healthy', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().status).to.eql('Healthy'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Salud: readiness (autotest numérico)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health/ready"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y estado Healthy', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().status).to.eql('Healthy'); });",
+                  "pm.test('ejecuta el autotest del motor', () => { const checks = pm.response.json().checks; pm.expect(checks.some(c => c.name === 'engine-self-test')).to.be.true; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 · Catálogo",
+      "item": [
+        {
+          "name": "Catálogo completo (60 análisis)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analyses",
+            "description": "Definiciones con columnas, parámetros y opciones."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('60 análisis y 15 categorías', () => { pm.expect(body.analyses).to.have.lengthOf(60); pm.expect(body.categories).to.have.lengthOf(15); });",
+                  "pm.collectionVariables.set('totalAnalisis', String(body.analyses.length));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Catálogo filtrado por categoría",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analyses?category=ANOVA",
+            "description": "Filtro por categoría; byCategory se filtra igual."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('3 análisis de ANOVA y una categoría', () => { const body = pm.response.json(); pm.expect(body.analyses).to.have.lengthOf(3); pm.expect(body.byCategory).to.have.lengthOf(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Definición de un análisis",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analyses/capability"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('declara lsl y usl', () => { const keys = pm.response.json().params.map(p => p.key); pm.expect(keys).to.include('lsl'); pm.expect(keys).to.include('usl'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Definición con columnas múltiples",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analyses/multivariate-pca"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('la columna x es múltiple', () => pm.expect(pm.response.json().numericColumns[0].multiple).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 · Análisis (60)",
+      "item": [
+        {
+          "name": "Estadísticas básicas",
+          "item": [
+            {
+              "name": "Estadísticas descriptivas · describe",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/describe/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]},\"params\":{\"confidence\":0.95}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Media, desviación estándar, cuartiles, intervalo de confianza y pruebas de normalidad.\n\nCategoría: Estadísticas básicas.\nEntradas: x confidence"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('describe'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Resumen gráfico · graphical-summary",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/graphical-summary/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"confidence\":0.95}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Resumen descriptivo con histograma, prueba de normalidad e intervalo de confianza.\n\nCategoría: Estadísticas básicas.\nEntradas: x confidence"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('graphical-summary'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Correlación · correlation",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/correlation/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Matriz de correlaciones de Pearson entre dos o más variables.\n\nCategoría: Estadísticas básicas.\nEntradas: x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('correlation'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Covarianza · covariance",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/covariance/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Matriz de covarianzas entre dos o más variables.\n\nCategoría: Estadísticas básicas.\nEntradas: x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('covariance'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Prueba de normalidad · normality",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/normality/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Prueba de Anderson-Darling para la normalidad de los datos.\n\nCategoría: Estadísticas básicas.\nEntradas: x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('normality'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Distribuciones",
+          "item": [
+            {
+              "name": "Distribución de probabilidad · probability-distribution",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/probability-distribution/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"distribution\":\"normal\",\"x\":1,\"p\":0.95}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Funciones de densidad, acumulada e inversa para 21 distribuciones.\n\nCategoría: Distribuciones.\nEntradas: distribution x p"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('probability-distribution'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tablas",
+          "item": [
+            {
+              "name": "Tally individual variables · tally",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/tally/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"text\":{\"t\":[\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\"]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Conteo, porcentaje y porcentaje acumulado por categoría.\n\nCategoría: Tablas.\nEntradas: x t"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('tally'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Tabla cruzada y chi-cuadrado · cross-tab",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/cross-tab/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"text\":{\"row\":[\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\"],\"column\":[\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\"]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Tabla de contingencia con prueba de independencia chi-cuadrado.\n\nCategoría: Tablas.\nEntradas: row column"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('cross-tab'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Chi-cuadrado de bondad de ajuste · chi-square-gof",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/chi-square-gof/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"counts\":[12,18,9,15]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Compara frecuencias observadas con proporciones esperadas iguales.\n\nCategoría: Tablas.\nEntradas: counts labels"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('chi-square-gof'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pruebas de hipótesis",
+          "item": [
+            {
+              "name": "t de 1 muestra · one-sample-t",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/one-sample-t/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"mu\":0,\"confidence\":0.95,\"alternative\":\"two-sided\"}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Contraste de la media de una población contra un valor de referencia.\n\nCategoría: Pruebas de hipótesis.\nEntradas: x mu confidence alternative"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('one-sample-t'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Z de 1 muestra · one-sample-z",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/one-sample-z/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"sigma\":1,\"mu\":0}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Contraste de la media con σ conocida.\n\nCategoría: Pruebas de hipótesis.\nEntradas: x sigma mu"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('one-sample-z'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "t de 2 muestras · two-sample-t",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/two-sample-t/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x1\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x2\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05]},\"params\":{\"pooled\":\"false\"}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Comparación de medias de dos muestras independientes (Welch o varianzas agrupadas).\n\nCategoría: Pruebas de hipótesis.\nEntradas: x1 x2 pooled"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('two-sample-t'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "t pareada · paired-t",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/paired-t/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x1\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x2\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Contraste de medias en observaciones pareadas.\n\nCategoría: Pruebas de hipótesis.\nEntradas: x1 x2"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('paired-t'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Proporción de 1 muestra · one-proportion",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/one-proportion/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"successes\":10,\"trials\":40,\"p0\":0.5}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Contraste de una proporción con aproximación normal e intervalo de Wilson.\n\nCategoría: Pruebas de hipótesis.\nEntradas: successes trials p0"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('one-proportion'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Proporción de 2 muestras · two-proportions",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/two-proportions/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"x1\":12,\"n1\":50,\"x2\":18,\"n2\":50}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Comparación de dos proporciones independientes.\n\nCategoría: Pruebas de hipótesis.\nEntradas: x1 n1 x2 n2"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('two-proportions'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Varianza de 1 muestra · one-variance",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/one-variance/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"sigma0\":1}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Contraste de una varianza contra un valor de referencia.\n\nCategoría: Pruebas de hipótesis.\nEntradas: x sigma0"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('one-variance'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Varianza de 2 muestras · two-variances",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/two-variances/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x1\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x2\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Comparación de dos varianzas mediante la prueba F.\n\nCategoría: Pruebas de hipótesis.\nEntradas: x1 x2"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('two-variances'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Prueba de equivalencia (TOST) · equivalence-tost",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/equivalence-tost/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x1\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x2\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05]},\"params\":{\"margin\":1}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Dos pruebas t de una cola para demostrar equivalencia con un margen.\n\nCategoría: Pruebas de hipótesis.\nEntradas: x1 x2 margin"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('equivalence-tost'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "No paramétricos",
+          "item": [
+            {
+              "name": "Prueba de los signos · nonparam-sign",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/nonparam-sign/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"median\":0}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Contraste de la mediana mediante la distribución binomial.\n\nCategoría: No paramétricos.\nEntradas: x median"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('nonparam-sign'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Wilcoxon de rangos con signo · nonparam-wilcoxon",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/nonparam-wilcoxon/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"median\":0}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Prueba no paramétrica para muestras pareadas o una muestra.\n\nCategoría: No paramétricos.\nEntradas: x median"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('nonparam-wilcoxon'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Mann-Whitney · nonparam-mann-whitney",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/nonparam-mann-whitney/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x1\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x2\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Comparación de dos muestras independientes por rangos.\n\nCategoría: No paramétricos.\nEntradas: x1 x2"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('nonparam-mann-whitney'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Kruskal-Wallis · nonparam-kruskal-wallis",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/nonparam-kruskal-wallis/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"text\":{\"factor\":[\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\"]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Comparación de k muestras independientes por rangos.\n\nCategoría: No paramétricos.\nEntradas: y factor"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('nonparam-kruskal-wallis'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Prueba de rachas · nonparam-runs",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/nonparam-runs/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Aleatoriedad de una secuencia alrededor de la mediana.\n\nCategoría: No paramétricos.\nEntradas: x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('nonparam-runs'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Correlación de Spearman · nonparam-spearman",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/nonparam-spearman/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"y\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Correlación de rangos entre dos variables.\n\nCategoría: No paramétricos.\nEntradas: x y"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('nonparam-spearman'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ANOVA",
+          "item": [
+            {
+              "name": "ANOVA de un factor · anova-one-way",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/anova-one-way/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"text\":{\"factor\":[\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\"]},\"params\":{\"posthoc\":\"true\"}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Comparación de medias entre niveles de un factor, con comparaciones múltiples.\n\nCategoría: ANOVA.\nEntradas: y factor posthoc"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('anova-one-way'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "ANOVA de dos factores · anova-two-way",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/anova-two-way/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"text\":{\"a\":[\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\"],\"b\":[\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\",\"Tarde\",\"Noche\",\"Mañana\"]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Modelo aditivo de dos factores (sin interacción).\n\nCategoría: ANOVA.\nEntradas: y a b"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('anova-two-way'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Prueba de igualdad de varianzas · equal-variances",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/equal-variances/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"text\":{\"factor\":[\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\",\"B\",\"C\",\"A\"]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Pruebas de Levene y Bartlett sobre los grupos de un factor.\n\nCategoría: ANOVA.\nEntradas: y factor"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('equal-variances'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Regresión",
+          "item": [
+            {
+              "name": "Regresión múltiple · regression-multiple",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/regression-multiple/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Ajuste por mínimos cuadrados (QR) con diagnóstico de residuos y VIF.\n\nCategoría: Regresión.\nEntradas: y x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('regression-multiple'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Regresión stepwise · regression-stepwise",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/regression-stepwise/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[34.648,32.654,36.491,32.312,35.25,33.696,35.559,34.093,34.307,34.852,33.449,35.93,33.769,34.885,34.026,32.972,35.633,35.52,33.478,34.681,33.917,36.071,34.36,33.208,35.063,36.408,32.466,34.682,33.84,33.985],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]},\"params\":{\"direction\":\"forward\"}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Selección de predictores por AIC (forward/backward).\n\nCategoría: Regresión.\nEntradas: y x direction"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('regression-stepwise'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Mejores subconjuntos · regression-best-subsets",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/regression-best-subsets/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Modelos con mayor R² ajustado hasta 4 predictores.\n\nCategoría: Regresión.\nEntradas: y x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('regression-best-subsets'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Regresión logística binaria · regression-logistic",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/regression-logistic/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Modelo logit ajustado por IRLS con desviación y AIC.\n\nCategoría: Regresión.\nEntradas: y x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('regression-logistic'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Regresión de Poisson · regression-poisson",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/regression-poisson/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[5.0,5.0,3.0,1.0,1.0,2.0,4.0,5.0,4.0,2.0,1.0,2.0,4.0,5.0,4.0,2.0,1.0,1.0,3.0,5.0,5.0,3.0,1.0,1.0,3.0,5.0,5.0,4.0,2.0,1.0],\"x1\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Modelo log-lineal para respuestas de conteo (IRLS).\n\nCategoría: Regresión.\nEntradas: y x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('regression-poisson'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Control de calidad",
+          "item": [
+            {
+              "name": "Carta X̄-R · chart-xbar-r",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/chart-xbar-r/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"size\":5}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Cartas de medias y rangos para subgrupos de tamaño constante.\n\nCategoría: Control de calidad.\nEntradas: x size"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('chart-xbar-r'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Carta I-MR · chart-imr",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/chart-imr/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Carta de individuos y rango móvil.\n\nCategoría: Control de calidad.\nEntradas: x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('chart-imr'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Carta P · chart-p",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/chart-p/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"defective\":[3,4,2,5,3,4,1,3,4,2],\"sample\":[50,50,50,50,50,50,50,50,50,50]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Proporción de defectuosos con subgrupos de distinto tamaño.\n\nCategoría: Control de calidad.\nEntradas: defective sample"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('chart-p'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Carta C · chart-c",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/chart-c/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"defects\":[5,7,3,8,6,4,7,5,6,9]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Número de defectos por unidad constante.\n\nCategoría: Control de calidad.\nEntradas: defects"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('chart-c'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Carta U · chart-u",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/chart-u/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"defects\":[5,7,3,8,6,4,7,5,6,9],\"units\":[1,1,1,1,1,1,1,1,1,1]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Defectos por unidad cuando el tamaño de la unidad varía.\n\nCategoría: Control de calidad.\nEntradas: defects units"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('chart-u'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Carta EWMA · chart-ewma",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/chart-ewma/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"lambda\":0.2}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Media móvil exponencialmente ponderada.\n\nCategoría: Control de calidad.\nEntradas: x lambda"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('chart-ewma'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Carta CUSUM · chart-cusum",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/chart-cusum/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"k\":0.5}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Sumas acumuladas tabulares (k = 0,5).\n\nCategoría: Control de calidad.\nEntradas: x k"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('chart-cusum'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Capacidad",
+          "item": [
+            {
+              "name": "Análisis de capacidad · capability",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/capability/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"lsl\":6.0,\"usl\":14.0,\"method\":\"normal\"}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Cp, Cpk, Pp, Ppk y PPM esperados.\n\nCategoría: Capacidad.\nEntradas: x lsl usl method"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('capability'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Sistemas de medida",
+          "item": [
+            {
+              "name": "Gage R&R (cruzado) · gage-rr",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/gage-rr/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"value\":[10.6,10.85,10.85,11.0,11.25,11.25,11.2,11.2,11.45,11.6,11.6,11.85,11.8,11.8,11.8,12.2,12.2,12.2]},\"text\":{\"part\":[\"P1\",\"P1\",\"P1\",\"P1\",\"P1\",\"P1\",\"P2\",\"P2\",\"P2\",\"P2\",\"P2\",\"P2\",\"P3\",\"P3\",\"P3\",\"P3\",\"P3\",\"P3\"],\"operator\":[\"Ana\",\"Ana\",\"Ana\",\"Luis\",\"Luis\",\"Luis\",\"Ana\",\"Ana\",\"Ana\",\"Luis\",\"Luis\",\"Luis\",\"Ana\",\"Ana\",\"Ana\",\"Luis\",\"Luis\",\"Luis\"]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Estudio de repetibilidad y reproducibilidad por ANOVA.\n\nCategoría: Sistemas de medida.\nEntradas: value part operator trial"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('error de dominio heredado del motor', () => pm.response.to.have.status(400));",
+                      "pm.test('código INVALID_INPUT', () => pm.expect(pm.response.json().code).to.eql('INVALID_INPUT'));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "DOE",
+          "item": [
+            {
+              "name": "Analizar diseño factorial (efectos) · doe-analyze",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/doe-analyze/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"y\":[7.8,8.4,8.6,9.2,10.0,10.6,12.4,13.0,7.8,8.4,8.6,9.2,10.0,10.6,12.4,13.0],\"A\":[-1,-1,-1,-1,1,1,1,1,-1,-1,-1,-1,1,1,1,1],\"B\":[-1,-1,1,1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,1],\"C\":[-1,1,-1,1,-1,1,-1,1,-1,1,-1,1,-1,1,-1,1]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Ajusta un modelo con factores codificados (−1/+1) y sus interacciones de 2 vías.\n\nCategoría: DOE.\nEntradas: y x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('doe-analyze'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Series temporales",
+          "item": [
+            {
+              "name": "Función de autocorrelación (ACF) · timeseries-acf",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/timeseries-acf/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"lags\":20}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Autocorrelaciones y banda de confianza.\n\nCategoría: Series temporales.\nEntradas: x lags"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('timeseries-acf'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Autocorrelación parcial (PACF) · timeseries-pacf",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/timeseries-pacf/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"lags\":20}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "PACF por Durbin-Levinson.\n\nCategoría: Series temporales.\nEntradas: x lags"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('timeseries-pacf'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Media móvil · timeseries-moving-average",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/timeseries-moving-average/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"window\":3}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Suavizado por media móvil centrada.\n\nCategoría: Series temporales.\nEntradas: x window"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('timeseries-moving-average'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Suavizado exponencial simple · timeseries-ses",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/timeseries-ses/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"alpha\":0.2}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Suavizado exponencial simple con pronóstico a un paso.\n\nCategoría: Series temporales.\nEntradas: x alpha"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('timeseries-ses'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Suavizado exponencial doble · timeseries-des",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/timeseries-des/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"alpha\":0.2,\"beta\":0.1}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Suavizado de Holt (nivel y tendencia).\n\nCategoría: Series temporales.\nEntradas: x alpha beta"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('timeseries-des'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Suavizado de Winters · timeseries-winters",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/timeseries-winters/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"period\":12,\"alpha\":0.2,\"beta\":0.1,\"gamma\":0.1}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Suavizado estacional (nivel, tendencia y estacionalidad).\n\nCategoría: Series temporales.\nEntradas: x period alpha beta gamma"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('timeseries-winters'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Descomposición estacional · timeseries-decompose",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/timeseries-decompose/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"period\":12}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Tendencia por media móvil centrada y patrón estacional.\n\nCategoría: Series temporales.\nEntradas: x period"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('timeseries-decompose'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Modelo AR y pronóstico · timeseries-ar",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/timeseries-ar/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]},\"params\":{\"order\":3,\"horizon\":5}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Ajuste AR(p) por Yule-Walker con selección AIC y Ljung-Box.\n\nCategoría: Series temporales.\nEntradas: x order horizon"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('timeseries-ar'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Fiabilidad",
+          "item": [
+            {
+              "name": "Ajuste de distribución Weibull · reliability-weibull",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/reliability-weibull/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Estimación por máxima verosimilitud y gráfico de probabilidad.\n\nCategoría: Fiabilidad.\nEntradas: x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('reliability-weibull'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Kaplan-Meier · reliability-kaplan-meier",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/reliability-kaplan-meier/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"time\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Curva de supervivencia con censura.\n\nCategoría: Fiabilidad.\nEntradas: time event"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('reliability-kaplan-meier'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Multivariante",
+          "item": [
+            {
+              "name": "Análisis de componentes principales · multivariate-pca",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/multivariate-pca/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "PCA sobre la matriz de correlaciones con cargas y puntuaciones.\n\nCategoría: Multivariante.\nEntradas: x"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('multivariate-pca'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Análisis factorial · multivariate-factor",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/multivariate-factor/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]},\"params\":{\"factors\":2}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Extracción por componentes principales con rotación varimax.\n\nCategoría: Multivariante.\nEntradas: x factors"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('multivariate-factor'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Análisis de conglomerados K-means · multivariate-kmeans",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/multivariate-kmeans/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x1\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x2\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62],\"x3\":[7.837,7.864,7.556,7.197,7.116,7.388,7.763,7.896,7.665,7.282,7.1,7.285,7.668,7.896,7.76,7.385,7.115,7.2,7.56,7.865,7.835,7.496,7.162,7.138,7.447,7.805,7.883,7.608,7.235,7.105]},\"params\":{\"k\":3}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Agrupamiento k-means++ sobre variables estandarizadas.\n\nCategoría: Multivariante.\nEntradas: x k"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('multivariate-kmeans'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Análisis discriminante (2 grupos) · multivariate-lda",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/multivariate-lda/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"numeric\":{\"x1\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2,9.9,10.5,9.4,11.0,10.1,9.7,10.8,9.5,10.3,10.6,9.2,11.1,10.05,9.85,10.35,9.75,10.55,9.65,10.45,9.95],\"x2\":[21.3,20.1,22.4,19.8,21.9,20.6,22.0,20.9,21.1,21.6,20.4,22.2,20.8,21.4,21.0,20.2,22.1,21.8,20.5,21.5,20.7,22.3,21.2,20.3,21.7,22.5,20.0,21.25,20.75,21.05],\"x3\":[5.2,4.8,5.6,5.0,4.6,5.4,4.9,5.3,5.1,4.7,5.5,5.05,4.95,5.35,4.85,5.15,4.75,5.45,5.25,4.65,5.55,5.02,4.92,5.32,4.82,5.12,4.72,5.42,5.22,4.62]},\"text\":{\"group\":[\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\",\"B\",\"A\"]}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Función discriminante lineal y exactitud de clasificación.\n\nCategoría: Multivariante.\nEntradas: x group"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('multivariate-lda'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Potencia y tamaño de muestra",
+          "item": [
+            {
+              "name": "Potencia y tamaño de muestra (t de 1 muestra) · power-t1",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/power-t1/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"effect\":0.5,\"n\":20,\"power\":0.8,\"alpha\":0.05}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Potencia para un efecto y n dados, y n necesario para una potencia objetivo.\n\nCategoría: Potencia y tamaño de muestra.\nEntradas: effect n power alpha"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('power-t1'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Potencia y tamaño de muestra (proporción) · power-prop1",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/power-prop1/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"p0\":0.5,\"p1\":0.6,\"n\":100,\"power\":0.8}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Potencia para una prueba de una proporción.\n\nCategoría: Potencia y tamaño de muestra.\nEntradas: p0 p1 n power"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('power-prop1'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Potencia y tamaño de muestra (ANOVA de 1 factor) · power-anova1",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/power-anova1/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"effect\":0.25,\"groups\":3,\"n\":20}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Aproximación para k grupos con efecto f de Cohen.\n\nCategoría: Potencia y tamaño de muestra.\nEntradas: effect groups n"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('power-anova1'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Tamaño de muestra (t de 2 muestras) · power-t2",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/analyses/power-t2/run",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"effect\":0.5,\"power\":0.8}}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "n por grupo para detectar un efecto con potencia objetivo.\n\nCategoría: Potencia y tamaño de muestra.\nEntradas: effect power"
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('id del análisis', () => pm.expect(body.id).to.eql('power-t2'));",
+                      "pm.test('devuelve secciones', () => pm.expect(body.sections.length).to.be.above(0));"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 · Distribuciones (21)",
+      "item": [
+        {
+          "name": "Catálogo de distribuciones (21)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/distributions"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('21 distribuciones', () => pm.expect(pm.response.json().distributions).to.have.lengthOf(21));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Metadatos · Normal (normal)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/distributions/normal"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('declara id y parámetros', () => { const body = pm.response.json(); pm.expect(body.id).to.eql('normal'); pm.expect(body.params.length).to.be.above(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Metadatos · Binomial (binomial)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/distributions/binomial"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('declara id y parámetros', () => { const body = pm.response.json(); pm.expect(body.id).to.eql('binomial'); pm.expect(body.params.length).to.be.above(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Metadatos · Weibull (weibull)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/distributions/weibull"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('declara id y parámetros', () => { const body = pm.response.json(); pm.expect(body.id).to.eql('weibull'); pm.expect(body.params.length).to.be.above(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Evaluar (21)",
+          "item": [
+            {
+              "name": "Normal · normal",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/normal/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"sigma\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "t de Student · t",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/t/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"df\":10},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Chi-cuadrada · chi2",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/chi2/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"df\":5},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "F de Fisher · f",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/f/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"df1\":5,\"df2\":10},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Gamma · gamma",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/gamma/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"shape\":2,\"scale\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Beta · beta",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/beta/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"a\":2,\"b\":2},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Exponencial · exponential",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/exponential/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"rate\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Weibull · weibull",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/weibull/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"shape\":1.5,\"scale\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Log-normal · lognormal",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/lognormal/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"meanLog\":0,\"sdLog\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Uniforme continua · uniform",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/uniform/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"a\":0,\"b\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Logística · logistic",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/logistic/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"s\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Cauchy · cauchy",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/cauchy/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"s\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Laplace · laplace",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/laplace/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"b\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Triangular · triangular",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/triangular/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"a\":0,\"c\":0.5,\"b\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Valor extremo menor (Gumbel) · smallestExtreme",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/smallestExtreme/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"s\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Valor extremo mayor (Gumbel) · largestExtreme",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/largestExtreme/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"s\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Normal plegada · foldedNormal",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/foldedNormal/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"sigma\":1},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Binomial · binomial",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/binomial/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"n\":10,\"p\":0.5},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Poisson · poisson",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/poisson/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"lambda\":3},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Hipergeométrica · hypergeometric",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/hypergeometric/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"population\":50,\"successes\":10,\"sample\":5},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Binomial negativa · negativeBinomial",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/negativeBinomial/evaluate",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"r\":5,\"p\":0.5},\"x\":[0,1],\"probabilities\":[0.5,0.975]}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "pdf/pmf y cdf para x = [0, 1]; inversas para p = [0.5, 0.975]."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('pdf y cdf con la longitud de x', () => { pm.expect(body.pdf).to.have.lengthOf(2); pm.expect(body.cdf).to.have.lengthOf(2); });",
+                      "pm.test('momentos y soporte', () => { pm.expect(body).to.have.property('mean'); pm.expect(body.support).to.have.property('lower'); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Muestrear (21)",
+          "item": [
+            {
+              "name": "Normal · normal",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/normal/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"sigma\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "t de Student · t",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/t/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"df\":10},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Chi-cuadrada · chi2",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/chi2/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"df\":5},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "F de Fisher · f",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/f/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"df1\":5,\"df2\":10},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Gamma · gamma",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/gamma/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"shape\":2,\"scale\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Beta · beta",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/beta/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"a\":2,\"b\":2},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Exponencial · exponential",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/exponential/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"rate\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Weibull · weibull",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/weibull/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"shape\":1.5,\"scale\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Log-normal · lognormal",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/lognormal/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"meanLog\":0,\"sdLog\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Uniforme continua · uniform",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/uniform/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"a\":0,\"b\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Logística · logistic",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/logistic/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"s\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Cauchy · cauchy",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/cauchy/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"s\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Laplace · laplace",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/laplace/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"b\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Triangular · triangular",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/triangular/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"a\":0,\"c\":0.5,\"b\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Valor extremo menor (Gumbel) · smallestExtreme",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/smallestExtreme/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"s\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Valor extremo mayor (Gumbel) · largestExtreme",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/largestExtreme/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"s\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Normal plegada · foldedNormal",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/foldedNormal/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"mu\":0,\"sigma\":1},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Binomial · binomial",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/binomial/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"n\":10,\"p\":0.5},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Poisson · poisson",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/poisson/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"lambda\":3},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Hipergeométrica · hypergeometric",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/hypergeometric/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"population\":50,\"successes\":10,\"sample\":5},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Binomial negativa · negativeBinomial",
+              "request": {
+                "method": "POST",
+                "url": "{{baseUrl}}/api/v1/distributions/negativeBinomial/sample",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"params\":{\"r\":5,\"p\":0.5},\"count\":5,\"seed\":20261023}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Muestreo determinista: la misma semilla produce la misma serie."
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                      "const body = pm.response.json();",
+                      "pm.test('5 valores y semilla eco', () => { pm.expect(body.values).to.have.lengthOf(5); pm.expect(body.seed).to.eql(20261023); });"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 · Errores y validación",
+      "item": [
+        {
+          "name": "404 · análisis inexistente",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analyses/no-existe"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 NOT_FOUND', () => { pm.response.to.have.status(404); pm.expect(pm.response.json().code).to.eql('NOT_FOUND'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "404 · distribución inexistente",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/distributions/no-existe"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 NOT_FOUND', () => { pm.response.to.have.status(404); pm.expect(pm.response.json().code).to.eql('NOT_FOUND'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "422 · dato insuficiente",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/analyses/one-sample-t/run",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"numeric\":{\"x\":[5]}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Un solo valor: el motor exige al menos 2 observaciones."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('422 INSUFFICIENT_DATA', () => { pm.response.to.have.status(422); const body = pm.response.json(); pm.expect(body.code).to.eql('INSUFFICIENT_DATA'); pm.expect(body.analysisId).to.eql('one-sample-t'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "400 · parámetro inválido (sigma = 0)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/distributions/normal/evaluate",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"params\":{\"sigma\":0},\"x\":[0]}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 INVALID_PARAMETER', () => { pm.response.to.have.status(400); pm.expect(pm.response.json().code).to.eql('INVALID_PARAMETER'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validar sin ejecutar (siempre 200)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/analyses/one-sample-t/validate",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"numeric\":{\"x\":[]}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 con valid=false', () => { pm.response.to.have.status(200); const body = pm.response.json(); pm.expect(body.valid).to.be.false; pm.expect(body.error.code).to.eql('INSUFFICIENT_DATA'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 · Flujo completo (encadenado)",
+      "item": [
+        {
+          "name": "1 · Descubrir el catálogo",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/analyses"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('60 análisis y 15 categorías', () => { pm.expect(pm.response.json().analyses).to.have.lengthOf(60); });",
+                  "pm.collectionVariables.set('totalAnalisis', String(pm.response.json().analyses.length));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2 · Validar la entrada",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/analyses/describe/validate",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2]},\"params\":{\"confidence\":0.95}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('válida', () => pm.expect(pm.response.json().valid).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3 · Ejecutar el análisis",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/analyses/describe/run",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2]},\"params\":{\"confidence\":0.95}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('N = 10 en la primera fila', () => pm.expect(body.sections[0].rows[0][1]).to.eql('10'));",
+                  "pm.collectionVariables.set('nDescriptivo', String(body.sections[0].rows[0][1]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4 · Mismo cálculo como texto de sesión",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/analyses/describe/run?format=text",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"numeric\":{\"x\":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2]},\"params\":{\"confidence\":0.95}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('text/plain', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('text/plain'));",
+                  "pm.test('contiene la tabla de sesión', () => pm.expect(pm.response.text()).to.include('Resumen'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5 · Cuantil normal(0,1) al 97,5 %",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/distributions/normal/evaluate",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"params\":{\"mu\":0,\"sigma\":1},\"x\":[0],\"probabilities\":[0.975]}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('inversa ≈ 1.959963984540054', () => pm.expect(body.invCdf[0]).to.be.closeTo(1.959963984540054, 1e-9));",
+                  "pm.collectionVariables.set('cuantil975', String(body.invCdf[0]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6 · Muestrear normal(0,1) con semilla",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/distributions/normal/sample",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"params\":{\"mu\":0,\"sigma\":1},\"count\":5,\"seed\":20261023}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const values = pm.response.json().values;",
+                  "pm.test('5 muestras', () => pm.expect(values).to.have.lengthOf(5));",
+                  "pm.collectionVariables.set('muestraA', JSON.stringify(values));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7 · Repetir: debe ser idéntico",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/distributions/normal/sample",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"params\":{\"mu\":0,\"sigma\":1},\"count\":5,\"seed\":20261023}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('determinista con la misma semilla', () => pm.expect(JSON.stringify(pm.response.json().values)).to.eql(pm.collectionVariables.get('muestraA')));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
