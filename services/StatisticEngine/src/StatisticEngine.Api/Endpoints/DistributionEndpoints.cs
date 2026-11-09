@@ -17,6 +17,7 @@ public static class DistributionEndpoints
 
         group.MapGet("/distributions/{id}", GetDistribution)
             .WithName("GetDistribution")
+            .WithSummary("Metadatos de una distribución")
             .Produces<DistributionInfoDto>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 

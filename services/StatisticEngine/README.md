@@ -52,10 +52,17 @@ Probes y documentación:
 
 | Recurso | URL |
 | --- | --- |
+| Página de inicio con enlaces | `GET /` |
+| Documentación interactiva (Scalar) | `GET /scalar/v1` |
+| Contrato OpenAPI | `GET /openapi/v1.json` |
+| Inventario de rutas publicadas | `GET /api/v1/endpoints` |
 | Liveness | `GET /health/live` |
 | Readiness (autotest numérico) | `GET /health/ready` |
-| OpenAPI | `GET /openapi/v1.json` |
-| Scalar UI (solo Development) | `GET /scalar/v1` |
+
+- **[API.md](API.md)**: guía completa con ejemplos ejecutables de los 9 endpoints, los 60 análisis
+  y las 21 distribuciones (generada desde el propio servicio).
+- **[examples/statisticengine.http](examples/statisticengine.http)**: colección lista para el
+  REST Client de Visual Studio / JetBrains HTTP Client / VS Code.
 
 ## 3. API v1
 
@@ -112,6 +119,8 @@ El muestreo es **determinista** para la misma semilla (xoshiro128** idéntico al
 ### Operación
 
 `GET /api/v1/meta` devuelve versión, baseline de paridad y límites efectivos.
+`GET /api/v1/endpoints` enumera las rutas realmente publicadas (se leen del enrutador en caliente,
+no de una lista fija). La raíz `/` sirve una página HTML con enlaces a todo lo anterior.
 Cabecera `X-StatisticEngine-Version` en todas las respuestas.
 
 ## 4. Errores
@@ -145,6 +154,7 @@ Sección `StatisticEngine` de `appsettings.json` o variables de entorno
 | `Auth:ApiKey` | vacío | Si se define, exige `X-Api-Key` (probes exentos) |
 | `Cors:AllowedOrigins` | vacío | Lista de orígenes; vacío deshabilita CORS |
 | `Proxy:Enabled` | `false` | Confía en `X-Forwarded-For/Proto` (solo detrás de proxy propio) |
+| `ApiExplorer:Enabled` | `true` | Publica OpenAPI (`/openapi/v1.json`) y Scalar (`/scalar/v1`) |
 | `RequestTimeoutSeconds` | 30 | Responde 504 al superarlo |
 | *(sin `Urls` en appsettings)* | — | La URL la fija el perfil de lanzamiento, `--urls` o `ASPNETCORE_URLS` (en contenedor: `http://+:8080`) |
 
@@ -161,7 +171,24 @@ Las pruebas comparan: textos exactos (tablas y formato de sesión), claves exact
 exactos, RNG bit a bit y dobles con tolerancia `1e-12` (`1e-9` en ajustes iterativos).
 Detalles, defectos reproducidos y desviaciones documentadas: [PARITY-NOTES.md](PARITY-NOTES.md).
 
-## 7. Verificación
+## 7. Regenerar la documentación del API
+
+`API.md` y `examples/statisticengine.http` se generan consultando el servicio en ejecución, de
+modo que las columnas, parámetros, estados y respuestas coinciden siempre con la implementación:
+
+```powershell
+# terminal 1
+dotnet run --project src/StatisticEngine.Api --launch-profile "StatisticEngine.Api (HTTP)"
+
+# terminal 2
+pwsh ./tools/docs/generate-api-docs.ps1 -BaseUrl http://localhost:5080
+```
+
+El script ejecuta una petición real por cada uno de los 60 análisis y de las 21 distribuciones,
+y deja constancia de los que devuelven error (hoy sólo `gage-rr`, por un defecto heredado del
+motor; ver `PARITY-NOTES.md`).
+
+## 8. Verificación
 
 ```powershell
 cd services/StatisticEngine
@@ -172,7 +199,7 @@ dotnet test StatisticEngine.slnx -c Release
 En Windows, el sandbox de archivos de este entorno falla al aplicar ACL sobre `E:\TinyTab`;
 los comandos anteriores deben ejecutarse con acceso completo (`danger-full-access`).
 
-## 8. Alcance
+## 9. Alcance
 
 Incluye el motor estadístico y su catálogo. **No** incluye hoja de trabajo, proyectos `.ttab`,
 importación/exportación CSV, HTML de sesión ni el lenguaje de comandos: son capas de la

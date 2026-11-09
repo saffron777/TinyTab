@@ -230,6 +230,43 @@ public class ApiContractTests : IClassFixture<StatisticEngineFactory>
         Assert.Equal("NOT_FOUND", document.RootElement.GetProperty("code").GetString());
     }
 
+    [Fact]
+    public async Task LaRaizDevuelveUnaPaginaNavegable()
+    {
+        var response = await _client.GetAsync("/");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("text/html", response.Content.Headers.ContentType?.MediaType);
+
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("scalar/v1", html, StringComparison.Ordinal);
+        Assert.Contains("openapi/v1.json", html, StringComparison.Ordinal);
+        Assert.Contains("/api/v1/analyses", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ElInventarioEnumeraLasRutasReales()
+    {
+        using var document = await GetJson("/api/v1/endpoints");
+        var endpoints = document.RootElement.GetProperty("endpoints").EnumerateArray().ToArray();
+
+        Assert.Contains(endpoints, endpoint =>
+            endpoint.GetProperty("method").GetString() == "POST"
+            && endpoint.GetProperty("path").GetString() == "/api/v1/analyses/{id}/run");
+        Assert.Contains(endpoints, endpoint =>
+            endpoint.GetProperty("method").GetString() == "POST"
+            && endpoint.GetProperty("path").GetString() == "/api/v1/distributions/{id}/evaluate");
+        Assert.Contains(endpoints, endpoint =>
+            endpoint.GetProperty("path").GetString() == "/api/v1/analyses");
+        Assert.True(endpoints.Length >= 15, $"Se esperaban al menos 15 rutas y hay {endpoints.Length}.");
+    }
+
+    [Fact]
+    public async Task LaDocumentacionInteractivaEstaDisponible()
+    {
+        var response = await _client.GetAsync("/scalar/v1");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     private async Task<JsonDocument> GetJson(string url)
     {
         var response = await _client.GetAsync(url);

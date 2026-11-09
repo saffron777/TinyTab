@@ -15,8 +15,17 @@ public sealed class StatisticEngineOptions
 
     public ProxyOptions Proxy { get; set; } = new();
 
+    /// <summary>Documentación de la API: documento OpenAPI y UI Scalar.</summary>
+    public ApiExplorerOptions ApiExplorer { get; set; } = new();
+
     /// <summary>Tiempo máximo de una petición antes de responder 504.</summary>
     public int RequestTimeoutSeconds { get; set; } = 30;
+}
+
+/// <summary>Publicación del contrato OpenAPI y de la documentación interactiva.</summary>
+public sealed class ApiExplorerOptions
+{
+    public bool Enabled { get; set; } = true;
 }
 
 /// <summary>Confianza en cabeceras <c>X-Forwarded-*</c> cuando el servicio está detrás de un proxy.</summary>

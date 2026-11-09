@@ -47,6 +47,7 @@ en el código C#.
 | 14 | `decompose`: si la tendencia es 0/NaN usa la media de la serie como sustituto | `timeseries.ts:175` |
 | 15 | `twoSampleT` y `oneSampleT` repiten una tabla «Estimación» **sin filas** | `registry-basic.ts` |
 | 16 | El análisis de distribución omitido usa `x = 1` y `p = 0.95` por defecto | `registry-basic.ts` |
+| 17 | El análisis `gage-rr` pasa la repetición como índice de fila, así que el diseño nunca queda balanceado y **siempre** devuelve `INVALID_INPUT` (el cálculo de Gage R&R del dominio sí es correcto) | `registry-advanced.ts:203-230` |
 
 ## 3. Desviaciones justificadas
 

@@ -19,6 +19,7 @@ public static class AnalysesEndpoints
 
         group.MapGet("/analyses/{id}", GetAnalysis)
             .WithName("GetAnalysis")
+            .WithSummary("Definición de un análisis: columnas, parámetros y opciones")
             .Produces<AnalysisDefinitionDto>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -33,6 +34,7 @@ public static class AnalysesEndpoints
 
         group.MapPost("/analyses/{id}/validate", Validate)
             .WithName("ValidateAnalysis")
+            .WithSummary("Valida la entrada sin ejecutar el análisis")
             .Produces<ValidateResponse>()
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
 

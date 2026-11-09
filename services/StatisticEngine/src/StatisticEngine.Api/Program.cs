@@ -119,7 +119,8 @@ app.Use(async (context, next) =>
         return;
     }
 
-    var isInfrastructure = context.Request.Path.StartsWithSegments("/health")
+    var isInfrastructure = context.Request.Path == "/"
+                           || context.Request.Path.StartsWithSegments("/health")
                            || context.Request.Path.StartsWithSegments("/openapi")
                            || context.Request.Path.StartsWithSegments("/scalar");
     // El preflight CORS nunca lleva credenciales: debe pasar para que el navegador lo resuelva.
@@ -152,8 +153,20 @@ app.Use(async (context, next) =>
 if (engineOptions.RateLimit.Enabled) app.UseRateLimiter();
 app.UseRequestTimeouts();
 
-app.MapOpenApi();
-if (app.Environment.IsDevelopment()) app.MapScalarApiReference();
+if (engineOptions.ApiExplorer.Enabled)
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
+
+// La raíz devuelve una página navegable con los enlaces a la documentación y el inventario de rutas.
+app.MapGet(
+        "/",
+        () => Results.Content(
+            LandingPage.Render(EngineInfo.Version, engineOptions.ApiExplorer.Enabled),
+            "text/html; charset=utf-8"))
+    .WithName("GetLandingPage")
+    .ExcludeFromDescription();
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
