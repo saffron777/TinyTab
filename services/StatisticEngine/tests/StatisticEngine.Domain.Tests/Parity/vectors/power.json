@@ -1,0 +1,384 @@
+{
+  "module": "power",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "ocCurve": [
+      {
+        "args": [
+          0.5,
+          [
+            5,
+            10,
+            20,
+            40
+          ],
+          0.05
+        ],
+        "expected": [
+          {
+            "n": 5,
+            "power": 0.20095555123041609
+          },
+          {
+            "n": 10,
+            "power": 0.35260808244470254
+          },
+          {
+            "n": 20,
+            "power": 0.6087794846454567
+          },
+          {
+            "n": 40,
+            "power": 0.8853791407623516
+          }
+        ]
+      },
+      {
+        "args": [
+          0,
+          [
+            5,
+            10
+          ],
+          0.05
+        ],
+        "expected": [
+          {
+            "n": 5,
+            "power": {
+              "$num": "NaN"
+            }
+          },
+          {
+            "n": 10,
+            "power": {
+              "$num": "NaN"
+            }
+          }
+        ]
+      }
+    ],
+    "powerOneProportion": [
+      {
+        "args": [
+          0.3,
+          0.5,
+          100,
+          0.05
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.9862259852877706,
+            "alpha": 0.05,
+            "n": 100,
+            "effect": 0.2,
+            "method": "proporción de 1 muestra (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0,
+          0.5,
+          100
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros inválidos."
+          }
+        }
+      },
+      {
+        "args": [
+          0.3,
+          1.5,
+          100
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros inválidos."
+          }
+        }
+      }
+    ],
+    "powerOneSampleT": [
+      {
+        "args": [
+          0.5,
+          20,
+          0.05
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.6087794846454567,
+            "alpha": 0.05,
+            "n": 20,
+            "effect": 0.5,
+            "method": "t de 1 muestra (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0.5,
+          20
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.6087794846454567,
+            "alpha": 0.05,
+            "n": 20,
+            "effect": 0.5,
+            "method": "t de 1 muestra (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0,
+          20
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros de potencia inválidos."
+          }
+        }
+      },
+      {
+        "args": [
+          0.5,
+          1
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros de potencia inválidos."
+          }
+        }
+      },
+      {
+        "args": [
+          0.5,
+          20,
+          1.5
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros de potencia inválidos."
+          }
+        }
+      }
+    ],
+    "powerOneWayAnova": [
+      {
+        "args": [
+          0.25,
+          10,
+          3,
+          0.05
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.19876632144999518,
+            "alpha": 0.05,
+            "n": 10,
+            "effect": 0.25,
+            "method": "ANOVA de 1 factor (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0.25,
+          10,
+          1
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros inválidos."
+          }
+        }
+      },
+      {
+        "args": [
+          0,
+          10,
+          3
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros inválidos."
+          }
+        }
+      }
+    ],
+    "powerTwoSampleT": [
+      {
+        "args": [
+          0.5,
+          20,
+          0.05
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.35260808244470243,
+            "alpha": 0.05,
+            "n": 20,
+            "effect": 0.5,
+            "method": "t de 2 muestras (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0.5,
+          1
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros inválidos."
+          }
+        }
+      }
+    ],
+    "sampleSizeOneProportion": [
+      {
+        "args": [
+          0.3,
+          0.5,
+          0.8,
+          0.05
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.8,
+            "alpha": 0.05,
+            "n": 44,
+            "effect": 0.2,
+            "method": "proporción de 1 muestra (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0.3,
+          0.3,
+          0.8
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Proporciones inválidas."
+          }
+        }
+      }
+    ],
+    "sampleSizeOneSampleT": [
+      {
+        "args": [
+          0.5,
+          0.8,
+          0.05
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.8,
+            "alpha": 0.05,
+            "n": 32,
+            "effect": 0.5,
+            "method": "t de 1 muestra (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0.3,
+          0.9
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.9,
+            "alpha": 0.05,
+            "n": 117,
+            "effect": 0.3,
+            "method": "t de 1 muestra (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0,
+          0.8
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros inválidos."
+          }
+        }
+      }
+    ],
+    "sampleSizeTwoSampleT": [
+      {
+        "args": [
+          0.5,
+          0.8,
+          0.05
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "power": 0.8,
+            "alpha": 0.05,
+            "n": 63,
+            "effect": 0.5,
+            "method": "t de 2 muestras (aprox. normal)"
+          }
+        }
+      },
+      {
+        "args": [
+          0,
+          0.8
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "El efecto debe ser distinto de cero."
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,970 @@
+{
+  "module": "anova",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "bartlettTest": [
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "Bartlett",
+            "statistic": 0,
+            "df": 2,
+            "pValue": 1
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3,
+              4
+            ],
+            [
+              2,
+              4,
+              6,
+              8,
+              10
+            ],
+            [
+              10,
+              11,
+              9,
+              10,
+              10.5,
+              9.5
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "Bartlett",
+            "statistic": 8.268174980200044,
+            "df": 2,
+            "pValue": 0.016017274384707333
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Bartlett requiere varianzas positivas en todos los grupos."
+          }
+        }
+      }
+    ],
+    "fCdf": [
+      {
+        "args": [
+          0,
+          1,
+          1
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          1,
+          2,
+          10
+        ],
+        "expected": 0.5981224279835424
+      },
+      {
+        "args": [
+          3,
+          2,
+          10
+        ],
+        "expected": 0.9046325683593746
+      },
+      {
+        "args": [
+          10,
+          5,
+          20
+        ],
+        "expected": 0.999934478168584
+      },
+      {
+        "args": [
+          2.5,
+          3,
+          12
+        ],
+        "expected": 0.8908452876049939
+      }
+    ],
+    "fCdfUpper": [
+      {
+        "args": [
+          0,
+          1,
+          1
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          1,
+          2,
+          10
+        ],
+        "expected": 0.4018775720164576
+      },
+      {
+        "args": [
+          3,
+          2,
+          10
+        ],
+        "expected": 0.09536743164062544
+      },
+      {
+        "args": [
+          10,
+          5,
+          20
+        ],
+        "expected": 0.00006552183141594892
+      },
+      {
+        "args": [
+          2.5,
+          3,
+          12
+        ],
+        "expected": 0.10915471239500607
+      },
+      {
+        "args": [
+          -1,
+          2,
+          3
+        ],
+        "expected": {
+          "$num": "NaN"
+        }
+      }
+    ],
+    "groupConfidenceIntervals": [
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ],
+          [
+            "A",
+            "B",
+            "C"
+          ]
+        ],
+        "expected": [
+          {
+            "label": "A",
+            "lower": -0.4841377117503298,
+            "upper": 4.48413771175033
+          },
+          {
+            "label": "B",
+            "lower": 2.51586228824967,
+            "upper": 7.48413771175033
+          },
+          {
+            "label": "C",
+            "lower": 5.51586228824967,
+            "upper": 10.48413771175033
+          }
+        ]
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ],
+          [
+            "A",
+            "B",
+            "C"
+          ],
+          0.9
+        ],
+        "expected": [
+          {
+            "label": "A",
+            "lower": 0.3141455391529513,
+            "upper": 3.6858544608470485
+          },
+          {
+            "label": "B",
+            "lower": 3.3141455391529515,
+            "upper": 6.6858544608470485
+          },
+          {
+            "label": "C",
+            "lower": 6.3141455391529515,
+            "upper": 9.685854460847048
+          }
+        ]
+      }
+    ],
+    "leveneTest": [
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "Levene",
+            "statistic": 0,
+            "df": 2,
+            "pValue": 1
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3,
+              4
+            ],
+            [
+              2,
+              4,
+              6,
+              8,
+              10
+            ],
+            [
+              10,
+              11,
+              9,
+              10,
+              10.5,
+              9.5
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "Levene",
+            "statistic": 4.6515151515151505,
+            "df": 2,
+            "pValue": 0.0319476682086407
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos dos grupos."
+          }
+        }
+      }
+    ],
+    "oneWayAnova": [
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ],
+          [
+            "A",
+            "B",
+            "C"
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "groups": [
+              {
+                "label": "A",
+                "n": 3,
+                "mean": 2,
+                "sd": 1
+              },
+              {
+                "label": "B",
+                "n": 3,
+                "mean": 5,
+                "sd": 1
+              },
+              {
+                "label": "C",
+                "n": 3,
+                "mean": 8,
+                "sd": 1
+              }
+            ],
+            "table": [
+              {
+                "source": "Factor",
+                "df": 2,
+                "ss": 54,
+                "ms": 27,
+                "f": 27,
+                "p": 0.0010000000000000009
+              },
+              {
+                "source": "Error",
+                "df": 6,
+                "ss": 6,
+                "ms": 1,
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              },
+              {
+                "source": "Total",
+                "df": 8,
+                "ss": 60,
+                "ms": {
+                  "$num": "NaN"
+                },
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              }
+            ],
+            "totalSS": 60,
+            "rSquared": 0.9,
+            "pooledSD": 1
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3,
+              4
+            ],
+            [
+              2,
+              4,
+              6,
+              8,
+              10
+            ],
+            [
+              10,
+              11,
+              9,
+              10,
+              10.5,
+              9.5
+            ]
+          ],
+          [
+            "A",
+            "B",
+            "C"
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "groups": [
+              {
+                "label": "A",
+                "n": 4,
+                "mean": 2.5,
+                "sd": 1.2909944487358056
+              },
+              {
+                "label": "B",
+                "n": 5,
+                "mean": 6,
+                "sd": 3.1622776601683795
+              },
+              {
+                "label": "C",
+                "n": 6,
+                "mean": 10,
+                "sd": 0.7071067811865476
+              }
+            ],
+            "table": [
+              {
+                "source": "Factor",
+                "df": 2,
+                "ss": 138.33333333333334,
+                "ms": 69.16666666666667,
+                "f": 17.473684210526315,
+                "p": 0.000278881660578989
+              },
+              {
+                "source": "Error",
+                "df": 12,
+                "ss": 47.5,
+                "ms": 3.9583333333333335,
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              },
+              {
+                "source": "Total",
+                "df": 14,
+                "ss": 185.83333333333334,
+                "ms": {
+                  "$num": "NaN"
+                },
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              }
+            ],
+            "totalSS": 185.83333333333334,
+            "rSquared": 0.7443946188340808,
+            "pooledSD": 1.9895560643855537
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            "A"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos dos grupos."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          [
+            "A",
+            "B"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Cada grupo necesita al menos 2 observaciones."
+          }
+        }
+      }
+    ],
+    "pairwiseComparisons": [
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ],
+          [
+            "A",
+            "B",
+            "C"
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "comparisons": [
+              {
+                "first": "A",
+                "second": "B",
+                "difference": -3,
+                "standardError": 0.816496580927726,
+                "t": -3.6742346141747673,
+                "pValue": 0.020803441870928082,
+                "significant": true
+              },
+              {
+                "first": "A",
+                "second": "C",
+                "difference": -6,
+                "standardError": 0.816496580927726,
+                "t": -7.3484692283495345,
+                "pValue": 0.0009749240378132522,
+                "significant": true
+              },
+              {
+                "first": "B",
+                "second": "C",
+                "difference": -3,
+                "standardError": 0.816496580927726,
+                "t": -3.6742346141747673,
+                "pValue": 0.020803441870928082,
+                "significant": true
+              }
+            ],
+            "method": "Holm"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ],
+          [
+            "A",
+            "B",
+            "C"
+          ],
+          0.1,
+          "fisher"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "comparisons": [
+              {
+                "first": "A",
+                "second": "B",
+                "difference": -3,
+                "standardError": 0.816496580927726,
+                "t": -3.6742346141747673,
+                "pValue": 0.03120516280639212,
+                "significant": true
+              },
+              {
+                "first": "A",
+                "second": "C",
+                "difference": -6,
+                "standardError": 0.816496580927726,
+                "t": -7.3484692283495345,
+                "pValue": 0.0009749240378132522,
+                "significant": true
+              },
+              {
+                "first": "B",
+                "second": "C",
+                "difference": -3,
+                "standardError": 0.816496580927726,
+                "t": -3.6742346141747673,
+                "pValue": 0.03120516280639212,
+                "significant": true
+              }
+            ],
+            "method": "Fisher (LSD)"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            "A"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos dos grupos."
+          }
+        }
+      }
+    ],
+    "twoWayAnova": [
+      {
+        "args": [
+          [
+            10,
+            11,
+            9,
+            12,
+            14,
+            13,
+            15,
+            16
+          ],
+          [
+            "A1",
+            "A1",
+            "A1",
+            "A1",
+            "A2",
+            "A2",
+            "A2",
+            "A2"
+          ],
+          [
+            "B1",
+            "B1",
+            "B2",
+            "B2",
+            "B1",
+            "B1",
+            "B2",
+            "B2"
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "table": [
+              {
+                "source": "Factor A",
+                "df": 1,
+                "ss": 32,
+                "ms": 32,
+                "f": 20,
+                "p": 0.006566271827562975
+              },
+              {
+                "source": "Factor B",
+                "df": 1,
+                "ss": 2,
+                "ms": 2,
+                "f": 1.25,
+                "p": 0.3143726376470174
+              },
+              {
+                "source": "Error",
+                "df": 5,
+                "ss": 8,
+                "ms": 1.6,
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              },
+              {
+                "source": "Total",
+                "df": 7,
+                "ss": 42,
+                "ms": {
+                  "$num": "NaN"
+                },
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              }
+            ],
+            "rSquared": 0.8095238095238095
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            11,
+            9,
+            12,
+            14,
+            13,
+            15
+          ],
+          [
+            "A1",
+            "A1",
+            "A1",
+            "A1",
+            "A2",
+            "A2",
+            "A2"
+          ],
+          [
+            "B1",
+            "B1",
+            "B2",
+            "B2",
+            "B1",
+            "B2",
+            "B2"
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "table": [
+              {
+                "source": "Factor A",
+                "df": 1,
+                "ss": 21,
+                "ms": 21,
+                "f": 13.090909090909093,
+                "p": 0.022394205918366383
+              },
+              {
+                "source": "Factor B",
+                "df": 1,
+                "ss": 0.5833333333333346,
+                "ms": 0.5833333333333346,
+                "f": 0.3636363636363645,
+                "p": 0.5790154287158964
+              },
+              {
+                "source": "Error",
+                "df": 4,
+                "ss": 6.416666666666665,
+                "ms": 1.6041666666666663,
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              },
+              {
+                "source": "Total",
+                "df": 6,
+                "ss": 28,
+                "ms": {
+                  "$num": "NaN"
+                },
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              }
+            ],
+            "rSquared": 0.7708333333333334
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            "A",
+            "B",
+            "A"
+          ],
+          [
+            "X",
+            "Y",
+            "X"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 4 observaciones."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            "A",
+            "A",
+            "A",
+            "A"
+          ],
+          [
+            "X",
+            "X",
+            "Y",
+            "Y"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Cada factor necesita al menos dos niveles."
+          }
+        }
+      }
+    ]
+  }
+}

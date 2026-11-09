@@ -1,0 +1,1157 @@
+{
+  "module": "regression",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "bestSubsets": [
+      {
+        "args": [
+          {
+            "response": [
+              2,
+              6.5,
+              6.5,
+              11,
+              11,
+              15.5,
+              15.5,
+              20
+            ],
+            "predictors": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              [
+                2,
+                1,
+                3,
+                2,
+                4,
+                3,
+                5,
+                4
+              ]
+            ],
+            "names": [
+              "x1",
+              "x2"
+            ]
+          },
+          1
+        ],
+        "expected": {
+          "ok": true,
+          "value": [
+            {
+              "terms": [
+                0
+              ],
+              "names": [
+                "x1"
+              ],
+              "rSquared": 0.9603174603174603,
+              "adjustedRSquared": 0.9537037037037037,
+              "aic": 7.49420725714668,
+              "mallowCp": 2.444754729011585e+30
+            },
+            {
+              "terms": [
+                1
+              ],
+              "names": [
+                "x2"
+              ],
+              "rSquared": 0.4444444444444444,
+              "adjustedRSquared": 0.35185185185185175,
+              "aic": 28.606665894068747,
+              "mallowCp": 3.422656620616219e+31
+            }
+          ]
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              2,
+              6.5,
+              6.5,
+              11,
+              11,
+              15.5,
+              15.5,
+              20
+            ],
+            "predictors": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              [
+                2,
+                1,
+                3,
+                2,
+                4,
+                3,
+                5,
+                4
+              ]
+            ],
+            "names": [
+              "x1",
+              "x2"
+            ]
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": [
+            {
+              "terms": [
+                0,
+                1
+              ],
+              "names": [
+                "x1",
+                "x2"
+              ],
+              "rSquared": 1,
+              "adjustedRSquared": 1,
+              "aic": -537.4022701824493,
+              "mallowCp": 2.999999999999999
+            },
+            {
+              "terms": [
+                0
+              ],
+              "names": [
+                "x1"
+              ],
+              "rSquared": 0.9603174603174603,
+              "adjustedRSquared": 0.9537037037037037,
+              "aic": 7.49420725714668,
+              "mallowCp": 2.444754729011585e+30
+            },
+            {
+              "terms": [
+                1
+              ],
+              "names": [
+                "x2"
+              ],
+              "rSquared": 0.4444444444444444,
+              "adjustedRSquared": 0.35185185185185175,
+              "aic": 28.606665894068747,
+              "mallowCp": 3.422656620616219e+31
+            }
+          ]
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              2,
+              6.5,
+              6.5,
+              11,
+              11,
+              15.5,
+              15.5,
+              20
+            ],
+            "predictors": [],
+            "names": []
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": []
+        }
+      }
+    ],
+    "durbinWatson": [
+      {
+        "args": [
+          [
+            1,
+            -1,
+            2,
+            -2,
+            1
+          ]
+        ],
+        "expected": 3.4545454545454546
+      },
+      {
+        "args": [
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "expected": {
+          "$num": "NaN"
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": {
+          "$num": "NaN"
+        }
+      }
+    ],
+    "logisticRegression": [
+      {
+        "args": [
+          [
+            0,
+            0,
+            1,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          [
+            [
+              -3,
+              -2,
+              -1,
+              1,
+              2,
+              3,
+              0.5,
+              -0.5
+            ]
+          ],
+          [
+            "x"
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "terms": [
+              "Constante",
+              "x"
+            ],
+            "coefficients": [
+              -7.324770257293163e-20,
+              0.21610351077300533
+            ],
+            "standardErrors": [
+              0.7214918701116557,
+              0.3896427506273265
+            ],
+            "z": [
+              -1.0152256124742757e-19,
+              0.5546196109771778
+            ],
+            "pValues": [
+              1,
+              0.5791548723076527
+            ],
+            "deviance": 10.770440424671612,
+            "nullDeviance": 11.090354888959125,
+            "aic": 14.770440424671612,
+            "iterations": 3,
+            "predicted": [
+              0.3433703559342454,
+              0.39359943853253415,
+              0.4461833990057329,
+              0.5538166009942671,
+              0.6064005614674658,
+              0.6566296440657546,
+              0.5269866877470755,
+              0.4730133122529245
+            ]
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            0,
+            0,
+            1,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          [
+            [
+              -3,
+              -2,
+              -1,
+              1,
+              2,
+              3,
+              0.5,
+              -0.5
+            ],
+            [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ]
+          ],
+          [
+            "x",
+            "z"
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "terms": [
+              "Constante",
+              "x",
+              "z"
+            ],
+            "coefficients": [
+              -0.6275812089861633,
+              0.1134497405150092,
+              0.13845002763945488
+            ],
+            "standardErrors": [
+              1.9625856698499484,
+              0.49169909332540884,
+              0.4036440799259178
+            ],
+            "z": [
+              -0.3197726441333619,
+              0.23073001771822998,
+              0.34300026811954015
+            ],
+            "pValues": [
+              0.7491406864490904,
+              0.8175245518841578,
+              0.7315982584480716
+            ],
+            "deviance": 10.650549009949938,
+            "nullDeviance": 11.090354888959125,
+            "aic": 16.650549009949938,
+            "iterations": 3,
+            "predicted": [
+              0.30375494746023224,
+              0.35948947937025155,
+              0.4192919044560942,
+              0.5099158602549969,
+              0.5723800622946654,
+              0.6326188349616234,
+              0.598277671449164,
+              0.6042712397529723
+            ]
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            0,
+            2,
+            1
+          ],
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            "x"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "La respuesta debe ser 0/1."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            0,
+            1,
+            1
+          ],
+          [],
+          []
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Se necesita al menos un predictor."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            [
+              1,
+              1,
+              1,
+              1
+            ]
+          ],
+          [
+            "x"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "SINGULAR_MATRIX",
+            "message": "Matriz de información singular en la regresión logística."
+          }
+        }
+      }
+    ],
+    "multipleRegression": [
+      {
+        "args": [
+          {
+            "response": [
+              2,
+              6.5,
+              6.5,
+              11,
+              11,
+              15.5,
+              15.5,
+              20
+            ],
+            "predictors": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ]
+            ],
+            "names": [
+              "x1"
+            ]
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "terms": [
+              "Constante",
+              "x1"
+            ],
+            "coefficients": [
+              {
+                "term": "Constante",
+                "estimate": 0.3928571428571432,
+                "standardError": 0.9878083347099521,
+                "t": 0.39770583933420334,
+                "pValue": 0.7046106369422469
+              },
+              {
+                "term": "x1",
+                "estimate": 2.357142857142857,
+                "standardError": 0.19561519910898786,
+                "t": 12.049896265113658,
+                "pValue": 0.00001982528309163456
+              }
+            ],
+            "rSquared": 0.9603174603174603,
+            "adjustedRSquared": 0.9537037037037037,
+            "standardError": 1.267731382092775,
+            "observations": 8,
+            "dfError": 6,
+            "ssRegression": 233.35714285714286,
+            "ssError": 9.642857142857144,
+            "ssTotal": 243,
+            "f": 145.2,
+            "pValue": 0.00001982528309163456,
+            "residuals": [
+              -0.7500000000000004,
+              1.3928571428571423,
+              -0.9642857142857144,
+              1.1785714285714288,
+              -1.1785714285714288,
+              0.9642857142857153,
+              -1.3928571428571423,
+              0.75
+            ],
+            "fitted": [
+              2.7500000000000004,
+              5.107142857142858,
+              7.464285714285714,
+              9.821428571428571,
+              12.178571428571429,
+              14.535714285714285,
+              16.892857142857142,
+              19.25
+            ],
+            "vif": [
+              1
+            ],
+            "durbinWatson": 3.6333333333333333
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              2,
+              6.5,
+              6.5,
+              11,
+              11,
+              15.5,
+              15.5,
+              20
+            ],
+            "predictors": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              [
+                2,
+                1,
+                3,
+                2,
+                4,
+                3,
+                5,
+                4
+              ]
+            ],
+            "names": [
+              "x1",
+              "x2"
+            ]
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "terms": [
+              "Constante",
+              "x1",
+              "x2"
+            ],
+            "coefficients": [
+              {
+                "term": "Constante",
+                "estimate": 2.0000000000000018,
+                "standardError": 1.85775845048325e-15,
+                "t": 1076566223924187.2,
+                "pValue": 0
+              },
+              {
+                "term": "x1",
+                "estimate": 2.9999999999999996,
+                "standardError": 5.127900497022838e-16,
+                "t": 5850347528665470,
+                "pValue": 0
+              },
+              {
+                "term": "x2",
+                "estimate": -1.4999999999999996,
+                "standardError": 9.593423386663635e-16,
+                "t": -1563571146130416,
+                "pValue": 2.0310266618626766e-75
+              }
+            ],
+            "rSquared": 1,
+            "adjustedRSquared": 1,
+            "standardError": 1.9860273225978185e-15,
+            "observations": 8,
+            "dfError": 5,
+            "ssRegression": 243,
+            "ssError": 1.9721522630525295e-29,
+            "ssTotal": 243,
+            "f": 3.080390958554597e+31,
+            "pValue": 0,
+            "residuals": [
+              -2.6645352591003757e-15,
+              0,
+              -1.7763568394002505e-15,
+              0,
+              -1.7763568394002505e-15,
+              -1.7763568394002505e-15,
+              -1.7763568394002505e-15,
+              0
+            ],
+            "fitted": [
+              2.0000000000000027,
+              6.5,
+              6.500000000000002,
+              11,
+              11.000000000000002,
+              15.500000000000002,
+              15.500000000000002,
+              20
+            ],
+            "vif": [
+              2.7999999999999994,
+              2.7999999999999994
+            ],
+            "durbinWatson": 1
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              1,
+              2,
+              3
+            ],
+            "predictors": [],
+            "names": []
+          }
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Se necesita al menos un predictor."
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              1,
+              2
+            ],
+            "predictors": [
+              [
+                1,
+                2
+              ]
+            ],
+            "names": [
+              "x"
+            ]
+          }
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Pocas observaciones para el número de predictores."
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              1,
+              2,
+              3
+            ],
+            "predictors": [
+              [
+                1,
+                1,
+                1
+              ]
+            ],
+            "names": [
+              "x"
+            ]
+          }
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "SINGULAR_MATRIX",
+            "message": "Hay colinealidad perfecta entre las variables."
+          }
+        }
+      }
+    ],
+    "poissonRegression": [
+      {
+        "args": [
+          [
+            0,
+            1,
+            2,
+            3,
+            2,
+            1,
+            4,
+            5,
+            3,
+            2
+          ],
+          [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          ],
+          [
+            "x"
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "terms": [
+              "Constante",
+              "x"
+            ],
+            "coefficients": [
+              0.1629980237678583,
+              0.13291030508782367
+            ],
+            "standardErrors": [
+              0.47067790034310036,
+              0.07582289280528756
+            ],
+            "z": [
+              0.34630481620029535,
+              1.7529046989691626
+            ],
+            "pValues": [
+              0.7291136494933022,
+              0.07961836690061408
+            ],
+            "deviance": 7.162900448232447,
+            "aic": 11.162900448232447,
+            "iterations": 6
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1.5,
+            2,
+            3
+          ],
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            "x"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "La respuesta Poisson debe ser un conteo."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            -1,
+            2,
+            3
+          ],
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            "x"
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "La respuesta Poisson debe ser un conteo."
+          }
+        }
+      }
+    ],
+    "stepwiseRegression": [
+      {
+        "args": [
+          {
+            "response": [
+              2,
+              6.5,
+              6.5,
+              11,
+              11,
+              15.5,
+              15.5,
+              20
+            ],
+            "predictors": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              [
+                2,
+                1,
+                3,
+                2,
+                4,
+                3,
+                5,
+                4
+              ]
+            ],
+            "names": [
+              "x1",
+              "x2"
+            ]
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "selected": [
+              "x1",
+              "x2"
+            ],
+            "steps": [
+              {
+                "step": 1,
+                "action": "Añadido",
+                "term": "x1",
+                "rSquared": 0.9603174603174603,
+                "aic": 7.49420725714668
+              },
+              {
+                "step": 2,
+                "action": "Añadido",
+                "term": "x2",
+                "rSquared": 1,
+                "aic": 1e-300
+              }
+            ],
+            "model": {
+              "terms": [
+                "Constante",
+                "x1",
+                "x2"
+              ],
+              "coefficients": [
+                {
+                  "term": "Constante",
+                  "estimate": 2.0000000000000018,
+                  "standardError": 1.85775845048325e-15,
+                  "t": 1076566223924187.2,
+                  "pValue": 0
+                },
+                {
+                  "term": "x1",
+                  "estimate": 2.9999999999999996,
+                  "standardError": 5.127900497022838e-16,
+                  "t": 5850347528665470,
+                  "pValue": 0
+                },
+                {
+                  "term": "x2",
+                  "estimate": -1.4999999999999996,
+                  "standardError": 9.593423386663635e-16,
+                  "t": -1563571146130416,
+                  "pValue": 2.0310266618626766e-75
+                }
+              ],
+              "rSquared": 1,
+              "adjustedRSquared": 1,
+              "standardError": 1.9860273225978185e-15,
+              "observations": 8,
+              "dfError": 5,
+              "ssRegression": 243,
+              "ssError": 1.9721522630525295e-29,
+              "ssTotal": 243,
+              "f": 3.080390958554597e+31,
+              "pValue": 0,
+              "residuals": [
+                -2.6645352591003757e-15,
+                0,
+                -1.7763568394002505e-15,
+                0,
+                -1.7763568394002505e-15,
+                -1.7763568394002505e-15,
+                -1.7763568394002505e-15,
+                0
+              ],
+              "fitted": [
+                2.0000000000000027,
+                6.5,
+                6.500000000000002,
+                11,
+                11.000000000000002,
+                15.500000000000002,
+                15.500000000000002,
+                20
+              ],
+              "vif": [
+                2.7999999999999994,
+                2.7999999999999994
+              ],
+              "durbinWatson": 1
+            }
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              2,
+              6.5,
+              6.5,
+              11,
+              11,
+              15.5,
+              15.5,
+              20
+            ],
+            "predictors": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ],
+              [
+                2,
+                1,
+                3,
+                2,
+                4,
+                3,
+                5,
+                4
+              ]
+            ],
+            "names": [
+              "x1",
+              "x2"
+            ]
+          },
+          "backward"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "selected": [
+              "x1",
+              "x2"
+            ],
+            "steps": [],
+            "model": {
+              "terms": [
+                "Constante",
+                "x1",
+                "x2"
+              ],
+              "coefficients": [
+                {
+                  "term": "Constante",
+                  "estimate": 2.0000000000000018,
+                  "standardError": 1.85775845048325e-15,
+                  "t": 1076566223924187.2,
+                  "pValue": 0
+                },
+                {
+                  "term": "x1",
+                  "estimate": 2.9999999999999996,
+                  "standardError": 5.127900497022838e-16,
+                  "t": 5850347528665470,
+                  "pValue": 0
+                },
+                {
+                  "term": "x2",
+                  "estimate": -1.4999999999999996,
+                  "standardError": 9.593423386663635e-16,
+                  "t": -1563571146130416,
+                  "pValue": 2.0310266618626766e-75
+                }
+              ],
+              "rSquared": 1,
+              "adjustedRSquared": 1,
+              "standardError": 1.9860273225978185e-15,
+              "observations": 8,
+              "dfError": 5,
+              "ssRegression": 243,
+              "ssError": 1.9721522630525295e-29,
+              "ssTotal": 243,
+              "f": 3.080390958554597e+31,
+              "pValue": 0,
+              "residuals": [
+                -2.6645352591003757e-15,
+                0,
+                -1.7763568394002505e-15,
+                0,
+                -1.7763568394002505e-15,
+                -1.7763568394002505e-15,
+                -1.7763568394002505e-15,
+                0
+              ],
+              "fitted": [
+                2.0000000000000027,
+                6.5,
+                6.500000000000002,
+                11,
+                11.000000000000002,
+                15.500000000000002,
+                15.500000000000002,
+                20
+              ],
+              "vif": [
+                2.7999999999999994,
+                2.7999999999999994
+              ],
+              "durbinWatson": 1
+            }
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              5,
+              5,
+              5,
+              5,
+              5
+            ],
+            "predictors": [
+              [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+              ]
+            ],
+            "names": [
+              "x1"
+            ]
+          }
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "NON_CONVERGENCE",
+            "message": "El stepwise no retuvo predictores."
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "response": [
+              2,
+              6.5,
+              6.5,
+              11,
+              11,
+              15.5,
+              15.5,
+              20
+            ],
+            "predictors": [],
+            "names": []
+          }
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Sin predictores."
+          }
+        }
+      }
+    ]
+  }
+}

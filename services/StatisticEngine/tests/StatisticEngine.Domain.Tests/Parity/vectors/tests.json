@@ -1,0 +1,2109 @@
+{
+  "module": "tests",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "andersonDarling": [
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0.3264973012915391,
+            "pValue": 0.4678903697877702,
+            "n": 12
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se recomiendan al menos 8 observaciones."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Los datos no tienen variabilidad."
+          }
+        }
+      }
+    ],
+    "chiSquareGoodnessOfFit": [
+      {
+        "args": [
+          [
+            10,
+            20,
+            30
+          ],
+          [
+            20,
+            20,
+            20
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 10,
+            "df": 2,
+            "pValue": 0.006737946999085475
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            20
+          ],
+          [
+            20
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Categorías incompatibles."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            -1,
+            20
+          ],
+          [
+            20,
+            20
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Las frecuencias deben ser no negativas y las esperadas positivas."
+          }
+        }
+      }
+    ],
+    "chiSquareIndependence": [
+      {
+        "args": [
+          [
+            [
+              10,
+              20
+            ],
+            [
+              30,
+              40
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0.7936507936507936,
+            "df": 1,
+            "pValue": 0.37299848361348664,
+            "expected": [
+              [
+                12,
+                18
+              ],
+              [
+                28,
+                42
+              ]
+            ]
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              10,
+              20
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "La tabla debe tener al menos 2x2."
+          }
+        }
+      }
+    ],
+    "kruskalWallis": [
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              7,
+              8,
+              9
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 7.200000000000003,
+            "df": 2,
+            "pValue": 0.027323722447292552
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3,
+              4
+            ],
+            [
+              2,
+              4,
+              6,
+              8,
+              10
+            ],
+            [
+              10,
+              11,
+              9,
+              10,
+              10.5,
+              9.5
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 9.5625,
+            "df": 2,
+            "pValue": 0.008385510525424092
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 grupos con datos."
+          }
+        }
+      }
+    ],
+    "mannWhitney": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            5,
+            6,
+            7,
+            8
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0,
+            "pValue": 0.020921335337793976,
+            "u1": 0,
+            "u2": 16
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            5,
+            6,
+            7,
+            8
+          ],
+          "two-sided"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0,
+            "pValue": 0.020921335337793976,
+            "u1": 0,
+            "u2": 16
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            5,
+            6,
+            7,
+            8
+          ],
+          "less"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0,
+            "pValue": 0.010460667668896988,
+            "u1": 0,
+            "u2": 16
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            5,
+            6,
+            7,
+            8
+          ],
+          "greater"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0,
+            "pValue": 0.989539332331103,
+            "u1": 0,
+            "u2": 16
+          }
+        }
+      },
+      {
+        "args": [
+          [],
+          [
+            1
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Ambas muestras deben tener datos."
+          }
+        }
+      }
+    ],
+    "oneProportion": [
+      {
+        "args": [
+          30,
+          100
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "estimate": 0.3,
+            "nullValue": 0.5,
+            "z": -4,
+            "pValue": 0.00006334248366624007,
+            "lower": 0.2189488529493276,
+            "upper": 0.3958485463334666,
+            "confidence": 0.95
+          }
+        }
+      },
+      {
+        "args": [
+          30,
+          100,
+          0.2,
+          0.9
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "estimate": 0.3,
+            "nullValue": 0.2,
+            "z": 2.4999999999999996,
+            "pValue": 0.012419330651552318,
+            "lower": 0.23070495436914545,
+            "upper": 0.37983213394412424,
+            "confidence": 0.9
+          }
+        }
+      },
+      {
+        "args": [
+          3,
+          10,
+          0.5,
+          0.95,
+          "greater"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "estimate": 0.3,
+            "nullValue": 0.5,
+            "z": -1.2649110640673518,
+            "pValue": 0.897048394633966,
+            "lower": 0.10779126740630099,
+            "upper": 0.6032218525388546,
+            "confidence": 0.95
+          }
+        }
+      },
+      {
+        "args": [
+          10,
+          0
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Datos de proporción inválidos."
+          }
+        }
+      },
+      {
+        "args": [
+          11,
+          10
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Datos de proporción inválidos."
+          }
+        }
+      }
+    ],
+    "oneSampleT": [
+      {
+        "args": [
+          [
+            2,
+            4,
+            4,
+            4,
+            5,
+            5,
+            7,
+            9
+          ],
+          5
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 0,
+            "df": 7,
+            "pValue": 1,
+            "estimate": 5,
+            "nullValue": 5,
+            "standardError": 0.7559289460184544,
+            "lower": 3.2125120817637924,
+            "upper": 6.787487918236208,
+            "confidence": 0.95,
+            "alternative": "two-sided"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            12,
+            14,
+            16
+          ],
+          0
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 10.069756700139283,
+            "df": 3,
+            "pValue": 0.002085480314975241,
+            "estimate": 13,
+            "nullValue": 0,
+            "standardError": 1.2909944487358056,
+            "lower": 8.891479486478962,
+            "upper": 17.108520513521036,
+            "confidence": 0.95,
+            "alternative": "two-sided"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 observaciones."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            2,
+            2
+          ],
+          0
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "La desviación estándar es cero."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          5,
+          0.9,
+          "two-sided"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 0,
+            "df": 11,
+            "pValue": 1,
+            "estimate": 5,
+            "nullValue": 5,
+            "standardError": 0.6154574548966637,
+            "lower": 3.8947093001928526,
+            "upper": 6.1052906998071474,
+            "confidence": 0.9,
+            "alternative": "two-sided"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          5,
+          0.9,
+          "less"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 0,
+            "df": 11,
+            "pValue": 0.5,
+            "estimate": 5,
+            "nullValue": 5,
+            "standardError": 0.6154574548966637,
+            "lower": 4.160866646542132,
+            "upper": 5.839133353457868,
+            "confidence": 0.9,
+            "alternative": "less"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          5,
+          0.9,
+          "greater"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 0,
+            "df": 11,
+            "pValue": 0.5,
+            "estimate": 5,
+            "nullValue": 5,
+            "standardError": 0.6154574548966637,
+            "lower": 4.160866646542132,
+            "upper": 5.839133353457868,
+            "confidence": 0.9,
+            "alternative": "greater"
+          }
+        }
+      }
+    ],
+    "oneSampleZ": [
+      {
+        "args": [
+          [
+            2,
+            4,
+            4,
+            4,
+            5,
+            5,
+            7,
+            9
+          ],
+          2,
+          5
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "z",
+            "statistic": 0,
+            "df": {
+              "$num": "Infinity"
+            },
+            "pValue": 1,
+            "estimate": 5,
+            "nullValue": 5,
+            "standardError": 0.7071067811865475,
+            "lower": 3.6140961756503223,
+            "upper": 6.385903824349677,
+            "confidence": 0.95,
+            "alternative": "two-sided"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            4,
+            4,
+            4,
+            5,
+            5,
+            7,
+            9
+          ],
+          0,
+          5
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "σ debe ser mayor que cero."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          1.5,
+          5,
+          0.99,
+          "two-sided"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "z",
+            "statistic": 0,
+            "df": {
+              "$num": "Infinity"
+            },
+            "pValue": 1,
+            "estimate": 5,
+            "nullValue": 5,
+            "standardError": 0.43301270189221935,
+            "lower": 3.8846331936571366,
+            "upper": 6.1153668063428634,
+            "confidence": 0.99,
+            "alternative": "two-sided"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          1.5,
+          5,
+          0.99,
+          "less"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "z",
+            "statistic": 0,
+            "df": {
+              "$num": "Infinity"
+            },
+            "pValue": 0.5,
+            "estimate": 5,
+            "nullValue": 5,
+            "standardError": 0.43301270189221935,
+            "lower": 3.992661821520355,
+            "upper": 6.007338178479645,
+            "confidence": 0.99,
+            "alternative": "less"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          1.5,
+          5,
+          0.99,
+          "greater"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "z",
+            "statistic": 0,
+            "df": {
+              "$num": "Infinity"
+            },
+            "pValue": 0.5,
+            "estimate": 5,
+            "nullValue": 5,
+            "standardError": 0.43301270189221935,
+            "lower": 3.992661821520355,
+            "upper": 6.007338178479645,
+            "confidence": 0.99,
+            "alternative": "greater"
+          }
+        }
+      }
+    ],
+    "oneVariance": [
+      {
+        "args": [
+          4,
+          10,
+          4
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 9,
+            "df": 9,
+            "pValue": 0.8745483778277336,
+            "ratio": 1,
+            "lower": 1.8924690865631075,
+            "upper": 13.331410153930529,
+            "confidence": 0.95
+          }
+        }
+      },
+      {
+        "args": [
+          4,
+          10
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 36,
+            "df": 9,
+            "pValue": 0.00007929317596078178,
+            "ratio": 4,
+            "lower": 1.8924690865631075,
+            "upper": 13.331410153930529,
+            "confidence": 0.95
+          }
+        }
+      },
+      {
+        "args": [
+          4,
+          10,
+          4,
+          0.9,
+          "less"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 9,
+            "df": 9,
+            "pValue": 0.5627258110861332,
+            "ratio": 1,
+            "lower": 2.4517053923454957,
+            "upper": 8.636906588665573,
+            "confidence": 0.9
+          }
+        }
+      },
+      {
+        "args": [
+          -1,
+          10
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Parámetros de varianza inválidos."
+          }
+        }
+      }
+    ],
+    "pairedT": [
+      {
+        "args": [
+          [
+            10,
+            12,
+            14
+          ],
+          [
+            9,
+            11,
+            12
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 4,
+            "df": 2,
+            "pValue": 0.057190958417936644,
+            "estimate": 1.3333333333333333,
+            "nullValue": 0,
+            "standardError": 0.3333333333333333,
+            "lower": -0.10088424324982026,
+            "upper": 2.767550909916487,
+            "confidence": 0.95,
+            "alternative": "two-sided"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            12,
+            14
+          ],
+          [
+            9,
+            11,
+            12
+          ],
+          {
+            "confidence": 0.9,
+            "alternative": "less"
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 4,
+            "df": 2,
+            "pValue": 0.9714045207910317,
+            "estimate": 1.3333333333333333,
+            "nullValue": 0,
+            "standardError": 0.3333333333333333,
+            "lower": 0.7047939722786234,
+            "upper": 1.9618726943880431,
+            "confidence": 0.9,
+            "alternative": "less"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 pares completos."
+          }
+        }
+      }
+    ],
+    "runsTest": [
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "runs": 2,
+            "z": -3.0276503540974917,
+            "pValue": 0.0024646307249678126
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se recomiendan al menos 10 observaciones."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Todos los valores están por encima o por debajo de la mediana."
+          }
+        }
+      }
+    ],
+    "signTest": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "positives": 8,
+            "negatives": 0,
+            "pValue": 0.007812500000000002
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          4,
+          "two-sided"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "positives": 6,
+            "negatives": 3,
+            "pValue": 0.5078125
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          4,
+          "less"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "positives": 6,
+            "negatives": 3,
+            "pValue": 0.25390625
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          4,
+          "greater"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "positives": 6,
+            "negatives": 3,
+            "pValue": 0.748046875
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            1,
+            1
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "positives": 3,
+            "negatives": 0,
+            "pValue": 0.25000000000000006
+          }
+        }
+      }
+    ],
+    "spearmanCorrelation": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          [
+            2,
+            4,
+            6,
+            8,
+            11
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "rho": 1,
+            "pValue": 0
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 3 pares."
+          }
+        }
+      }
+    ],
+    "tCdf": [
+      {
+        "args": [
+          -3,
+          1
+        ],
+        "expected": 0.10241638234956672
+      },
+      {
+        "args": [
+          -3,
+          2
+        ],
+        "expected": 0.047732983133354646
+      },
+      {
+        "args": [
+          -3,
+          5
+        ],
+        "expected": 0.015049623948731269
+      },
+      {
+        "args": [
+          -3,
+          10
+        ],
+        "expected": 0.0066718275112848
+      },
+      {
+        "args": [
+          -3,
+          30
+        ],
+        "expected": 0.0026949820328259887
+      },
+      {
+        "args": [
+          -1,
+          1
+        ],
+        "expected": 0.24999999999999994
+      },
+      {
+        "args": [
+          -1,
+          2
+        ],
+        "expected": 0.21132486540518663
+      },
+      {
+        "args": [
+          -1,
+          5
+        ],
+        "expected": 0.18160873382456166
+      },
+      {
+        "args": [
+          -1,
+          10
+        ],
+        "expected": 0.17044656615102888
+      },
+      {
+        "args": [
+          -1,
+          30
+        ],
+        "expected": 0.1626543077130132
+      },
+      {
+        "args": [
+          0,
+          1
+        ],
+        "expected": 0.5
+      },
+      {
+        "args": [
+          0,
+          2
+        ],
+        "expected": 0.5
+      },
+      {
+        "args": [
+          0,
+          5
+        ],
+        "expected": 0.5
+      },
+      {
+        "args": [
+          0,
+          10
+        ],
+        "expected": 0.5
+      },
+      {
+        "args": [
+          0,
+          30
+        ],
+        "expected": 0.5
+      },
+      {
+        "args": [
+          1,
+          1
+        ],
+        "expected": 0.75
+      },
+      {
+        "args": [
+          1,
+          2
+        ],
+        "expected": 0.7886751345948133
+      },
+      {
+        "args": [
+          1,
+          5
+        ],
+        "expected": 0.8183912661754383
+      },
+      {
+        "args": [
+          1,
+          10
+        ],
+        "expected": 0.8295534338489712
+      },
+      {
+        "args": [
+          1,
+          30
+        ],
+        "expected": 0.8373456922869869
+      },
+      {
+        "args": [
+          2,
+          1
+        ],
+        "expected": 0.8524163823495667
+      },
+      {
+        "args": [
+          2,
+          2
+        ],
+        "expected": 0.9082482904638629
+      },
+      {
+        "args": [
+          2,
+          5
+        ],
+        "expected": 0.9490302605850708
+      },
+      {
+        "args": [
+          2,
+          10
+        ],
+        "expected": 0.9633059826146297
+      },
+      {
+        "args": [
+          2,
+          30
+        ],
+        "expected": 0.9726874775185083
+      },
+      {
+        "args": [
+          1,
+          0
+        ],
+        "expected": {
+          "$num": "NaN"
+        }
+      }
+    ],
+    "tQuantile": [
+      {
+        "args": [
+          0.5,
+          1
+        ],
+        "expected": -1.0536712127723507e-8
+      },
+      {
+        "args": [
+          0.5,
+          2
+        ],
+        "expected": -1.4901161193847656e-8
+      },
+      {
+        "args": [
+          0.5,
+          5
+        ],
+        "expected": -2.1073424255447014e-8
+      },
+      {
+        "args": [
+          0.5,
+          10
+        ],
+        "expected": -2.9802322387695312e-8
+      },
+      {
+        "args": [
+          0.5,
+          30
+        ],
+        "expected": -4.214684851089403e-8
+      },
+      {
+        "args": [
+          0.9,
+          1
+        ],
+        "expected": 3.077683537175253
+      },
+      {
+        "args": [
+          0.9,
+          2
+        ],
+        "expected": 1.8856180831641298
+      },
+      {
+        "args": [
+          0.9,
+          5
+        ],
+        "expected": 1.4758840488244807
+      },
+      {
+        "args": [
+          0.9,
+          10
+        ],
+        "expected": 1.3721836411103276
+      },
+      {
+        "args": [
+          0.9,
+          30
+        ],
+        "expected": 1.310415025391383
+      },
+      {
+        "args": [
+          0.975,
+          1
+        ],
+        "expected": 12.70620473617467
+      },
+      {
+        "args": [
+          0.975,
+          2
+        ],
+        "expected": 4.302652729749461
+      },
+      {
+        "args": [
+          0.975,
+          5
+        ],
+        "expected": 2.570581835636313
+      },
+      {
+        "args": [
+          0.975,
+          10
+        ],
+        "expected": 2.228138851986274
+      },
+      {
+        "args": [
+          0.975,
+          30
+        ],
+        "expected": 2.042272456301239
+      },
+      {
+        "args": [
+          0.995,
+          1
+        ],
+        "expected": 63.656741162870844
+      },
+      {
+        "args": [
+          0.995,
+          2
+        ],
+        "expected": 9.92484320091824
+      },
+      {
+        "args": [
+          0.995,
+          5
+        ],
+        "expected": 4.0321429835552145
+      },
+      {
+        "args": [
+          0.995,
+          10
+        ],
+        "expected": 3.1692726726169456
+      },
+      {
+        "args": [
+          0.995,
+          30
+        ],
+        "expected": 2.7499956535672228
+      },
+      {
+        "args": [
+          -1,
+          5
+        ],
+        "expected": {
+          "$num": "-Infinity"
+        }
+      },
+      {
+        "args": [
+          2,
+          5
+        ],
+        "expected": {
+          "$num": "Infinity"
+        }
+      }
+    ],
+    "tostTwoSample": [
+      {
+        "args": [
+          [
+            10,
+            12,
+            14,
+            16
+          ],
+          [
+            8,
+            9,
+            11,
+            13
+          ],
+          2
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "lowerP": 0.9842383270005022,
+            "upperP": 0.33742145359919706,
+            "pValue": 0.9842383270005022,
+            "estimate": 2.75
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            12,
+            14,
+            16
+          ],
+          [
+            8,
+            9,
+            11,
+            13
+          ],
+          0
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "El margen de equivalencia debe ser positivo."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          1
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Cada muestra necesita al menos 2 observaciones."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            1
+          ],
+          1
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "No hay variabilidad."
+          }
+        }
+      }
+    ],
+    "twoProportions": [
+      {
+        "args": [
+          30,
+          100,
+          40,
+          110
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "estimate": -0.06363636363636366,
+            "nullValue": 0,
+            "z": -0.9770084209183949,
+            "pValue": 0.32856498343919593,
+            "lower": -0.19071220381369094,
+            "upper": 0.06343947654096363,
+            "confidence": 0.95
+          }
+        }
+      },
+      {
+        "args": [
+          30,
+          100,
+          40,
+          110,
+          0.9,
+          "less"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "estimate": -0.06363636363636366,
+            "nullValue": 0,
+            "z": -0.9770084209183949,
+            "pValue": 0.16428249171959797,
+            "lower": -0.17028177052256877,
+            "upper": 0.043009043249841464,
+            "confidence": 0.9
+          }
+        }
+      },
+      {
+        "args": [
+          0,
+          100,
+          0,
+          100
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "No hay variabilidad para el contraste."
+          }
+        }
+      },
+      {
+        "args": [
+          1,
+          0,
+          1,
+          10
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Los tamaños de muestra deben ser positivos."
+          }
+        }
+      }
+    ],
+    "twoSampleT": [
+      {
+        "args": [
+          [
+            10,
+            12,
+            14,
+            16
+          ],
+          [
+            8,
+            9,
+            11,
+            13
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 1.6160169526854928,
+            "df": 5.866106669365448,
+            "pValue": 0.15834391441115736,
+            "estimate": 2.75,
+            "nullValue": 0,
+            "standardError": 1.7017148213885114,
+            "lower": -1.437093388901606,
+            "upper": 6.937093388901606,
+            "confidence": 0.95,
+            "alternative": "two-sided"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            12,
+            14,
+            16
+          ],
+          [
+            8,
+            9,
+            11,
+            13
+          ],
+          {
+            "pooled": true
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 1.6160169526854928,
+            "df": 6,
+            "pValue": 0.15721795319313459,
+            "estimate": 2.75,
+            "nullValue": 0,
+            "standardError": 1.7017148213885114,
+            "lower": -1.4139461637245905,
+            "upper": 6.9139461637245905,
+            "confidence": 0.95,
+            "alternative": "two-sided"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            12,
+            14,
+            16
+          ],
+          [
+            8,
+            9,
+            11,
+            13
+          ],
+          {
+            "confidence": 0.9,
+            "alternative": "greater"
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "test": "t",
+            "statistic": 1.6160169526854928,
+            "df": 5.866106669365448,
+            "pValue": 0.07917195720557868,
+            "estimate": 2.75,
+            "nullValue": 0,
+            "standardError": 1.7017148213885114,
+            "lower": 0.29306846743835235,
+            "upper": 5.206931532561647,
+            "confidence": 0.9,
+            "alternative": "greater"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Cada muestra necesita al menos 2 observaciones."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "La variabilidad es cero en ambas muestras."
+          }
+        }
+      }
+    ],
+    "twoVariances": [
+      {
+        "args": [
+          4,
+          10,
+          9,
+          12
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0.4444444444444444,
+            "df": 9,
+            "pValue": 0.2335535427536676,
+            "ratio": 0.4444444444444444,
+            "lower": 0.12387318746411753,
+            "upper": 1.7386997632197043,
+            "confidence": 0.95
+          }
+        }
+      },
+      {
+        "args": [
+          4,
+          10,
+          9,
+          12,
+          0.9,
+          "greater"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0.4444444444444444,
+            "df": 9,
+            "pValue": 0.8832232286231662,
+            "ratio": 0.4444444444444444,
+            "lower": 0.15345658158198966,
+            "upper": 1.3788824033491085,
+            "confidence": 0.9
+          }
+        }
+      },
+      {
+        "args": [
+          0,
+          10,
+          9,
+          12
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 0,
+            "df": 9,
+            "pValue": 0,
+            "ratio": 0,
+            "lower": 0,
+            "upper": 0,
+            "confidence": 0.95
+          }
+        }
+      }
+    ],
+    "wilcoxonSignedRank": [
+      {
+        "args": [
+          [
+            1,
+            -2,
+            3,
+            -4,
+            5,
+            -6,
+            7
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 16,
+            "pValue": 0.7353166906373407,
+            "n": 7
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          4
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 34.5,
+            "pValue": 0.15513156872711376,
+            "n": 9
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            -2,
+            3,
+            -4,
+            5,
+            -6,
+            7,
+            8,
+            -9
+          ],
+          0,
+          "two-sided"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 24,
+            "pValue": 0.8589549227374824,
+            "n": 9
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            -2,
+            3,
+            -4,
+            5,
+            -6,
+            7,
+            8,
+            -9
+          ],
+          0,
+          "less"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 24,
+            "pValue": 0.5705225386312588,
+            "n": 9
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            -2,
+            3,
+            -4,
+            5,
+            -6,
+            7,
+            8,
+            -9
+          ],
+          0,
+          "greater"
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "statistic": 24,
+            "pValue": 0.4294774613687412,
+            "n": 9
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 5 diferencias no nulas."
+          }
+        }
+      }
+    ]
+  }
+}

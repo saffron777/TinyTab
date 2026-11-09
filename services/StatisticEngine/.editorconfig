@@ -1,0 +1,30 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,md}]
+indent_size = 2
+
+[*.cs]
+indent_size = 4
+dotnet_sort_system_directives_first = true
+csharp_style_namespace_declarations = file_scoped:warning
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
+# CA1859 (usar tipos concretos) es una sugerencia de rendimiento que no aporta en el motor
+# ni en los helpers de prueba; se desactiva para no forzar tipos concretos en firmas internas.
+dotnet_diagnostic.CA1859.severity = none
+
+[*.csproj]
+indent_size = 2
+
+# Reglas de estilo de test que no aportan aquí: las pruebas de integración usan HttpClient
+# sin token (el runner ya impone su propio timeout) y arrays literales en los cuerpos JSON.
+[tests/**/*.cs]
+dotnet_diagnostic.xUnit1051.severity = none
+dotnet_diagnostic.CA1861.severity = none

@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>StatisticEngine.Domain</RootNamespace>
+    <AssemblyName>StatisticEngine.Domain</AssemblyName>
+  </PropertyGroup>
+</Project>

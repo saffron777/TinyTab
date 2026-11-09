@@ -60,6 +60,27 @@ Worksheet  ⇄ importCsv/exportWorksheetCsv (.ttw/.csv)
 Sesión     ⇄ sessionToHtml (.html)
 ```
 
+## Microservicio StatisticEngine (C# / .NET 10)
+
+El motor estadístico del dominio se expone además como microservicio HTTP independiente en
+`services/StatisticEngine`, con un port nativo en C# verificado 1:1 contra el motor TypeScript
+mediante vectores dorados:
+
+```
+services/StatisticEngine/src/StatisticEngine.Domain        cálculo puro (espeja src/domain)
+services/StatisticEngine/src/StatisticEngine.Application   casos de uso y puertos
+services/StatisticEngine/src/StatisticEngine.Api           host HTTP, contratos y límites
+services/StatisticEngine/tools/golden                      generación de vectores de paridad
+```
+
+- Regla de dependencia: `Api → Application → Domain`; el dominio no conoce HTTP ni I/O.
+- API versionada `/api/v1`: catálogo y ejecución de los 60 análisis, 21 distribuciones, metadatos
+  y probes de salud. Errores en `application/problem+json` con `code` del motor.
+- Sin estado ni base de datos: el RNG recibe semilla explícita y cada petición es independiente.
+- Paridad verificada (29 pruebas de dominio + 19 de API) contra el motor TypeScript, incluidos sus
+  defectos documentados. Detalle en `services/StatisticEngine/PARITY-NOTES.md`.
+- La aplicación de escritorio sigue usando el motor TypeScript; el servicio es autónomo.
+
 ## Pruebas
 
 - `tests/unit/numeric.test.ts`: funciones especiales y cuantiles.
@@ -75,3 +96,4 @@ Sesión     ⇄ sessionToHtml (.html)
 - ADR 0002: motor estadístico en TypeScript puro.
 - ADR 0003: gráficos SVG propios.
 - ADR 0004: formatos `.ttab`, `.ttw` y CSV.
+- ADR 0005: microservicio `StatisticEngine` en C# / .NET 10 con paridad verificada.

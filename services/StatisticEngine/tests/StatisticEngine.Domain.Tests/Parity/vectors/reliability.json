@@ -1,0 +1,345 @@
+{
+  "module": "reliability",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "kaplanMeier": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            9,
+            11
+          ],
+          [
+            true,
+            false,
+            true,
+            true,
+            false,
+            true,
+            true,
+            false,
+            true,
+            true
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "times": [
+              0,
+              1,
+              2,
+              3,
+              5,
+              6,
+              9,
+              11
+            ],
+            "survival": [
+              1,
+              0.9,
+              0.7999999999999999,
+              0.6857142857142856,
+              0.5485714285714285,
+              0.41142857142857137,
+              0.20571428571428568,
+              0
+            ],
+            "standardError": [
+              0,
+              0.09486832980505137,
+              0.12649110640673517,
+              0.15149401743232058,
+              0.17243784531136666,
+              0.17559029971148654,
+              0.16990341965852776,
+              0
+            ],
+            "atRisk": [
+              10,
+              10,
+              9,
+              7,
+              5,
+              4,
+              2,
+              1
+            ],
+            "events": [
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "median": 6
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ],
+          [
+            true
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 observaciones."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            false,
+            false,
+            false
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "times": [
+              0
+            ],
+            "survival": [
+              1
+            ],
+            "standardError": [
+              0
+            ],
+            "atRisk": [
+              3
+            ],
+            "events": [
+              0
+            ],
+            "median": {
+              "$num": "Infinity"
+            }
+          }
+        }
+      }
+    ],
+    "lognormalFit": [
+      {
+        "args": [
+          [
+            120,
+            150,
+            200,
+            260,
+            340,
+            430,
+            520,
+            610
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "location": 5.652143078685314,
+            "scale": 0.5897999624936455,
+            "logLikelihood": -51.84487812557899,
+            "n": 8
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 tiempos positivos."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Los datos no tienen variabilidad."
+          }
+        }
+      }
+    ],
+    "probabilityPlotPoints": [
+      {
+        "args": [
+          [
+            120,
+            150,
+            200,
+            260,
+            340,
+            430,
+            520,
+            610
+          ]
+        ],
+        "expected": [
+          {
+            "x": 4.787491742782046,
+            "y": -2.441716398881459,
+            "rank": 0.08333333333333333
+          },
+          {
+            "x": 5.0106352940962555,
+            "y": -1.4866709640080433,
+            "rank": 0.20238095238095236
+          },
+          {
+            "x": 5.298317366548036,
+            "y": -0.9473544235464281,
+            "rank": 0.32142857142857145
+          },
+          {
+            "x": 5.560681631015528,
+            "y": -0.5435740523829053,
+            "rank": 0.44047619047619047
+          },
+          {
+            "x": 5.8289456176102075,
+            "y": -0.19857425584038713,
+            "rank": 0.5595238095238095
+          },
+          {
+            "x": 6.063785208687608,
+            "y": 0.12661497045899217,
+            "rank": 0.6785714285714286
+          },
+          {
+            "x": 6.253828811575473,
+            "y": 0.46850466560279447,
+            "rank": 0.7976190476190476
+          },
+          {
+            "x": 6.413458957167357,
+            "y": 0.9102350933653258,
+            "rank": 0.9166666666666666
+          }
+        ]
+      }
+    ],
+    "reliabilityAt": [
+      {
+        "args": [
+          150,
+          2,
+          100
+        ],
+        "expected": 0.10539922456186433
+      }
+    ],
+    "weibullFit": [
+      {
+        "args": [
+          [
+            120,
+            150,
+            200,
+            260,
+            340,
+            430,
+            520,
+            610
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "shape": 2.121173771347954,
+            "scale": 373.0552760868136,
+            "logLikelihood": -51.776055664913805,
+            "aic": 107.55211132982761,
+            "n": 8
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 3 tiempos positivos."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            5,
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "shape": 10,
+            "scale": 5.255685030558886,
+            "logLikelihood": -1.6515282731169543,
+            "aic": 7.3030565462339085,
+            "n": 4
+          }
+        }
+      }
+    ],
+    "weibullQuantile": [
+      {
+        "args": [
+          0.5,
+          2,
+          100
+        ],
+        "expected": 83.25546111576976
+      }
+    ]
+  }
+}

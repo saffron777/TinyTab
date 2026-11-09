@@ -1,0 +1,411 @@
+{
+  "module": "descriptive",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "correlationMatrix": [
+      {
+        "args": [
+          [
+            "x",
+            "y"
+          ],
+          [
+            [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            [
+              2,
+              4,
+              6,
+              8,
+              11
+            ]
+          ]
+        ],
+        "expected": {
+          "labels": [
+            "x",
+            "y"
+          ],
+          "matrix": [
+            [
+              1,
+              0.9958932064677039
+            ],
+            [
+              0.9958932064677039,
+              1
+            ]
+          ]
+        }
+      }
+    ],
+    "covarianceMatrix": [
+      {
+        "args": [
+          [
+            [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            [
+              2,
+              4,
+              6,
+              8,
+              11
+            ]
+          ]
+        ],
+        "expected": [
+          [
+            2.5,
+            5.5
+          ],
+          [
+            5.5,
+            12.2
+          ]
+        ]
+      }
+    ],
+    "describe": [
+      {
+        "args": [
+          [
+            2,
+            4,
+            4,
+            4,
+            5,
+            5,
+            7,
+            9
+          ]
+        ],
+        "expected": {
+          "n": 8,
+          "missing": 0,
+          "mean": 5,
+          "seMean": 0.7559289460184544,
+          "sd": 2.138089935299395,
+          "variance": 4.571428571428571,
+          "cv": 42.7617987059879,
+          "min": 2,
+          "q1": 4,
+          "median": 4.5,
+          "q3": 5.5,
+          "max": 9,
+          "iqr": 1.5,
+          "range": 7,
+          "skewness": 0.8184875533567997,
+          "kurtosis": 0.9406249999999998,
+          "sum": 40,
+          "sumSquares": 232
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            4,
+            4,
+            4,
+            5,
+            5,
+            7,
+            9
+          ],
+          3
+        ],
+        "expected": {
+          "n": 8,
+          "missing": 3,
+          "mean": 5,
+          "seMean": 0.7559289460184544,
+          "sd": 2.138089935299395,
+          "variance": 4.571428571428571,
+          "cv": 42.7617987059879,
+          "min": 2,
+          "q1": 4,
+          "median": 4.5,
+          "q3": 5.5,
+          "max": 9,
+          "iqr": 1.5,
+          "range": 7,
+          "skewness": 0.8184875533567997,
+          "kurtosis": 0.9406249999999998,
+          "sum": 40,
+          "sumSquares": 232
+        }
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": {
+          "n": 1,
+          "missing": 0,
+          "mean": 5,
+          "seMean": {
+            "$num": "NaN"
+          },
+          "sd": {
+            "$num": "NaN"
+          },
+          "variance": {
+            "$num": "NaN"
+          },
+          "cv": {
+            "$num": "NaN"
+          },
+          "min": 5,
+          "q1": 5,
+          "median": 5,
+          "q3": 5,
+          "max": 5,
+          "iqr": 0,
+          "range": 0,
+          "skewness": {
+            "$num": "NaN"
+          },
+          "kurtosis": {
+            "$num": "NaN"
+          },
+          "sum": 5,
+          "sumSquares": 25
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "expected": {
+          "n": 5,
+          "missing": 0,
+          "mean": 1,
+          "seMean": 0,
+          "sd": 0,
+          "variance": 0,
+          "cv": 0,
+          "min": 1,
+          "q1": 1,
+          "median": 1,
+          "q3": 1,
+          "max": 1,
+          "iqr": 0,
+          "range": 0,
+          "skewness": 0,
+          "kurtosis": 0,
+          "sum": 5,
+          "sumSquares": 5
+        }
+      }
+    ],
+    "describeByGroup": [
+      {
+        "args": [
+          [
+            [
+              "A",
+              [
+                1,
+                2,
+                3
+              ]
+            ],
+            [
+              "B",
+              [
+                4,
+                5,
+                6
+              ]
+            ]
+          ]
+        ],
+        "expected": [
+          {
+            "group": "A",
+            "values": [
+              1,
+              2,
+              3
+            ],
+            "stats": {
+              "n": 3,
+              "missing": 0,
+              "mean": 2,
+              "seMean": 0.5773502691896258,
+              "sd": 1,
+              "variance": 1,
+              "cv": 50,
+              "min": 1,
+              "q1": 1.5,
+              "median": 2,
+              "q3": 2.5,
+              "max": 3,
+              "iqr": 1,
+              "range": 2,
+              "skewness": 0,
+              "kurtosis": {
+                "$num": "NaN"
+              },
+              "sum": 6,
+              "sumSquares": 14
+            }
+          },
+          {
+            "group": "B",
+            "values": [
+              4,
+              5,
+              6
+            ],
+            "stats": {
+              "n": 3,
+              "missing": 0,
+              "mean": 5,
+              "seMean": 0.5773502691896258,
+              "sd": 1,
+              "variance": 1,
+              "cv": 20,
+              "min": 4,
+              "q1": 4.5,
+              "median": 5,
+              "q3": 5.5,
+              "max": 6,
+              "iqr": 1,
+              "range": 2,
+              "skewness": 0,
+              "kurtosis": {
+                "$num": "NaN"
+              },
+              "sum": 15,
+              "sumSquares": 77
+            }
+          }
+        ]
+      }
+    ],
+    "meanConfidenceInterval": [
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          0.9
+        ],
+        "expected": {
+          "lower": 3.8947093001928526,
+          "upper": 6.1052906998071474,
+          "halfWidth": 1.1052906998071472
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          0.95
+        ],
+        "expected": {
+          "lower": 3.6453872751046736,
+          "upper": 6.354612724895326,
+          "halfWidth": 1.3546127248953266
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          0.99
+        ],
+        "expected": {
+          "lower": 3.0885082265447217,
+          "upper": 6.911491773455278,
+          "halfWidth": 1.9114917734552785
+        }
+      },
+      {
+        "args": [
+          [
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          0.95,
+          2
+        ],
+        "expected": {
+          "lower": 3.868414265011533,
+          "upper": 6.131585734988467,
+          "halfWidth": 1.1315857349884666
+        }
+      }
+    ]
+  }
+}

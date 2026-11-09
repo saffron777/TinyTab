@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>StatisticEngine.Application</RootNamespace>
+    <AssemblyName>StatisticEngine.Application</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StatisticEngine.Domain\StatisticEngine.Domain.csproj" />
+  </ItemGroup>
+</Project>

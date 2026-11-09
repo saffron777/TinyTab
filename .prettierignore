@@ -6,3 +6,7 @@ coverage
 pnpm-lock.yaml
 build
 docs/screenshots
+services/**/bin
+services/**/obj
+services/**/.artifacts
+services/StatisticEngine/tests/StatisticEngine.Domain.Tests/Parity/vectors

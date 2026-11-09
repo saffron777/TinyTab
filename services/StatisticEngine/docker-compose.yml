@@ -1,0 +1,25 @@
+services:
+  statisticengine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: statisticengine:1.0.0
+    container_name: statisticengine
+    ports:
+      - "5080:8080"
+    environment:
+      StatisticEngine__RateLimit__Enabled: "true"
+      StatisticEngine__RateLimit__PermitLimit: "120"
+      StatisticEngine__Limits__MaxNumericValues: "1000000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true

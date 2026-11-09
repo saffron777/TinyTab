@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/StatisticEngine.Domain/StatisticEngine.Domain.csproj" />
+    <Project Path="src/StatisticEngine.Application/StatisticEngine.Application.csproj" />
+    <Project Path="src/StatisticEngine.Api/StatisticEngine.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/StatisticEngine.Domain.Tests/StatisticEngine.Domain.Tests.csproj" />
+    <Project Path="tests/StatisticEngine.Api.Tests/StatisticEngine.Api.Tests.csproj" />
+  </Folder>
+</Solution>

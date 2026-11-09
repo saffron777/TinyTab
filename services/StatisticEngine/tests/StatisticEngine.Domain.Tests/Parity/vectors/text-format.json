@@ -1,0 +1,114 @@
+{
+  "module": "text-format",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "formatAnalysisResult": [
+      {
+        "args": [
+          "describe"
+        ],
+        "expected": "Estadísticas descriptivas\nIntervalo de confianza del 95.0 %\n\n─ Resumen\nVariable  N   Media    EE media  Desv.Est.  Mínimo  Q1       Mediana  Q3       Máximo  IQR      IC media\n────────  ──  ───────  ────────  ─────────  ──────  ───────  ───────  ───────  ──────  ───────  ─────────────────\nVar1      30  20.2343  1.142     6.2549     10      15.7525  20.3     25.2825  30.81   9.53     17.8987 – 22.5699\nVar2      30  44.8515  3.2988    18.068     15      31.9525  46.8     59.9562  73.215  28.0037  38.1048 – 51.5982"
+      },
+      {
+        "args": [
+          "graphical-summary"
+        ],
+        "expected": "Resumen gráfico\n\n─ Estadísticas\nN   Media    Mediana  Desv.Est.  Mínimo  Máximo  IQR\n──  ───────  ───────  ─────────  ──────  ──────  ────\n30  20.2343  20.3     6.2549     10      30.81   9.53\n\n─ Intervalo de confianza para la media\nInferior  Media    Superior\n────────  ───────  ────────\n17.8987   20.2343  22.5699\n\n─ Prueba de normalidad (Anderson-Darling)\nEstadístico  Valor p\n───────────  ───────\n0.363        0.419\n\nGráficos generados: 2 (histogram, boxplot)"
+      },
+      {
+        "args": [
+          "capability"
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Indique al menos un límite de especificación."
+          }
+        }
+      },
+      {
+        "args": [
+          "one-sample-t"
+        ],
+        "expected": "t de 1 muestra\n\n─ Estimación\nN  Media  Desv.Est.  EE media\n─  ─────  ─────────  ────────\n\n─ Prueba\nHipótesis nula  Estadístico t  GL  Valor p\n──────────────  ─────────────  ──  ───────\nμ = 0           17.719         29  <0.001\n\n─ Intervalo de confianza (95.0 %)\nInferior  Media    Superior\n────────  ───────  ────────\n17.8987   20.2343  22.5699\n\n─ Conclusión\nSe rechaza H₀ (p < 0,05). Diferencia estimada: 20.2343"
+      },
+      {
+        "args": [
+          "anova-one-way"
+        ],
+        "expected": "ANOVA de un factor\n\n─ Estadísticas por grupo\nGrupo  N   Media    Desv.Est.\n─────  ──  ───────  ─────────\nA      15  19.9027  6.4473\nB      15  20.566   6.264\n\n─ Tabla ANOVA\nFuente  GL  SC        MC      F      Valor p\n──────  ──  ────────  ──────  ─────  ───────\nFactor  1   3.3       3.3     0.082  0.777\nError   28  1131.274  40.403  *      *\nTotal   29  1134.574  *       *      *\n\n─ R²\nR² = 0.0029 (0.29 %)\n\n─ Comparaciones por pares (Holm)\nGrupo A  Grupo B  Diferencia  EE     t       Valor p  Sig.\n───────  ───────  ──────────  ─────  ──────  ───────  ────\nA        B        -0.6633     2.321  -0.286  0.777    No\n\nGráficos generados: 1 (boxplot)"
+      }
+    ],
+    "sectionToPlainText": [
+      {
+        "args": [
+          {
+            "kind": "table",
+            "title": "Resumen",
+            "headers": [
+              "Variable",
+              "N",
+              "Media",
+              "EE media",
+              "Desv.Est.",
+              "Mínimo",
+              "Q1",
+              "Mediana",
+              "Q3",
+              "Máximo",
+              "IQR",
+              "IC media"
+            ],
+            "rows": [
+              [
+                "Var1",
+                "30",
+                "20.2343",
+                "1.142",
+                "6.2549",
+                "10",
+                "15.7525",
+                "20.3",
+                "25.2825",
+                "30.81",
+                "9.53",
+                "17.8987 – 22.5699"
+              ],
+              [
+                "Var2",
+                "30",
+                "44.8515",
+                "3.2988",
+                "18.068",
+                "15",
+                "31.9525",
+                "46.8",
+                "59.9562",
+                "73.215",
+                "28.0037",
+                "38.1048 – 51.5982"
+              ]
+            ]
+          }
+        ],
+        "expected": "Resumen\nVariable  N   Media    EE media  Desv.Est.  Mínimo  Q1       Mediana  Q3       Máximo  IQR      IC media\n────────  ──  ───────  ────────  ─────────  ──────  ───────  ───────  ───────  ──────  ───────  ─────────────────\nVar1      30  20.2343  1.142     6.2549     10      15.7525  20.3     25.2825  30.81   9.53     17.8987 – 22.5699\nVar2      30  44.8515  3.2988    18.068     15      31.9525  46.8     59.9562  73.215  28.0037  38.1048 – 51.5982"
+      },
+      {
+        "args": [
+          {
+            "kind": "text",
+            "title": "T",
+            "text": "contenido"
+          }
+        ],
+        "expected": "T\ncontenido"
+      }
+    ]
+  }
+}

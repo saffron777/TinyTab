@@ -1,0 +1,459 @@
+{
+  "module": "msa",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "gageRR": [
+      {
+        "args": [
+          [
+            {
+              "part": "P1",
+              "operator": "A",
+              "trial": 1,
+              "value": 10.01
+            },
+            {
+              "part": "P1",
+              "operator": "A",
+              "trial": 2,
+              "value": 10.02
+            },
+            {
+              "part": "P1",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.02
+            },
+            {
+              "part": "P1",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.03
+            },
+            {
+              "part": "P2",
+              "operator": "A",
+              "trial": 1,
+              "value": 10.51
+            },
+            {
+              "part": "P2",
+              "operator": "A",
+              "trial": 2,
+              "value": 10.52
+            },
+            {
+              "part": "P2",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.49
+            },
+            {
+              "part": "P2",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.5
+            },
+            {
+              "part": "P3",
+              "operator": "A",
+              "trial": 1,
+              "value": 11.02
+            },
+            {
+              "part": "P3",
+              "operator": "A",
+              "trial": 2,
+              "value": 11.03
+            },
+            {
+              "part": "P3",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.98
+            },
+            {
+              "part": "P3",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.99
+            }
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "parts": 3,
+            "operators": 2,
+            "trials": 2,
+            "repeatability": 0.007071067811182096,
+            "reproducibility": 0.018027756377119317,
+            "interaction": 0.017078251276632518,
+            "partVariation": 0.49235827063905907,
+            "totalVariation": 0.49273894372849003,
+            "grr": 0.019364916730600774,
+            "percentContribution": 0.15445340654872816,
+            "percentStudy": 3.9300560625610443,
+            "percentTolerance": 3.9300560625610443,
+            "ndc": 35.84963319279586,
+            "table": [
+              {
+                "source": "Pieza",
+                "df": 2,
+                "ss": 1.9406000000001313,
+                "ms": 0.9703000000000657,
+                "f": 1532.052631596945,
+                "p": 19.000000000000007
+              },
+              {
+                "source": "Operador",
+                "df": 1,
+                "ss": 0.000833333333275732,
+                "ms": 0.000833333333275732,
+                "f": 1.3157894736086293,
+                "p": 18.512820512820518
+              },
+              {
+                "source": "Pieza × Operador",
+                "df": 2,
+                "ss": 0.0012666666666518722,
+                "ms": 0.0006333333333259361,
+                "f": 12.666666668967048,
+                "p": 5.143252849784713
+              },
+              {
+                "source": "Repetibilidad",
+                "df": 6,
+                "ss": 0.0002999999999420133,
+                "ms": 0.00004999999999033555,
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              },
+              {
+                "source": "Total",
+                "df": 11,
+                "ss": 1.943000000000001,
+                "ms": {
+                  "$num": "NaN"
+                },
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "part": "P1",
+              "operator": "A",
+              "trial": 1,
+              "value": 10.01
+            },
+            {
+              "part": "P1",
+              "operator": "A",
+              "trial": 2,
+              "value": 10.02
+            },
+            {
+              "part": "P1",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.02
+            },
+            {
+              "part": "P1",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.03
+            },
+            {
+              "part": "P2",
+              "operator": "A",
+              "trial": 1,
+              "value": 10.51
+            },
+            {
+              "part": "P2",
+              "operator": "A",
+              "trial": 2,
+              "value": 10.52
+            },
+            {
+              "part": "P2",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.49
+            },
+            {
+              "part": "P2",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.5
+            },
+            {
+              "part": "P3",
+              "operator": "A",
+              "trial": 1,
+              "value": 11.02
+            },
+            {
+              "part": "P3",
+              "operator": "A",
+              "trial": 2,
+              "value": 11.03
+            },
+            {
+              "part": "P3",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.98
+            },
+            {
+              "part": "P3",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.99
+            }
+          ],
+          0.5
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "parts": 3,
+            "operators": 2,
+            "trials": 2,
+            "repeatability": 0.007071067811182096,
+            "reproducibility": 0.018027756377119317,
+            "interaction": 0.017078251276632518,
+            "partVariation": 0.49235827063905907,
+            "totalVariation": 0.49273894372849003,
+            "grr": 0.019364916730600774,
+            "percentContribution": 0.15445340654872816,
+            "percentStudy": 3.9300560625610443,
+            "percentTolerance": 23.23790007672093,
+            "ndc": 35.84963319279586,
+            "table": [
+              {
+                "source": "Pieza",
+                "df": 2,
+                "ss": 1.9406000000001313,
+                "ms": 0.9703000000000657,
+                "f": 1532.052631596945,
+                "p": 19.000000000000007
+              },
+              {
+                "source": "Operador",
+                "df": 1,
+                "ss": 0.000833333333275732,
+                "ms": 0.000833333333275732,
+                "f": 1.3157894736086293,
+                "p": 18.512820512820518
+              },
+              {
+                "source": "Pieza × Operador",
+                "df": 2,
+                "ss": 0.0012666666666518722,
+                "ms": 0.0006333333333259361,
+                "f": 12.666666668967048,
+                "p": 5.143252849784713
+              },
+              {
+                "source": "Repetibilidad",
+                "df": 6,
+                "ss": 0.0002999999999420133,
+                "ms": 0.00004999999999033555,
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              },
+              {
+                "source": "Total",
+                "df": 11,
+                "ss": 1.943000000000001,
+                "ms": {
+                  "$num": "NaN"
+                },
+                "f": {
+                  "$num": "NaN"
+                },
+                "p": {
+                  "$num": "NaN"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "part": "P1",
+              "operator": "A",
+              "trial": 1,
+              "value": 10.01
+            },
+            {
+              "part": "P1",
+              "operator": "A",
+              "trial": 2,
+              "value": 10.02
+            },
+            {
+              "part": "P1",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.02
+            },
+            {
+              "part": "P1",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.03
+            },
+            {
+              "part": "P2",
+              "operator": "A",
+              "trial": 1,
+              "value": 10.51
+            },
+            {
+              "part": "P2",
+              "operator": "A",
+              "trial": 2,
+              "value": 10.52
+            },
+            {
+              "part": "P2",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.49
+            }
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 8 mediciones."
+          }
+        }
+      }
+    ],
+    "gageStatisticsByOperator": [
+      {
+        "args": [
+          [
+            {
+              "part": "P1",
+              "operator": "A",
+              "trial": 1,
+              "value": 10.01
+            },
+            {
+              "part": "P1",
+              "operator": "A",
+              "trial": 2,
+              "value": 10.02
+            },
+            {
+              "part": "P1",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.02
+            },
+            {
+              "part": "P1",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.03
+            },
+            {
+              "part": "P2",
+              "operator": "A",
+              "trial": 1,
+              "value": 10.51
+            },
+            {
+              "part": "P2",
+              "operator": "A",
+              "trial": 2,
+              "value": 10.52
+            },
+            {
+              "part": "P2",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.49
+            },
+            {
+              "part": "P2",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.5
+            },
+            {
+              "part": "P3",
+              "operator": "A",
+              "trial": 1,
+              "value": 11.02
+            },
+            {
+              "part": "P3",
+              "operator": "A",
+              "trial": 2,
+              "value": 11.03
+            },
+            {
+              "part": "P3",
+              "operator": "B",
+              "trial": 1,
+              "value": 10.98
+            },
+            {
+              "part": "P3",
+              "operator": "B",
+              "trial": 2,
+              "value": 10.99
+            }
+          ]
+        ],
+        "expected": [
+          {
+            "operator": "A",
+            "mean": 10.518333333333333,
+            "sd": 0.4517263183241227,
+            "n": 6
+          },
+          {
+            "operator": "B",
+            "mean": 10.501666666666667,
+            "sd": 0.4293910416702554,
+            "n": 6
+          }
+        ]
+      }
+    ]
+  }
+}

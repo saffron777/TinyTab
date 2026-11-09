@@ -1,0 +1,2475 @@
+{
+  "module": "doe",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "analyzeFactorial": [
+      {
+        "args": [
+          {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 1,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 2,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 4,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 5,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 7,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 0,
+            "seed": 20261023
+          },
+          [
+            12.1,
+            13.4,
+            12.8,
+            14.2,
+            12.5,
+            13.8,
+            13.1,
+            14.6
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "terms": [
+              "Constante",
+              "A",
+              "B",
+              "C",
+              "A*B",
+              "A*C",
+              "B*C"
+            ],
+            "coefficients": [
+              13.3125,
+              0.18750000000000064,
+              0.3625000000000003,
+              0.6875000000000004,
+              -0.012500000000000695,
+              0.01249999999999971,
+              0.03749999999999924
+            ],
+            "standardErrors": [
+              0.01250000000000018,
+              0.01250000000000018,
+              0.01250000000000018,
+              0.01250000000000018,
+              0.01250000000000018,
+              0.01250000000000018,
+              0.01250000000000018
+            ],
+            "t": [
+              1064.9999999999848,
+              14.999999999999837,
+              28.99999999999961,
+              54.99999999999925,
+              -1.0000000000000413,
+              0.9999999999999624,
+              2.9999999999998965
+            ],
+            "pValues": [
+              0.0005977648688015869,
+              0.04237860926989323,
+              0.02194371123202221,
+              0.011573629733444335,
+              0.4999999999999868,
+              0.5000000000000118,
+              0.20483276469914014
+            ],
+            "effects": [
+              0.3750000000000013,
+              0.7250000000000006,
+              1.3750000000000009,
+              -0.02500000000000139,
+              0.02499999999999942,
+              0.07499999999999848
+            ],
+            "rSquared": 0.999756275895686,
+            "fitted": [
+              12.112499999999997,
+              13.3875,
+              12.787500000000001,
+              14.212500000000002,
+              12.4875,
+              13.8125,
+              13.1125,
+              14.587499999999999
+            ],
+            "residuals": [
+              -0.012499999999997513,
+              0.012500000000001066,
+              0.01249999999999929,
+              -0.012500000000002842,
+              0.01249999999999929,
+              -0.01249999999999929,
+              -0.012500000000001066,
+              0.012500000000001066
+            ]
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 3,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 2,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 4,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 5,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 7,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 0,
+            "seed": 20261023
+          },
+          [
+            12.1,
+            13.4,
+            12.8,
+            14.2,
+            12.5,
+            13.8,
+            13.1,
+            14.6
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "terms": [
+              "Constante",
+              "A",
+              "B",
+              "C",
+              "A*B",
+              "A*C",
+              "B*C"
+            ],
+            "coefficients": [
+              13.3125,
+              0.18750000000000056,
+              0.18749999999999922,
+              0.16249999999999967,
+              0.16250000000000053,
+              0.5375000000000005,
+              -0.3125000000000003
+            ],
+            "standardErrors": [
+              0.3624999999999998,
+              0.3624999999999998,
+              0.3624999999999998,
+              0.3624999999999998,
+              0.3624999999999998,
+              0.3624999999999998,
+              0.3624999999999998
+            ],
+            "t": [
+              36.7241379310345,
+              0.5172413793103466,
+              0.517241379310343,
+              0.44827586206896486,
+              0.4482758620689672,
+              1.4827586206896575,
+              -0.8620689655172425
+            ],
+            "pValues": [
+              0.017330903656549435,
+              0.696112491332556,
+              0.696112491332558,
+              0.7317162004397597,
+              0.7317162004397584,
+              0.37773843498056037,
+              0.5470710533228761
+            ],
+            "effects": [
+              0.3750000000000011,
+              0.37499999999999845,
+              0.32499999999999934,
+              0.32500000000000107,
+              1.075000000000001,
+              -0.6250000000000006
+            ],
+            "rSquared": 0.7950280282719963,
+            "fitted": [
+              12.462499999999999,
+              13.037499999999998,
+              13.162500000000001,
+              13.837500000000002,
+              12.1375,
+              14.162500000000001,
+              13.462499999999999,
+              14.2375
+            ],
+            "residuals": [
+              -0.36249999999999893,
+              0.3625000000000025,
+              -0.3625000000000007,
+              0.36249999999999716,
+              0.3625000000000007,
+              -0.3625000000000007,
+              -0.36249999999999893,
+              0.36249999999999893
+            ]
+          }
+        }
+      },
+      {
+        "args": [
+          {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 1,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 2,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 4,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 5,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 7,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 0,
+            "seed": 20261023
+          },
+          [
+            12.1,
+            13.4,
+            12.8,
+            14.2
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "La respuesta debe tener una fila por corrida."
+          }
+        }
+      }
+    ],
+    "createCcd": [
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "B",
+              "low": -1,
+              "high": 1
+            }
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "type": "ccd",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 4,
+                "runOrder": 1,
+                "coded": [
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 2,
+                "coded": [
+                  1.4142135623730951,
+                  0
+                ],
+                "actual": [
+                  1.4142135623730951,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 3,
+                "coded": [
+                  0,
+                  -1.4142135623730951
+                ],
+                "actual": [
+                  0,
+                  -1.4142135623730951
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 4,
+                "coded": [
+                  -1.4142135623730951,
+                  0
+                ],
+                "actual": [
+                  -1.4142135623730951,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 5,
+                "coded": [
+                  0,
+                  1.4142135623730951
+                ],
+                "actual": [
+                  0,
+                  1.4142135623730951
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 6,
+                "coded": [
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 7,
+                "coded": [
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 10,
+                "runOrder": 9,
+                "coded": [
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 9,
+                "runOrder": 10,
+                "coded": [
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 11,
+                "runOrder": 11,
+                "coded": [
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 3,
+            "seed": 20261023
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "B",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "C",
+              "low": -1,
+              "high": 1
+            }
+          ],
+          {
+            "centerPoints": 2,
+            "seed": 5
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "type": "ccd",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 13,
+                "runOrder": 1,
+                "coded": [
+                  0,
+                  0,
+                  -1.681792830507429
+                ],
+                "actual": [
+                  0,
+                  0,
+                  -1.681792830507429
+                ]
+              },
+              {
+                "standardOrder": 12,
+                "runOrder": 2,
+                "coded": [
+                  0,
+                  1.681792830507429,
+                  0
+                ],
+                "actual": [
+                  0,
+                  1.681792830507429,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 4,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 5,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 9,
+                "runOrder": 6,
+                "coded": [
+                  -1.681792830507429,
+                  0,
+                  0
+                ],
+                "actual": [
+                  -1.681792830507429,
+                  0,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 7,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 15,
+                "runOrder": 8,
+                "coded": [
+                  0,
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 9,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 14,
+                "runOrder": 10,
+                "coded": [
+                  0,
+                  0,
+                  1.681792830507429
+                ],
+                "actual": [
+                  0,
+                  0,
+                  1.681792830507429
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 11,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 12,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 13,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 10,
+                "runOrder": 14,
+                "coded": [
+                  1.681792830507429,
+                  0,
+                  0
+                ],
+                "actual": [
+                  1.681792830507429,
+                  0,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 11,
+                "runOrder": 15,
+                "coded": [
+                  0,
+                  -1.681792830507429,
+                  0
+                ],
+                "actual": [
+                  0,
+                  -1.681792830507429,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 16,
+                "runOrder": 16,
+                "coded": [
+                  0,
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 2,
+            "seed": 5
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            }
+          ],
+          {}
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "El diseño compuesto central admite entre 2 y 5 factores."
+          }
+        }
+      }
+    ],
+    "createFactorialDesign": [
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "B",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "C",
+              "low": -1,
+              "high": 1
+            }
+          ],
+          {
+            "replicates": 1,
+            "centerPoints": 0,
+            "seed": 20261023,
+            "randomize": false
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 1,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 2,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 4,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 5,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 7,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 0,
+            "seed": 20261023
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "B",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "C",
+              "low": -1,
+              "high": 1
+            }
+          ],
+          {
+            "seed": 20261023
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 3,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 2,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 4,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 5,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 7,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 0,
+            "seed": 20261023
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "B",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "C",
+              "low": -1,
+              "high": 1
+            }
+          ],
+          {
+            "replicates": 2,
+            "centerPoints": 2,
+            "seed": 7
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 4,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 2,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 18,
+                "runOrder": 3,
+                "coded": [
+                  0,
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 4,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 5,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 7,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 8,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 9,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 10,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 11,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 12,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 13,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 17,
+                "runOrder": 14,
+                "coded": [
+                  0,
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 15,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 16,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 17,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 18,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              }
+            ],
+            "replicateCount": 2,
+            "centerPoints": 2,
+            "seed": 7
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            }
+          ],
+          {
+            "seed": 1
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 1,
+                "runOrder": 1,
+                "coded": [
+                  -1
+                ],
+                "actual": [
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 2,
+                "coded": [
+                  1
+                ],
+                "actual": [
+                  1
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 0,
+            "seed": 1
+          }
+        }
+      },
+      {
+        "args": [
+          [],
+          {}
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Se admiten entre 1 y 8 factores."
+          }
+        }
+      }
+    ],
+    "createPlackettBurman": [
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "B",
+              "low": -1,
+              "high": 1
+            },
+            {
+              "name": "C",
+              "low": -1,
+              "high": 1
+            }
+          ],
+          20261023
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "type": "plackett-burman",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 2,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 2,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 4,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 5,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 9,
+                "runOrder": 7,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 9,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 11,
+                "runOrder": 10,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 10,
+                "runOrder": 11,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 12,
+                "runOrder": 12,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 0,
+            "seed": 20261023
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "name": "A",
+              "low": -1,
+              "high": 1
+            }
+          ],
+          1
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "Plackett-Burman admite entre 2 y 11 factores."
+          }
+        }
+      }
+    ],
+    "designSummary": [
+      {
+        "args": [
+          {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 1,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 2,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 4,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 5,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 7,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              }
+            ],
+            "replicateCount": 1,
+            "centerPoints": 0,
+            "seed": 20261023
+          }
+        ],
+        "expected": {
+          "runs": 8,
+          "factors": 3,
+          "type": "factorial",
+          "centerPoints": 0
+        }
+      },
+      {
+        "args": [
+          {
+            "type": "factorial",
+            "factors": [
+              {
+                "name": "A",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "B",
+                "low": -1,
+                "high": 1
+              },
+              {
+                "name": "C",
+                "low": -1,
+                "high": 1
+              }
+            ],
+            "runs": [
+              {
+                "standardOrder": 2,
+                "runOrder": 1,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 2,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 3,
+                "runOrder": 3,
+                "coded": [
+                  -1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 4,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 5,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 6,
+                "runOrder": 6,
+                "coded": [
+                  1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 18,
+                "runOrder": 7,
+                "coded": [
+                  0,
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 8,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 9,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 2,
+                "runOrder": 10,
+                "coded": [
+                  -1,
+                  -1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 11,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 12,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 4,
+                "runOrder": 13,
+                "coded": [
+                  -1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  -1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 1,
+                "runOrder": 14,
+                "coded": [
+                  -1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  -1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 5,
+                "runOrder": 15,
+                "coded": [
+                  1,
+                  -1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 7,
+                "runOrder": 16,
+                "coded": [
+                  1,
+                  1,
+                  -1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  -1
+                ]
+              },
+              {
+                "standardOrder": 8,
+                "runOrder": 17,
+                "coded": [
+                  1,
+                  1,
+                  1
+                ],
+                "actual": [
+                  1,
+                  1,
+                  1
+                ]
+              },
+              {
+                "standardOrder": 17,
+                "runOrder": 18,
+                "coded": [
+                  0,
+                  0,
+                  0
+                ],
+                "actual": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "replicateCount": 2,
+            "centerPoints": 2,
+            "seed": 20261023
+          }
+        ],
+        "expected": {
+          "runs": 18,
+          "factors": 3,
+          "type": "factorial",
+          "centerPoints": 2
+        }
+      }
+    ]
+  }
+}

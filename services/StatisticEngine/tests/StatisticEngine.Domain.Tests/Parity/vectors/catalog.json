@@ -1,0 +1,1899 @@
+{
+  "module": "catalog",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "ALL_ANALYSES": [
+      {
+        "args": [],
+        "expected": [
+          {
+            "id": "describe",
+            "label": "Estadísticas descriptivas",
+            "category": "Estadísticas básicas",
+            "description": "Media, desviación estándar, cuartiles, intervalo de confianza y pruebas de normalidad.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variables",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "confidence",
+                "label": "Nivel de confianza",
+                "kind": "number",
+                "defaultValue": 0.95,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "graphical-summary",
+            "label": "Resumen gráfico",
+            "category": "Estadísticas básicas",
+            "description": "Resumen descriptivo con histograma, prueba de normalidad e intervalo de confianza.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variable",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "confidence",
+                "label": "Nivel de confianza",
+                "kind": "number",
+                "defaultValue": 0.95,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "correlation",
+            "label": "Correlación",
+            "category": "Estadísticas básicas",
+            "description": "Matriz de correlaciones de Pearson entre dos o más variables.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variables",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "covariance",
+            "label": "Covarianza",
+            "category": "Estadísticas básicas",
+            "description": "Matriz de covarianzas entre dos o más variables.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variables",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "tally",
+            "label": "Tally individual variables",
+            "category": "Tablas",
+            "description": "Conteo, porcentaje y porcentaje acumulado por categoría.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variable numérica (opcional)",
+                "required": false,
+                "multiple": false
+              }
+            ],
+            "textColumns": [
+              {
+                "key": "t",
+                "label": "Variable de texto (opcional)",
+                "required": false,
+                "multiple": false
+              }
+            ],
+            "params": []
+          },
+          {
+            "id": "cross-tab",
+            "label": "Tabla cruzada y chi-cuadrado",
+            "category": "Tablas",
+            "description": "Tabla de contingencia con prueba de independencia chi-cuadrado.",
+            "numericColumns": [],
+            "textColumns": [
+              {
+                "key": "row",
+                "label": "Variable de fila",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "column",
+                "label": "Variable de columna",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "params": []
+          },
+          {
+            "id": "normality",
+            "label": "Prueba de normalidad",
+            "category": "Estadísticas básicas",
+            "description": "Prueba de Anderson-Darling para la normalidad de los datos.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variable",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "probability-distribution",
+            "label": "Distribución de probabilidad",
+            "category": "Distribuciones",
+            "description": "Funciones de densidad, acumulada e inversa para 21 distribuciones.",
+            "numericColumns": [],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "distribution",
+                "label": "Distribución",
+                "kind": "select",
+                "defaultValue": "normal",
+                "options": [
+                  {
+                    "value": "normal",
+                    "label": "Normal"
+                  },
+                  {
+                    "value": "t",
+                    "label": "t de Student"
+                  },
+                  {
+                    "value": "chi2",
+                    "label": "Chi-cuadrada"
+                  },
+                  {
+                    "value": "f",
+                    "label": "F de Fisher"
+                  },
+                  {
+                    "value": "gamma",
+                    "label": "Gamma"
+                  },
+                  {
+                    "value": "beta",
+                    "label": "Beta"
+                  },
+                  {
+                    "value": "exponential",
+                    "label": "Exponencial"
+                  },
+                  {
+                    "value": "weibull",
+                    "label": "Weibull"
+                  },
+                  {
+                    "value": "lognormal",
+                    "label": "Log-normal"
+                  },
+                  {
+                    "value": "uniform",
+                    "label": "Uniforme continua"
+                  },
+                  {
+                    "value": "logistic",
+                    "label": "Logística"
+                  },
+                  {
+                    "value": "cauchy",
+                    "label": "Cauchy"
+                  },
+                  {
+                    "value": "laplace",
+                    "label": "Laplace"
+                  },
+                  {
+                    "value": "triangular",
+                    "label": "Triangular"
+                  },
+                  {
+                    "value": "smallestExtreme",
+                    "label": "Valor extremo menor (Gumbel)"
+                  },
+                  {
+                    "value": "largestExtreme",
+                    "label": "Valor extremo mayor (Gumbel)"
+                  },
+                  {
+                    "value": "foldedNormal",
+                    "label": "Normal plegada"
+                  },
+                  {
+                    "value": "binomial",
+                    "label": "Binomial"
+                  },
+                  {
+                    "value": "poisson",
+                    "label": "Poisson"
+                  },
+                  {
+                    "value": "hypergeometric",
+                    "label": "Hipergeométrica"
+                  },
+                  {
+                    "value": "negativeBinomial",
+                    "label": "Binomial negativa"
+                  }
+                ],
+                "optional": false
+              },
+              {
+                "key": "x",
+                "label": "Valor de x",
+                "kind": "number",
+                "defaultValue": 1,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "p",
+                "label": "Probabilidad acumulada",
+                "kind": "number",
+                "defaultValue": 0.95,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "one-sample-t",
+            "label": "t de 1 muestra",
+            "category": "Pruebas de hipótesis",
+            "description": "Contraste de la media de una población contra un valor de referencia.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Muestra",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "mu",
+                "label": "Media hipotética (H₀)",
+                "kind": "number",
+                "defaultValue": 0,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "confidence",
+                "label": "Nivel de confianza",
+                "kind": "number",
+                "defaultValue": 0.95,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "alternative",
+                "label": "Hipótesis alternativa",
+                "kind": "select",
+                "defaultValue": "two-sided",
+                "options": [
+                  {
+                    "value": "two-sided",
+                    "label": "≠"
+                  },
+                  {
+                    "value": "less",
+                    "label": "<"
+                  },
+                  {
+                    "value": "greater",
+                    "label": ">"
+                  }
+                ],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "one-sample-z",
+            "label": "Z de 1 muestra",
+            "category": "Pruebas de hipótesis",
+            "description": "Contraste de la media con σ conocida.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Muestra",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "sigma",
+                "label": "σ conocida",
+                "kind": "number",
+                "defaultValue": 1,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "mu",
+                "label": "Media hipotética",
+                "kind": "number",
+                "defaultValue": 0,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "two-sample-t",
+            "label": "t de 2 muestras",
+            "category": "Pruebas de hipótesis",
+            "description": "Comparación de medias de dos muestras independientes (Welch o varianzas agrupadas).",
+            "numericColumns": [
+              {
+                "key": "x1",
+                "label": "Muestra 1",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x2",
+                "label": "Muestra 2",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "pooled",
+                "label": "Asumir varianzas iguales",
+                "kind": "select",
+                "defaultValue": "false",
+                "options": [
+                  {
+                    "value": "false",
+                    "label": "No"
+                  },
+                  {
+                    "value": "true",
+                    "label": "Sí"
+                  }
+                ],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "paired-t",
+            "label": "t pareada",
+            "category": "Pruebas de hipótesis",
+            "description": "Contraste de medias en observaciones pareadas.",
+            "numericColumns": [
+              {
+                "key": "x1",
+                "label": "Muestra 1",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x2",
+                "label": "Muestra 2",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "one-proportion",
+            "label": "Proporción de 1 muestra",
+            "category": "Pruebas de hipótesis",
+            "description": "Contraste de una proporción con aproximación normal e intervalo de Wilson.",
+            "numericColumns": [],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "successes",
+                "label": "Éxitos",
+                "kind": "integer",
+                "defaultValue": 10,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "trials",
+                "label": "Ensayos",
+                "kind": "integer",
+                "defaultValue": 40,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "p0",
+                "label": "Proporción nula",
+                "kind": "number",
+                "defaultValue": 0.5,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "two-proportions",
+            "label": "Proporción de 2 muestras",
+            "category": "Pruebas de hipótesis",
+            "description": "Comparación de dos proporciones independientes.",
+            "numericColumns": [],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "x1",
+                "label": "Éxitos muestra 1",
+                "kind": "integer",
+                "defaultValue": 12,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "n1",
+                "label": "Ensayos muestra 1",
+                "kind": "integer",
+                "defaultValue": 50,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "x2",
+                "label": "Éxitos muestra 2",
+                "kind": "integer",
+                "defaultValue": 18,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "n2",
+                "label": "Ensayos muestra 2",
+                "kind": "integer",
+                "defaultValue": 50,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "one-variance",
+            "label": "Varianza de 1 muestra",
+            "category": "Pruebas de hipótesis",
+            "description": "Contraste de una varianza contra un valor de referencia.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Muestra",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "sigma0",
+                "label": "Desviación hipotética (σ₀)",
+                "kind": "number",
+                "defaultValue": 1,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "two-variances",
+            "label": "Varianza de 2 muestras",
+            "category": "Pruebas de hipótesis",
+            "description": "Comparación de dos varianzas mediante la prueba F.",
+            "numericColumns": [
+              {
+                "key": "x1",
+                "label": "Muestra 1",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x2",
+                "label": "Muestra 2",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "chi-square-gof",
+            "label": "Chi-cuadrado de bondad de ajuste",
+            "category": "Tablas",
+            "description": "Compara frecuencias observadas con proporciones esperadas iguales.",
+            "numericColumns": [
+              {
+                "key": "counts",
+                "label": "Frecuencias observadas",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [
+              {
+                "key": "labels",
+                "label": "Etiquetas (opcional)",
+                "required": false,
+                "multiple": false
+              }
+            ],
+            "params": []
+          },
+          {
+            "id": "equivalence-tost",
+            "label": "Prueba de equivalencia (TOST)",
+            "category": "Pruebas de hipótesis",
+            "description": "Dos pruebas t de una cola para demostrar equivalencia con un margen.",
+            "numericColumns": [
+              {
+                "key": "x1",
+                "label": "Muestra 1",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x2",
+                "label": "Muestra 2",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "margin",
+                "label": "Margen de equivalencia",
+                "kind": "number",
+                "defaultValue": 1,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "anova-one-way",
+            "label": "ANOVA de un factor",
+            "category": "ANOVA",
+            "description": "Comparación de medias entre niveles de un factor, con comparaciones múltiples.",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [
+              {
+                "key": "factor",
+                "label": "Factor",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "params": [
+              {
+                "key": "posthoc",
+                "label": "Comparaciones por pares (Holm)",
+                "kind": "select",
+                "defaultValue": "true",
+                "options": [
+                  {
+                    "value": "true",
+                    "label": "Sí"
+                  },
+                  {
+                    "value": "false",
+                    "label": "No"
+                  }
+                ],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "anova-two-way",
+            "label": "ANOVA de dos factores",
+            "category": "ANOVA",
+            "description": "Modelo aditivo de dos factores (sin interacción).",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [
+              {
+                "key": "a",
+                "label": "Factor A",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "b",
+                "label": "Factor B",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "params": []
+          },
+          {
+            "id": "equal-variances",
+            "label": "Prueba de igualdad de varianzas",
+            "category": "ANOVA",
+            "description": "Pruebas de Levene y Bartlett sobre los grupos de un factor.",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [
+              {
+                "key": "factor",
+                "label": "Factor",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "params": []
+          },
+          {
+            "id": "regression-multiple",
+            "label": "Regresión múltiple",
+            "category": "Regresión",
+            "description": "Ajuste por mínimos cuadrados (QR) con diagnóstico de residuos y VIF.",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x",
+                "label": "Predictores",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "regression-stepwise",
+            "label": "Regresión stepwise",
+            "category": "Regresión",
+            "description": "Selección de predictores por AIC (forward/backward).",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x",
+                "label": "Predictores",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "direction",
+                "label": "Dirección",
+                "kind": "select",
+                "defaultValue": "forward",
+                "options": [
+                  {
+                    "value": "forward",
+                    "label": "Forward"
+                  },
+                  {
+                    "value": "backward",
+                    "label": "Backward"
+                  }
+                ],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "regression-best-subsets",
+            "label": "Mejores subconjuntos",
+            "category": "Regresión",
+            "description": "Modelos con mayor R² ajustado hasta 4 predictores.",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x",
+                "label": "Predictores",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "regression-logistic",
+            "label": "Regresión logística binaria",
+            "category": "Regresión",
+            "description": "Modelo logit ajustado por IRLS con desviación y AIC.",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta 0/1",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x",
+                "label": "Predictores",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "regression-poisson",
+            "label": "Regresión de Poisson",
+            "category": "Regresión",
+            "description": "Modelo log-lineal para respuestas de conteo (IRLS).",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Conteo",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x",
+                "label": "Predictores",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "chart-xbar-r",
+            "label": "Carta X̄-R",
+            "category": "Control de calidad",
+            "description": "Cartas de medias y rangos para subgrupos de tamaño constante.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Mediciones (por subgrupos consecutivos)",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "size",
+                "label": "Tamaño del subgrupo",
+                "kind": "integer",
+                "defaultValue": 5,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "chart-imr",
+            "label": "Carta I-MR",
+            "category": "Control de calidad",
+            "description": "Carta de individuos y rango móvil.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Observaciones",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "chart-p",
+            "label": "Carta P",
+            "category": "Control de calidad",
+            "description": "Proporción de defectuosos con subgrupos de distinto tamaño.",
+            "numericColumns": [
+              {
+                "key": "defective",
+                "label": "Defectuosos",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "sample",
+                "label": "Tamaño de muestra",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "chart-c",
+            "label": "Carta C",
+            "category": "Control de calidad",
+            "description": "Número de defectos por unidad constante.",
+            "numericColumns": [
+              {
+                "key": "defects",
+                "label": "Defectos",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "chart-u",
+            "label": "Carta U",
+            "category": "Control de calidad",
+            "description": "Defectos por unidad cuando el tamaño de la unidad varía.",
+            "numericColumns": [
+              {
+                "key": "defects",
+                "label": "Defectos",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "units",
+                "label": "Unidades inspeccionadas",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "chart-ewma",
+            "label": "Carta EWMA",
+            "category": "Control de calidad",
+            "description": "Media móvil exponencialmente ponderada.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Observaciones",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "lambda",
+                "label": "Peso λ",
+                "kind": "number",
+                "defaultValue": 0.2,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "chart-cusum",
+            "label": "Carta CUSUM",
+            "category": "Control de calidad",
+            "description": "Sumas acumuladas tabulares (k = 0,5).",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Observaciones",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "k",
+                "label": "Valor de referencia k",
+                "kind": "number",
+                "defaultValue": 0.5,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "capability",
+            "label": "Análisis de capacidad",
+            "category": "Capacidad",
+            "description": "Cp, Cpk, Pp, Ppk y PPM esperados.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Mediciones",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "lsl",
+                "label": "Límite inferior (vacío = sin límite)",
+                "kind": "number",
+                "defaultValue": "",
+                "options": [],
+                "optional": true
+              },
+              {
+                "key": "usl",
+                "label": "Límite superior (vacío = sin límite)",
+                "kind": "number",
+                "defaultValue": "",
+                "options": [],
+                "optional": true
+              },
+              {
+                "key": "method",
+                "label": "Método",
+                "kind": "select",
+                "defaultValue": "normal",
+                "options": [
+                  {
+                    "value": "normal",
+                    "label": "Normal"
+                  },
+                  {
+                    "value": "nonnormal",
+                    "label": "No normal (empírico)"
+                  }
+                ],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "gage-rr",
+            "label": "Gage R&R (cruzado)",
+            "category": "Sistemas de medida",
+            "description": "Estudio de repetibilidad y reproducibilidad por ANOVA.",
+            "numericColumns": [
+              {
+                "key": "value",
+                "label": "Medición",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [
+              {
+                "key": "part",
+                "label": "Pieza",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "operator",
+                "label": "Operador",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "params": [
+              {
+                "key": "trial",
+                "label": "Columna de repetición (opcional)",
+                "kind": "number",
+                "defaultValue": "",
+                "options": [],
+                "optional": true
+              }
+            ]
+          },
+          {
+            "id": "doe-analyze",
+            "label": "Analizar diseño factorial (efectos)",
+            "category": "DOE",
+            "description": "Ajusta un modelo con factores codificados (−1/+1) y sus interacciones de 2 vías.",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x",
+                "label": "Factores codificados",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "timeseries-acf",
+            "label": "Función de autocorrelación (ACF)",
+            "category": "Series temporales",
+            "description": "Autocorrelaciones y banda de confianza.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Serie",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "lags",
+                "label": "Número de rezagos",
+                "kind": "integer",
+                "defaultValue": 20,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "timeseries-pacf",
+            "label": "Autocorrelación parcial (PACF)",
+            "category": "Series temporales",
+            "description": "PACF por Durbin-Levinson.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Serie",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "lags",
+                "label": "Número de rezagos",
+                "kind": "integer",
+                "defaultValue": 20,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "timeseries-moving-average",
+            "label": "Media móvil",
+            "category": "Series temporales",
+            "description": "Suavizado por media móvil centrada.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Serie",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "window",
+                "label": "Ventana",
+                "kind": "integer",
+                "defaultValue": 3,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "timeseries-ses",
+            "label": "Suavizado exponencial simple",
+            "category": "Series temporales",
+            "description": "Suavizado exponencial simple con pronóstico a un paso.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Serie",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "alpha",
+                "label": "α",
+                "kind": "number",
+                "defaultValue": 0.2,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "timeseries-des",
+            "label": "Suavizado exponencial doble",
+            "category": "Series temporales",
+            "description": "Suavizado de Holt (nivel y tendencia).",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Serie",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "alpha",
+                "label": "α",
+                "kind": "number",
+                "defaultValue": 0.2,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "beta",
+                "label": "β",
+                "kind": "number",
+                "defaultValue": 0.1,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "timeseries-winters",
+            "label": "Suavizado de Winters",
+            "category": "Series temporales",
+            "description": "Suavizado estacional (nivel, tendencia y estacionalidad).",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Serie",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "period",
+                "label": "Periodo estacional",
+                "kind": "integer",
+                "defaultValue": 12,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "alpha",
+                "label": "α",
+                "kind": "number",
+                "defaultValue": 0.2,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "beta",
+                "label": "β",
+                "kind": "number",
+                "defaultValue": 0.1,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "gamma",
+                "label": "γ",
+                "kind": "number",
+                "defaultValue": 0.1,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "timeseries-decompose",
+            "label": "Descomposición estacional",
+            "category": "Series temporales",
+            "description": "Tendencia por media móvil centrada y patrón estacional.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Serie",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "period",
+                "label": "Periodo",
+                "kind": "integer",
+                "defaultValue": 12,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "timeseries-ar",
+            "label": "Modelo AR y pronóstico",
+            "category": "Series temporales",
+            "description": "Ajuste AR(p) por Yule-Walker con selección AIC y Ljung-Box.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Serie",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "order",
+                "label": "Orden máximo",
+                "kind": "integer",
+                "defaultValue": 3,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "horizon",
+                "label": "Horizonte de pronóstico",
+                "kind": "integer",
+                "defaultValue": 5,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "reliability-weibull",
+            "label": "Ajuste de distribución Weibull",
+            "category": "Fiabilidad",
+            "description": "Estimación por máxima verosimilitud y gráfico de probabilidad.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Tiempos de falla",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "reliability-kaplan-meier",
+            "label": "Kaplan-Meier",
+            "category": "Fiabilidad",
+            "description": "Curva de supervivencia con censura.",
+            "numericColumns": [
+              {
+                "key": "time",
+                "label": "Tiempo",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "event",
+                "label": "Evento observado (columna 0/1 opcional)",
+                "kind": "number",
+                "defaultValue": "",
+                "options": [],
+                "optional": true
+              }
+            ]
+          },
+          {
+            "id": "multivariate-pca",
+            "label": "Análisis de componentes principales",
+            "category": "Multivariante",
+            "description": "PCA sobre la matriz de correlaciones con cargas y puntuaciones.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variables",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "multivariate-factor",
+            "label": "Análisis factorial",
+            "category": "Multivariante",
+            "description": "Extracción por componentes principales con rotación varimax.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variables",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "factors",
+                "label": "Número de factores",
+                "kind": "integer",
+                "defaultValue": 2,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "multivariate-kmeans",
+            "label": "Análisis de conglomerados K-means",
+            "category": "Multivariante",
+            "description": "Agrupamiento k-means++ sobre variables estandarizadas.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variables",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "k",
+                "label": "Número de grupos",
+                "kind": "integer",
+                "defaultValue": 3,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "multivariate-lda",
+            "label": "Análisis discriminante (2 grupos)",
+            "category": "Multivariante",
+            "description": "Función discriminante lineal y exactitud de clasificación.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Variables",
+                "required": true,
+                "multiple": true
+              }
+            ],
+            "textColumns": [
+              {
+                "key": "group",
+                "label": "Grupo (2 niveles)",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "params": []
+          },
+          {
+            "id": "power-t1",
+            "label": "Potencia y tamaño de muestra (t de 1 muestra)",
+            "category": "Potencia y tamaño de muestra",
+            "description": "Potencia para un efecto y n dados, y n necesario para una potencia objetivo.",
+            "numericColumns": [],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "effect",
+                "label": "Tamaño del efecto (d)",
+                "kind": "number",
+                "defaultValue": 0.5,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "n",
+                "label": "Tamaño de muestra",
+                "kind": "integer",
+                "defaultValue": 20,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "power",
+                "label": "Potencia objetivo",
+                "kind": "number",
+                "defaultValue": 0.8,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "alpha",
+                "label": "α",
+                "kind": "number",
+                "defaultValue": 0.05,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "power-prop1",
+            "label": "Potencia y tamaño de muestra (proporción)",
+            "category": "Potencia y tamaño de muestra",
+            "description": "Potencia para una prueba de una proporción.",
+            "numericColumns": [],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "p0",
+                "label": "Proporción nula",
+                "kind": "number",
+                "defaultValue": 0.5,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "p1",
+                "label": "Proporción alternativa",
+                "kind": "number",
+                "defaultValue": 0.6,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "n",
+                "label": "Tamaño de muestra",
+                "kind": "integer",
+                "defaultValue": 100,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "power",
+                "label": "Potencia objetivo",
+                "kind": "number",
+                "defaultValue": 0.8,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "power-anova1",
+            "label": "Potencia y tamaño de muestra (ANOVA de 1 factor)",
+            "category": "Potencia y tamaño de muestra",
+            "description": "Aproximación para k grupos con efecto f de Cohen.",
+            "numericColumns": [],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "effect",
+                "label": "Tamaño del efecto (f)",
+                "kind": "number",
+                "defaultValue": 0.25,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "groups",
+                "label": "Número de grupos",
+                "kind": "integer",
+                "defaultValue": 3,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "n",
+                "label": "n por grupo",
+                "kind": "integer",
+                "defaultValue": 20,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "power-t2",
+            "label": "Tamaño de muestra (t de 2 muestras)",
+            "category": "Potencia y tamaño de muestra",
+            "description": "n por grupo para detectar un efecto con potencia objetivo.",
+            "numericColumns": [],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "effect",
+                "label": "Tamaño del efecto (d)",
+                "kind": "number",
+                "defaultValue": 0.5,
+                "options": [],
+                "optional": false
+              },
+              {
+                "key": "power",
+                "label": "Potencia objetivo",
+                "kind": "number",
+                "defaultValue": 0.8,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "nonparam-sign",
+            "label": "Prueba de los signos",
+            "category": "No paramétricos",
+            "description": "Contraste de la mediana mediante la distribución binomial.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Muestra",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "median",
+                "label": "Mediana nula",
+                "kind": "number",
+                "defaultValue": 0,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "nonparam-wilcoxon",
+            "label": "Wilcoxon de rangos con signo",
+            "category": "No paramétricos",
+            "description": "Prueba no paramétrica para muestras pareadas o una muestra.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Muestra",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": [
+              {
+                "key": "median",
+                "label": "Mediana nula",
+                "kind": "number",
+                "defaultValue": 0,
+                "options": [],
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "nonparam-mann-whitney",
+            "label": "Mann-Whitney",
+            "category": "No paramétricos",
+            "description": "Comparación de dos muestras independientes por rangos.",
+            "numericColumns": [
+              {
+                "key": "x1",
+                "label": "Muestra 1",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "x2",
+                "label": "Muestra 2",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "nonparam-kruskal-wallis",
+            "label": "Kruskal-Wallis",
+            "category": "No paramétricos",
+            "description": "Comparación de k muestras independientes por rangos.",
+            "numericColumns": [
+              {
+                "key": "y",
+                "label": "Respuesta",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [
+              {
+                "key": "factor",
+                "label": "Factor",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "params": []
+          },
+          {
+            "id": "nonparam-runs",
+            "label": "Prueba de rachas",
+            "category": "No paramétricos",
+            "description": "Aleatoriedad de una secuencia alrededor de la mediana.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "Secuencia",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          },
+          {
+            "id": "nonparam-spearman",
+            "label": "Correlación de Spearman",
+            "category": "No paramétricos",
+            "description": "Correlación de rangos entre dos variables.",
+            "numericColumns": [
+              {
+                "key": "x",
+                "label": "X",
+                "required": true,
+                "multiple": false
+              },
+              {
+                "key": "y",
+                "label": "Y",
+                "required": true,
+                "multiple": false
+              }
+            ],
+            "textColumns": [],
+            "params": []
+          }
+        ]
+      }
+    ],
+    "ANALYSIS_CATEGORIES": [
+      {
+        "args": [],
+        "expected": [
+          "Estadísticas básicas",
+          "Distribuciones",
+          "Tablas",
+          "Pruebas de hipótesis",
+          "No paramétricos",
+          "ANOVA",
+          "Regresión",
+          "Control de calidad",
+          "Capacidad",
+          "Sistemas de medida",
+          "DOE",
+          "Series temporales",
+          "Fiabilidad",
+          "Multivariante",
+          "Potencia y tamaño de muestra"
+        ]
+      }
+    ],
+    "analysesByCategory": [
+      {
+        "args": [],
+        "expected": [
+          {
+            "category": "Estadísticas básicas",
+            "ids": [
+              "describe",
+              "graphical-summary",
+              "correlation",
+              "covariance",
+              "normality"
+            ]
+          },
+          {
+            "category": "Distribuciones",
+            "ids": [
+              "probability-distribution"
+            ]
+          },
+          {
+            "category": "Tablas",
+            "ids": [
+              "tally",
+              "cross-tab",
+              "chi-square-gof"
+            ]
+          },
+          {
+            "category": "Pruebas de hipótesis",
+            "ids": [
+              "one-sample-t",
+              "one-sample-z",
+              "two-sample-t",
+              "paired-t",
+              "one-proportion",
+              "two-proportions",
+              "one-variance",
+              "two-variances",
+              "equivalence-tost"
+            ]
+          },
+          {
+            "category": "No paramétricos",
+            "ids": [
+              "nonparam-sign",
+              "nonparam-wilcoxon",
+              "nonparam-mann-whitney",
+              "nonparam-kruskal-wallis",
+              "nonparam-runs",
+              "nonparam-spearman"
+            ]
+          },
+          {
+            "category": "ANOVA",
+            "ids": [
+              "anova-one-way",
+              "anova-two-way",
+              "equal-variances"
+            ]
+          },
+          {
+            "category": "Regresión",
+            "ids": [
+              "regression-multiple",
+              "regression-stepwise",
+              "regression-best-subsets",
+              "regression-logistic",
+              "regression-poisson"
+            ]
+          },
+          {
+            "category": "Control de calidad",
+            "ids": [
+              "chart-xbar-r",
+              "chart-imr",
+              "chart-p",
+              "chart-c",
+              "chart-u",
+              "chart-ewma",
+              "chart-cusum"
+            ]
+          },
+          {
+            "category": "Capacidad",
+            "ids": [
+              "capability"
+            ]
+          },
+          {
+            "category": "Sistemas de medida",
+            "ids": [
+              "gage-rr"
+            ]
+          },
+          {
+            "category": "DOE",
+            "ids": [
+              "doe-analyze"
+            ]
+          },
+          {
+            "category": "Series temporales",
+            "ids": [
+              "timeseries-acf",
+              "timeseries-pacf",
+              "timeseries-moving-average",
+              "timeseries-ses",
+              "timeseries-des",
+              "timeseries-winters",
+              "timeseries-decompose",
+              "timeseries-ar"
+            ]
+          },
+          {
+            "category": "Fiabilidad",
+            "ids": [
+              "reliability-weibull",
+              "reliability-kaplan-meier"
+            ]
+          },
+          {
+            "category": "Multivariante",
+            "ids": [
+              "multivariate-pca",
+              "multivariate-factor",
+              "multivariate-kmeans",
+              "multivariate-lda"
+            ]
+          },
+          {
+            "category": "Potencia y tamaño de muestra",
+            "ids": [
+              "power-t1",
+              "power-prop1",
+              "power-anova1",
+              "power-t2"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

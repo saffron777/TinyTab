@@ -14,3 +14,9 @@ test-results/
 .pnpm-store/
 *.ttab
 *.ttw
+services/**/bin/
+services/**/obj/
+services/**/.artifacts/
+services/**/.vs/
+TestResults/
+*.user

@@ -1,0 +1,2072 @@
+{
+  "module": "spc",
+  "engine": {
+    "name": "tinytab-statistical-software",
+    "version": "0.1.0",
+    "parityBaseline": "tinytab@0.1.0/src/domain"
+  },
+  "encoding": "NaN|Infinity|-Infinity|-0 -> {\"$num\":\"...\"}; Map -> {\"$map\":[[k,v]]}; Set -> {\"$set\":[...]}; undefined -> {\"$undefined\":true}",
+  "functions": {
+    "cChart": [
+      {
+        "args": [
+          [
+            3,
+            2,
+            4,
+            1,
+            5
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "chart": "C",
+            "centerLine": 3,
+            "lowerLimit": 0,
+            "upperLimit": 8.196152422706632,
+            "sigma": 1.7320508075688772,
+            "points": [
+              {
+                "index": 1,
+                "value": 3,
+                "centerLine": 3,
+                "lowerLimit": 0,
+                "upperLimit": 8.196152422706632,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 2,
+                "value": 2,
+                "centerLine": 3,
+                "lowerLimit": 0,
+                "upperLimit": 8.196152422706632,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 3,
+                "value": 4,
+                "centerLine": 3,
+                "lowerLimit": 0,
+                "upperLimit": 8.196152422706632,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 4,
+                "value": 1,
+                "centerLine": 3,
+                "lowerLimit": 0,
+                "upperLimit": 8.196152422706632,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 5,
+                "value": 5,
+                "centerLine": 3,
+                "lowerLimit": 0,
+                "upperLimit": 8.196152422706632,
+                "outOfControl": false,
+                "rules": []
+              }
+            ],
+            "violations": 0
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            3
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 muestras."
+          }
+        }
+      }
+    ],
+    "cusumChart": [
+      {
+        "args": [
+          [
+            10,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.02,
+            9.98,
+            10.01,
+            10.03,
+            9.97,
+            14.2,
+            10.02
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "chart": "CUSUM",
+            "centerLine": 0,
+            "lowerLimit": 0,
+            "upperLimit": 5,
+            "sigma": 1,
+            "points": [
+              {
+                "index": 1,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 2,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 3,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 4,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 5,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 6,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 7,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 8,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 9,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 10,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 11,
+                "value": 2.672675411259069,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 12,
+                "value": 1.8984935855947036,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              }
+            ],
+            "violations": 0
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.02,
+            9.98,
+            10.01,
+            10.03,
+            9.97,
+            14.2,
+            10.02
+          ],
+          10,
+          0.5
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "chart": "CUSUM",
+            "centerLine": 0,
+            "lowerLimit": 0,
+            "upperLimit": 5,
+            "sigma": 1,
+            "points": [
+              {
+                "index": 1,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 2,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 3,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 4,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 5,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 6,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 7,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 8,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 9,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 10,
+                "value": 0,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 11,
+                "value": 2.9633493768130195,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 12,
+                "value": 2.479841516702605,
+                "centerLine": 0,
+                "lowerLimit": 0,
+                "upperLimit": 5,
+                "outOfControl": false,
+                "rules": []
+              }
+            ],
+            "violations": 0
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 3 observaciones."
+          }
+        }
+      }
+    ],
+    "evaluateRules": [
+      {
+        "args": [
+          [
+            10,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.02,
+            9.98,
+            10.01,
+            10.03,
+            9.97,
+            14.2,
+            10.02
+          ],
+          10,
+          0.05
+        ],
+        "expected": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            "Regla 1: punto fuera de los límites de control"
+          ],
+          []
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          5,
+          0
+        ],
+        "expected": [
+          [],
+          [],
+          [
+            "Regla 5: 2 de 3 puntos a más de 2σ en el mismo lado"
+          ],
+          [
+            "Regla 5: 2 de 3 puntos a más de 2σ en el mismo lado"
+          ],
+          [],
+          [
+            "Regla 3: 6 puntos consecutivos en tendencia"
+          ],
+          [
+            "Regla 3: 6 puntos consecutivos en tendencia"
+          ],
+          [
+            "Regla 5: 2 de 3 puntos a más de 2σ en el mismo lado",
+            "Regla 3: 6 puntos consecutivos en tendencia"
+          ]
+        ]
+      }
+    ],
+    "ewmaChart": [
+      {
+        "args": [
+          [
+            10,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.02,
+            9.98,
+            10.01,
+            10.03,
+            9.97,
+            14.2,
+            10.02
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "chart": "EWMA",
+            "centerLine": 10.352500000000001,
+            "lowerLimit": 9.624880656461837,
+            "upperLimit": 11.080119343538165,
+            "sigma": 1.2126989058969404,
+            "points": [
+              {
+                "index": 1,
+                "value": 10.282000000000002,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 2,
+                "value": 10.245600000000001,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 3,
+                "value": 10.176480000000002,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 4,
+                "value": 10.151184,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 5,
+                "value": 10.110947200000002,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 6,
+                "value": 10.092757760000001,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": true,
+                "rules": [
+                  "Regla 3: 6 puntos consecutivos en tendencia"
+                ]
+              },
+              {
+                "index": 7,
+                "value": 10.070206208000002,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": true,
+                "rules": [
+                  "Regla 3: 6 puntos consecutivos en tendencia"
+                ]
+              },
+              {
+                "index": 8,
+                "value": 10.058164966400003,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": true,
+                "rules": [
+                  "Regla 2: 8 puntos consecutivos al mismo lado",
+                  "Regla 3: 6 puntos consecutivos en tendencia"
+                ]
+              },
+              {
+                "index": 9,
+                "value": 10.052531973120002,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": true,
+                "rules": [
+                  "Regla 2: 8 puntos consecutivos al mismo lado",
+                  "Regla 3: 6 puntos consecutivos en tendencia"
+                ]
+              },
+              {
+                "index": 10,
+                "value": 10.036025578496002,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": true,
+                "rules": [
+                  "Regla 2: 8 puntos consecutivos al mismo lado",
+                  "Regla 3: 6 puntos consecutivos en tendencia"
+                ]
+              },
+              {
+                "index": 11,
+                "value": 10.868820462796801,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 12,
+                "value": 10.699056370237441,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 9.624880656461837,
+                "upperLimit": 11.080119343538165,
+                "outOfControl": false,
+                "rules": []
+              }
+            ],
+            "violations": 5
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.02,
+            9.98,
+            10.01,
+            10.03,
+            9.97,
+            14.2,
+            10.02
+          ],
+          0.5,
+          1
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "chart": "EWMA",
+            "centerLine": 10.352500000000001,
+            "lowerLimit": 8.852500000000001,
+            "upperLimit": 11.852500000000001,
+            "sigma": 1,
+            "points": [
+              {
+                "index": 1,
+                "value": 10.17625,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 2,
+                "value": 10.138124999999999,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 3,
+                "value": 10.0190625,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 4,
+                "value": 10.03453125,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 5,
+                "value": 9.992265625,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 6,
+                "value": 10.006132812499999,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 7,
+                "value": 9.99306640625,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 8,
+                "value": 10.001533203125,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": true,
+                "rules": [
+                  "Regla 2: 8 puntos consecutivos al mismo lado"
+                ]
+              },
+              {
+                "index": 9,
+                "value": 10.0157666015625,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": true,
+                "rules": [
+                  "Regla 2: 8 puntos consecutivos al mismo lado"
+                ]
+              },
+              {
+                "index": 10,
+                "value": 9.992883300781251,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": true,
+                "rules": [
+                  "Regla 2: 8 puntos consecutivos al mismo lado"
+                ]
+              },
+              {
+                "index": 11,
+                "value": 12.096441650390625,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": true,
+                "rules": []
+              },
+              {
+                "index": 12,
+                "value": 11.058220825195313,
+                "centerLine": 10.352500000000001,
+                "lowerLimit": 8.852500000000001,
+                "upperLimit": 11.852500000000001,
+                "outOfControl": false,
+                "rules": []
+              }
+            ],
+            "violations": 4
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.02,
+            9.98,
+            10.01,
+            10.03,
+            9.97,
+            14.2,
+            10.02
+          ],
+          0
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_PARAMETER",
+            "message": "λ debe estar en (0, 1]."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 observaciones."
+          }
+        }
+      }
+    ],
+    "histogram": [
+      {
+        "args": [
+          [
+            10,
+            10.2,
+            9.8,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.15
+          ]
+        ],
+        "expected": {
+          "lower": 9.8,
+          "upper": 10.2,
+          "counts": [
+            1,
+            2,
+            1,
+            2,
+            2
+          ],
+          "edges": [
+            9.8,
+            9.88,
+            9.96,
+            10.04,
+            10.12,
+            10.2
+          ]
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            10.2,
+            9.8,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.15
+          ],
+          3
+        ],
+        "expected": {
+          "lower": 9.8,
+          "upper": 10.2,
+          "counts": [
+            2,
+            3,
+            3
+          ],
+          "edges": [
+            9.8,
+            9.933333333333334,
+            10.066666666666666,
+            10.2
+          ]
+        }
+      },
+      {
+        "args": [
+          [
+            5,
+            5,
+            5
+          ]
+        ],
+        "expected": {
+          "lower": 5,
+          "upper": 5,
+          "counts": [
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "edges": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      }
+    ],
+    "individualsChart": [
+      {
+        "args": [
+          [
+            10,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.02,
+            9.98,
+            10.01,
+            10.03,
+            9.97,
+            14.2,
+            10.02
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "individuals": {
+              "chart": "I",
+              "centerLine": 10.352500000000001,
+              "lowerLimit": 8.13296421663443,
+              "upperLimit": 12.572035783365571,
+              "sigma": 0.7398452611218566,
+              "points": [
+                {
+                  "index": 1,
+                  "value": 10,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 2,
+                  "value": 10.1,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 3,
+                  "value": 9.9,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 4,
+                  "value": 10.05,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 5,
+                  "value": 9.95,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 6,
+                  "value": 10.02,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 7,
+                  "value": 9.98,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 8,
+                  "value": 10.01,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 2: 8 puntos consecutivos al mismo lado"
+                  ]
+                },
+                {
+                  "index": 9,
+                  "value": 10.03,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 2: 8 puntos consecutivos al mismo lado"
+                  ]
+                },
+                {
+                  "index": 10,
+                  "value": 9.97,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 2: 8 puntos consecutivos al mismo lado"
+                  ]
+                },
+                {
+                  "index": 11,
+                  "value": 14.2,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                },
+                {
+                  "index": 12,
+                  "value": 10.02,
+                  "centerLine": 10.352500000000001,
+                  "lowerLimit": 8.13296421663443,
+                  "upperLimit": 12.572035783365571,
+                  "outOfControl": false,
+                  "rules": []
+                }
+              ],
+              "violations": 4
+            },
+            "movingRange": {
+              "chart": "MR",
+              "centerLine": 0.8345454545454541,
+              "lowerLimit": 0,
+              "upperLimit": 2.7264599999999986,
+              "sigma": 0.7398452611218566,
+              "points": [
+                {
+                  "index": 1,
+                  "value": 0.09999999999999964,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 2,
+                  "value": 0.1999999999999993,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 3,
+                  "value": 0.15000000000000036,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 4,
+                  "value": 0.10000000000000142,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 5,
+                  "value": 0.07000000000000028,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 6,
+                  "value": 0.03999999999999915,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 7,
+                  "value": 0.02999999999999936,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 3: 6 puntos consecutivos en tendencia"
+                  ]
+                },
+                {
+                  "index": 8,
+                  "value": 0.019999999999999574,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 2: 8 puntos consecutivos al mismo lado",
+                    "Regla 3: 6 puntos consecutivos en tendencia"
+                  ]
+                },
+                {
+                  "index": 9,
+                  "value": 0.05999999999999872,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 2: 8 puntos consecutivos al mismo lado"
+                  ]
+                },
+                {
+                  "index": 10,
+                  "value": 4.229999999999999,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                },
+                {
+                  "index": 11,
+                  "value": 4.18,
+                  "centerLine": 0.8345454545454541,
+                  "lowerLimit": 0,
+                  "upperLimit": 2.7264599999999986,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                }
+              ],
+              "violations": 5
+            }
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 observaciones."
+          }
+        }
+      }
+    ],
+    "nonnormalCapability": [
+      {
+        "args": [
+          [
+            10,
+            10.2,
+            9.8,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.15
+          ],
+          9.5,
+          10.5
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "mean": 10.01875,
+            "sd": 0.13346347815039114,
+            "lowerSpec": 9.5,
+            "upperSpec": 10.5,
+            "cp": 2.5088908820633242,
+            "cpk": 2.383446337960156,
+            "cpu": 2.383446337960156,
+            "cpl": 2.634335426166492,
+            "pp": 1.2487810821089278,
+            "ppk": 1.2019517915298412,
+            "ppmBelow": 0,
+            "ppmAbove": 0,
+            "ppmTotal": 0,
+            "method": "No normal (percentiles empíricos)"
+          }
+        }
+      }
+    ],
+    "npChart": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            0,
+            3,
+            1
+          ],
+          10
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "chart": "NP",
+            "centerLine": 1.4000000000000001,
+            "lowerLimit": 0,
+            "upperLimit": 4.6918080138428495,
+            "sigma": 1.0972693379476164,
+            "points": [
+              {
+                "index": 1,
+                "value": 1,
+                "centerLine": 1.4000000000000001,
+                "lowerLimit": 0,
+                "upperLimit": 4.6918080138428495,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 2,
+                "value": 2,
+                "centerLine": 1.4000000000000001,
+                "lowerLimit": 0,
+                "upperLimit": 4.6918080138428495,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 3,
+                "value": 0,
+                "centerLine": 1.4000000000000001,
+                "lowerLimit": 0,
+                "upperLimit": 4.6918080138428495,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 4,
+                "value": 3,
+                "centerLine": 1.4000000000000001,
+                "lowerLimit": 0,
+                "upperLimit": 4.6918080138428495,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 5,
+                "value": 1,
+                "centerLine": 1.4000000000000001,
+                "lowerLimit": 0,
+                "upperLimit": 4.6918080138428495,
+                "outOfControl": false,
+                "rules": []
+              }
+            ],
+            "violations": 0
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ],
+          10
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 muestras."
+          }
+        }
+      }
+    ],
+    "pChart": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            0,
+            3,
+            1
+          ],
+          [
+            10,
+            10,
+            10,
+            10,
+            10
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "chart": "P",
+            "centerLine": 0.14,
+            "lowerLimit": 0,
+            "upperLimit": 0.46918080138428486,
+            "sigma": 0.10972693379476162,
+            "points": [
+              {
+                "index": 1,
+                "value": 0.1,
+                "centerLine": 0.14,
+                "lowerLimit": 0,
+                "upperLimit": 0.46918080138428486,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 2,
+                "value": 0.2,
+                "centerLine": 0.14,
+                "lowerLimit": 0,
+                "upperLimit": 0.46918080138428486,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 3,
+                "value": 0,
+                "centerLine": 0.14,
+                "lowerLimit": 0,
+                "upperLimit": 0.46918080138428486,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 4,
+                "value": 0.3,
+                "centerLine": 0.14,
+                "lowerLimit": 0,
+                "upperLimit": 0.46918080138428486,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 5,
+                "value": 0.1,
+                "centerLine": 0.14,
+                "lowerLimit": 0,
+                "upperLimit": 0.46918080138428486,
+                "outOfControl": false,
+                "rules": []
+              }
+            ],
+            "violations": 0
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            0
+          ],
+          [
+            10,
+            10
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Datos incompatibles."
+          }
+        }
+      }
+    ],
+    "processCapability": [
+      {
+        "args": [
+          [
+            10,
+            10.2,
+            9.8,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.15
+          ],
+          9.5,
+          10.5
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "mean": 10.01875,
+            "sd": 0.13346347815039114,
+            "lowerSpec": 9.5,
+            "upperSpec": 10.5,
+            "cp": 1.2487810821089278,
+            "cpk": 1.2019517915298412,
+            "cpu": 1.2019517915298412,
+            "cpl": 1.2956103726880144,
+            "pp": 1.2487810821089278,
+            "ppk": 1.2019517915298412,
+            "ppmBelow": 50.78067978381267,
+            "ppmAbove": 155.56319410869878,
+            "ppmTotal": 206.34387389251145,
+            "method": "Normal"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            10.2,
+            9.8,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.15
+          ],
+          9.5,
+          {
+            "$undefined": true
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "mean": 10.01875,
+            "sd": 0.13346347815039114,
+            "lowerSpec": 9.5,
+            "upperSpec": {
+              "$num": "NaN"
+            },
+            "cp": {
+              "$num": "NaN"
+            },
+            "cpk": {
+              "$num": "NaN"
+            },
+            "cpu": {
+              "$num": "NaN"
+            },
+            "cpl": 1.2956103726880144,
+            "pp": {
+              "$num": "NaN"
+            },
+            "ppk": {
+              "$num": "NaN"
+            },
+            "ppmBelow": 50.78067978381267,
+            "ppmAbove": 0,
+            "ppmTotal": 50.78067978381267,
+            "method": "Normal"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            10.2,
+            9.8,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.15
+          ],
+          {
+            "$undefined": true
+          },
+          10.5
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "mean": 10.01875,
+            "sd": 0.13346347815039114,
+            "lowerSpec": {
+              "$num": "NaN"
+            },
+            "upperSpec": 10.5,
+            "cp": {
+              "$num": "NaN"
+            },
+            "cpk": {
+              "$num": "NaN"
+            },
+            "cpu": 1.2019517915298412,
+            "cpl": {
+              "$num": "NaN"
+            },
+            "pp": {
+              "$num": "NaN"
+            },
+            "ppk": {
+              "$num": "NaN"
+            },
+            "ppmBelow": 0,
+            "ppmAbove": 155.56319410869878,
+            "ppmTotal": 155.56319410869878,
+            "method": "Normal"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            10,
+            10.2,
+            9.8,
+            10.1,
+            9.9,
+            10.05,
+            9.95,
+            10.15
+          ],
+          9.5,
+          10.5,
+          {
+            "method": "nonnormal"
+          }
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "mean": 10.01875,
+            "sd": 0.13346347815039114,
+            "lowerSpec": 9.5,
+            "upperSpec": 10.5,
+            "cp": 1.2487810821089278,
+            "cpk": 1.2019517915298412,
+            "cpu": 1.2019517915298412,
+            "cpl": 1.2956103726880144,
+            "pp": 1.2487810821089278,
+            "ppk": 1.2019517915298412,
+            "ppmBelow": 0,
+            "ppmAbove": 0,
+            "ppmTotal": 0,
+            "method": "No normal (percentiles empíricos)"
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "Se necesitan al menos 2 observaciones."
+          }
+        }
+      }
+    ],
+    "uChart": [
+      {
+        "args": [
+          [
+            3,
+            2,
+            4,
+            1,
+            5
+          ],
+          [
+            10,
+            12,
+            11,
+            9,
+            10
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "chart": "U",
+            "centerLine": 0.28846153846153844,
+            "lowerLimit": 0,
+            "upperLimit": 0.7880915791064069,
+            "sigma": 0.1665433468816228,
+            "points": [
+              {
+                "index": 1,
+                "value": 0.3,
+                "centerLine": 0.28846153846153844,
+                "lowerLimit": 0,
+                "upperLimit": 0.7880915791064069,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 2,
+                "value": 0.16666666666666666,
+                "centerLine": 0.28846153846153844,
+                "lowerLimit": 0,
+                "upperLimit": 0.7880915791064069,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 3,
+                "value": 0.36363636363636365,
+                "centerLine": 0.28846153846153844,
+                "lowerLimit": 0,
+                "upperLimit": 0.7880915791064069,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 4,
+                "value": 0.1111111111111111,
+                "centerLine": 0.28846153846153844,
+                "lowerLimit": 0,
+                "upperLimit": 0.7880915791064069,
+                "outOfControl": false,
+                "rules": []
+              },
+              {
+                "index": 5,
+                "value": 0.5,
+                "centerLine": 0.28846153846153844,
+                "lowerLimit": 0,
+                "upperLimit": 0.7880915791064069,
+                "outOfControl": false,
+                "rules": []
+              }
+            ],
+            "violations": 0
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            3,
+            2
+          ],
+          [
+            10
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Datos incompatibles."
+          }
+        }
+      }
+    ],
+    "xbarRChart": [
+      {
+        "args": [
+          [
+            {
+              "values": [
+                10,
+                10.1,
+                10.2
+              ]
+            },
+            {
+              "values": [
+                10.5,
+                10.6,
+                10.7
+              ]
+            },
+            {
+              "values": [
+                11,
+                11.1,
+                11.2
+              ]
+            },
+            {
+              "values": [
+                11.5,
+                11.6,
+                11.7
+              ]
+            },
+            {
+              "values": [
+                12,
+                12.1,
+                12.2
+              ]
+            }
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "xbar": {
+              "chart": "X̄",
+              "centerLine": 11.1,
+              "lowerLimit": 10.8954,
+              "upperLimit": 11.304599999999999,
+              "sigma": 0.11813349084465403,
+              "points": [
+                {
+                  "index": 1,
+                  "value": 10.1,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.8954,
+                  "upperLimit": 11.304599999999999,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                },
+                {
+                  "index": 2,
+                  "value": 10.6,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.8954,
+                  "upperLimit": 11.304599999999999,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                },
+                {
+                  "index": 3,
+                  "value": 11.1,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.8954,
+                  "upperLimit": 11.304599999999999,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 4,
+                  "value": 11.6,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.8954,
+                  "upperLimit": 11.304599999999999,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                },
+                {
+                  "index": 5,
+                  "value": 12.1,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.8954,
+                  "upperLimit": 11.304599999999999,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                }
+              ],
+              "violations": 4
+            },
+            "range": {
+              "chart": "R",
+              "centerLine": 0.1999999999999993,
+              "lowerLimit": 0,
+              "upperLimit": 0.5147999999999981,
+              "sigma": 0.10490253987005278,
+              "points": [
+                {
+                  "index": 1,
+                  "value": 0.1999999999999993,
+                  "centerLine": 0.1999999999999993,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.5147999999999981,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 2,
+                  "value": 0.1999999999999993,
+                  "centerLine": 0.1999999999999993,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.5147999999999981,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 3,
+                  "value": 0.1999999999999993,
+                  "centerLine": 0.1999999999999993,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.5147999999999981,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 4,
+                  "value": 0.1999999999999993,
+                  "centerLine": 0.1999999999999993,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.5147999999999981,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 5,
+                  "value": 0.1999999999999993,
+                  "centerLine": 0.1999999999999993,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.5147999999999981,
+                  "outOfControl": false,
+                  "rules": []
+                }
+              ],
+              "violations": 0
+            }
+          }
+        }
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "No hay subgrupos."
+          }
+        }
+      },
+      {
+        "args": [
+          [
+            {
+              "values": [
+                1
+              ]
+            },
+            {
+              "values": [
+                1,
+                2
+              ]
+            }
+          ]
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INVALID_INPUT",
+            "message": "Todos los subgrupos deben tener el mismo tamaño."
+          }
+        }
+      }
+    ],
+    "xbarSChart": [
+      {
+        "args": [
+          [
+            {
+              "values": [
+                10,
+                10.1,
+                10.2
+              ]
+            },
+            {
+              "values": [
+                10.5,
+                10.6,
+                10.7
+              ]
+            },
+            {
+              "values": [
+                11,
+                11.1,
+                11.2
+              ]
+            },
+            {
+              "values": [
+                11.5,
+                11.6,
+                11.7
+              ]
+            },
+            {
+              "values": [
+                12,
+                12.1,
+                12.2
+              ]
+            }
+          ]
+        ],
+        "expected": {
+          "ok": true,
+          "value": {
+            "xbar": {
+              "chart": "X̄",
+              "centerLine": 11.1,
+              "lowerLimit": 10.926794919243113,
+              "upperLimit": 11.273205080756886,
+              "sigma": 0.10797684868345599,
+              "points": [
+                {
+                  "index": 1,
+                  "value": 10.1,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.926794919243113,
+                  "upperLimit": 11.273205080756886,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                },
+                {
+                  "index": 2,
+                  "value": 10.6,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.926794919243113,
+                  "upperLimit": 11.273205080756886,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                },
+                {
+                  "index": 3,
+                  "value": 11.1,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.926794919243113,
+                  "upperLimit": 11.273205080756886,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 4,
+                  "value": 11.6,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.926794919243113,
+                  "upperLimit": 11.273205080756886,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                },
+                {
+                  "index": 5,
+                  "value": 12.1,
+                  "centerLine": 11.1,
+                  "lowerLimit": 10.926794919243113,
+                  "upperLimit": 11.273205080756886,
+                  "outOfControl": true,
+                  "rules": [
+                    "Regla 1: punto fuera de los límites de control"
+                  ]
+                }
+              ],
+              "violations": 4
+            },
+            "s": {
+              "chart": "S",
+              "centerLine": 0.09999999999999964,
+              "lowerLimit": 0,
+              "upperLimit": 0.2567999999999991,
+              "sigma": 0.10797684868345599,
+              "points": [
+                {
+                  "index": 1,
+                  "value": 0.09999999999999964,
+                  "centerLine": 0.09999999999999964,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.2567999999999991,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 2,
+                  "value": 0.09999999999999964,
+                  "centerLine": 0.09999999999999964,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.2567999999999991,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 3,
+                  "value": 0.09999999999999964,
+                  "centerLine": 0.09999999999999964,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.2567999999999991,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 4,
+                  "value": 0.09999999999999964,
+                  "centerLine": 0.09999999999999964,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.2567999999999991,
+                  "outOfControl": false,
+                  "rules": []
+                },
+                {
+                  "index": 5,
+                  "value": 0.09999999999999964,
+                  "centerLine": 0.09999999999999964,
+                  "lowerLimit": 0,
+                  "upperLimit": 0.2567999999999991,
+                  "outOfControl": false,
+                  "rules": []
+                }
+              ],
+              "violations": 0
+            }
+          }
+        }
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": {
+          "ok": false,
+          "error": {
+            "code": "INSUFFICIENT_DATA",
+            "message": "No hay subgrupos."
+          }
+        }
+      }
+    ]
+  }
+}

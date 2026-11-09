@@ -1,0 +1,12 @@
+**/bin
+**/obj
+**/.artifacts
+**/tests
+tests
+tools
+*.user
+.vs
+.vscode
+README.md
+PARITY-NOTES.md
+docker-compose.yml
