@@ -1,0 +1,259 @@
+{
+ "sigmaCommit": "5c378d709e3df54b7df99dc2ead578c31a3ed346",
+ "modules": [
+  "doe",
+  "optimizacion"
+ ],
+ "analyses": [
+  {
+   "module": "doe",
+   "id": "factorial",
+   "csharp_id": "factorial",
+   "covered": false,
+   "label": "Factorial completo 2^k",
+   "group": "Diseños factoriales",
+   "description": "Genera un diseño factorial 2^k (con réplicas centrales opcionales) y, si hay respuesta, ajusta los efectos principales e interacciones.",
+   "roles": [
+    {
+     "name": "response",
+     "label": "Respuesta (opcional)",
+     "kind": "numeric",
+     "multiple": false,
+     "optional": true,
+     "min_count": 1,
+     "max_count": null,
+     "help": "Si se elige, se analiza contra el diseño generado (debe tener una fila por corrida).",
+     "dataset_param": null
+    }
+   ],
+   "params": [
+    {
+     "name": "factors",
+     "label": "Factores (2 a 7)",
+     "kind": "integer",
+     "default": 3,
+     "options": [],
+     "help": "",
+     "optional": false,
+     "minimum": 2,
+     "maximum": 7,
+     "visible_if": null
+    },
+    {
+     "name": "center_points",
+     "label": "Réplicas en el centro",
+     "kind": "integer",
+     "default": 0,
+     "options": [],
+     "help": "",
+     "optional": false,
+     "minimum": 0,
+     "maximum": 10,
+     "visible_if": null
+    },
+    {
+     "name": "alpha",
+     "label": "Nivel de significancia α",
+     "kind": "number",
+     "default": 0.05,
+     "options": [],
+     "help": "",
+     "optional": false,
+     "minimum": 0.001,
+     "maximum": 0.5,
+     "visible_if": null
+    }
+   ],
+   "outputs": [
+    {
+     "key": "diseño",
+     "label": "Diseño factorial",
+     "required": false
+    }
+   ],
+   "heavy": false,
+   "needs_dataset": true
+  },
+  {
+   "module": "doe",
+   "id": "response_surface",
+   "csharp_id": "response-surface",
+   "covered": false,
+   "label": "Superficie de respuesta (compuesto central)",
+   "group": "Superficie de respuesta",
+   "description": "Genera un diseño compuesto central y, si hay respuesta, ajusta el modelo cuadrático con interacciones.",
+   "roles": [
+    {
+     "name": "response",
+     "label": "Respuesta (opcional)",
+     "kind": "numeric",
+     "multiple": false,
+     "optional": true,
+     "min_count": 1,
+     "max_count": null,
+     "help": "Si se elige, se analiza contra el diseño generado (debe tener una fila por corrida).",
+     "dataset_param": null
+    }
+   ],
+   "params": [
+    {
+     "name": "factors",
+     "label": "Factores (2 a 7)",
+     "kind": "integer",
+     "default": 3,
+     "options": [],
+     "help": "",
+     "optional": false,
+     "minimum": 2,
+     "maximum": 7,
+     "visible_if": null
+    },
+    {
+     "name": "axial",
+     "label": "Distancia axial α (vacío = rotable 2^(k/4))",
+     "kind": "number",
+     "default": null,
+     "options": [],
+     "help": "",
+     "optional": true,
+     "minimum": 0.5,
+     "maximum": 3.0,
+     "visible_if": null
+    },
+    {
+     "name": "center_points",
+     "label": "Réplicas en el centro",
+     "kind": "integer",
+     "default": 0,
+     "options": [],
+     "help": "",
+     "optional": false,
+     "minimum": 0,
+     "maximum": 10,
+     "visible_if": null
+    },
+    {
+     "name": "alpha",
+     "label": "Nivel de significancia α",
+     "kind": "number",
+     "default": 0.05,
+     "options": [],
+     "help": "",
+     "optional": false,
+     "minimum": 0.001,
+     "maximum": 0.5,
+     "visible_if": null
+    }
+   ],
+   "outputs": [
+    {
+     "key": "diseño",
+     "label": "Diseño compuesto central",
+     "required": false
+    }
+   ],
+   "heavy": false,
+   "needs_dataset": true
+  },
+  {
+   "module": "optimizacion",
+   "id": "lp",
+   "csharp_id": "lp",
+   "covered": false,
+   "label": "Programación lineal / entera (asignación con presupuesto)",
+   "group": "Programación lineal",
+   "description": "Optimiza la asignación de recursos: maximiza o minimiza el valor sujeto a un presupuesto y límites por elemento.",
+   "roles": [
+    {
+     "name": "value",
+     "label": "Coeficiente del objetivo (por unidad)",
+     "kind": "numeric",
+     "multiple": false,
+     "optional": false,
+     "min_count": 1,
+     "max_count": null,
+     "help": "Lo que aporta cada elemento por unidad (beneficio, rendimiento…).",
+     "dataset_param": null
+    },
+    {
+     "name": "cost",
+     "label": "Uso de recurso por unidad (opcional)",
+     "kind": "numeric",
+     "multiple": false,
+     "optional": true,
+     "min_count": 1,
+     "max_count": null,
+     "help": "Cuánto consume cada unidad del recurso limitado; por defecto 1.",
+     "dataset_param": null
+    },
+    {
+     "name": "bound",
+     "label": "Límite superior por elemento (opcional)",
+     "kind": "numeric",
+     "multiple": false,
+     "optional": true,
+     "min_count": 1,
+     "max_count": null,
+     "help": "Cantidad máxima de cada elemento; por defecto 1.",
+     "dataset_param": null
+    }
+   ],
+   "params": [
+    {
+     "name": "sense",
+     "label": "Sentido",
+     "kind": "select",
+     "default": "maximize",
+     "options": [
+      [
+       "maximize",
+       "Maximizar"
+      ],
+      [
+       "minimize",
+       "Minimizar"
+      ]
+     ],
+     "help": "",
+     "optional": false,
+     "minimum": null,
+     "maximum": null,
+     "visible_if": null
+    },
+    {
+     "name": "budget",
+     "label": "Presupuesto (recurso disponible)",
+     "kind": "number",
+     "default": 10.0,
+     "options": [],
+     "help": "",
+     "optional": false,
+     "minimum": 0.0,
+     "maximum": null,
+     "visible_if": null
+    },
+    {
+     "name": "integer",
+     "label": "Variables enteras (0/1 con límite 1)",
+     "kind": "boolean",
+     "default": false,
+     "options": [],
+     "help": "",
+     "optional": false,
+     "minimum": null,
+     "maximum": null,
+     "visible_if": null
+    }
+   ],
+   "outputs": [
+    {
+     "key": "solucion",
+     "label": "Asignación óptima",
+     "required": false
+    }
+   ],
+   "heavy": false,
+   "needs_dataset": true
+  }
+ ]
+}

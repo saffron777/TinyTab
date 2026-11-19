@@ -76,6 +76,14 @@ public static class ApiErrors
             context,
             analysisId);
 
+    public static IResult UnknownDataOperation(string operationId, HttpContext context) =>
+        Create(
+            StatusCodes.Status404NotFound,
+            NotFound,
+            $"Operación de datos desconocida: {operationId}",
+            context,
+            operationId);
+
     public static IResult UnknownDistribution(string distributionId, HttpContext context) =>
         Create(
             StatusCodes.Status404NotFound,

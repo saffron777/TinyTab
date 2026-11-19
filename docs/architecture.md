@@ -64,21 +64,25 @@ Sesión     ⇄ sessionToHtml (.html)
 
 El motor estadístico del dominio se expone además como microservicio HTTP independiente en
 `services/StatisticEngine`, con un port nativo en C# verificado 1:1 contra el motor TypeScript
-mediante vectores dorados:
+mediante vectores dorados. Desde el ADR 0006 el servicio amplía el catálogo con análisis
+portados desde Sigma (origen `sigma`), manteniendo intacto el baseline TinyTab:
 
 ```
-services/StatisticEngine/src/StatisticEngine.Domain        cálculo puro (espeja src/domain)
+services/StatisticEngine/src/StatisticEngine.Domain        cálculo puro (espeja src/domain + extensiones Sigma)
 services/StatisticEngine/src/StatisticEngine.Application   casos de uso y puertos
 services/StatisticEngine/src/StatisticEngine.Api           host HTTP, contratos y límites
-services/StatisticEngine/tools/golden                      generación de vectores de paridad
+services/StatisticEngine/tools/golden                      vectores de paridad TinyTab
+services/StatisticEngine/tools/sigma-golden               vectores de paridad Sigma
 ```
 
 - Regla de dependencia: `Api → Application → Domain`; el dominio no conoce HTTP ni I/O.
-- API versionada `/api/v1`: catálogo y ejecución de los 60 análisis, 21 distribuciones, metadatos
-  y probes de salud. Errores en `application/problem+json` con `code` del motor.
+- API versionada `/api/v1`: catálogo y ejecución de análisis (60 baseline + extensiones Sigma),
+  21 distribuciones, operaciones de datos sobre frames tipados, metadatos y probes de salud.
+  Errores en `application/problem+json` con `code` del motor.
 - Sin estado ni base de datos: el RNG recibe semilla explícita y cada petición es independiente.
-- Paridad verificada (29 pruebas de dominio + 19 de API) contra el motor TypeScript, incluidos sus
-  defectos documentados. Detalle en `services/StatisticEngine/PARITY-NOTES.md`.
+- Paridad verificada contra el motor TypeScript (baseline) y contra Sigma (extensiones),
+  incluidos sus defectos y desviaciones documentadas. Detalle en
+  `services/StatisticEngine/PARITY-NOTES.md` y `EXTENSIONS-NOTES.md`.
 - La aplicación de escritorio sigue usando el motor TypeScript; el servicio es autónomo.
 
 ## Pruebas
@@ -97,3 +101,5 @@ services/StatisticEngine/tools/golden                      generación de vector
 - ADR 0003: gráficos SVG propios.
 - ADR 0004: formatos `.ttab`, `.ttw` y CSV.
 - ADR 0005: microservicio `StatisticEngine` en C# / .NET 10 con paridad verificada.
+- ADR 0006: ampliación del `StatisticEngine` con las capacidades de Sigma (catálogo con
+  `origin`, baseline congelado, vectores dorados desde Sigma y operaciones de datos).

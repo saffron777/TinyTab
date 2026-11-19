@@ -12,6 +12,8 @@ using StatisticEngine.Api.Infrastructure;
 using StatisticEngine.Application;
 using StatisticEngine.Application.Ports;
 using StatisticEngine.Application.UseCases;
+using StatisticEngine.Domain.Analysis;
+using StatisticEngine.Domain.Distributions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +63,11 @@ builder.Services.AddRequestTimeouts(options =>
         Timeout = TimeSpan.FromSeconds(engineOptions.RequestTimeoutSeconds),
         TimeoutStatusCode = StatusCodes.Status504GatewayTimeout
     };
+    options.AddPolicy("heavy", new RequestTimeoutPolicy
+    {
+        Timeout = TimeSpan.FromSeconds(engineOptions.Limits.HeavyRequestTimeoutSeconds),
+        TimeoutStatusCode = StatusCodes.Status504GatewayTimeout
+    });
 });
 
 if (engineOptions.RateLimit.Enabled)
@@ -163,7 +170,12 @@ if (engineOptions.ApiExplorer.Enabled)
 app.MapGet(
         "/",
         () => Results.Content(
-            LandingPage.Render(EngineInfo.Version, engineOptions.ApiExplorer.Enabled),
+            LandingPage.Render(
+                EngineInfo.Version,
+                engineOptions.ApiExplorer.Enabled,
+                AnalysisCatalog.All.Count,
+                DataCatalog.All.Count,
+                DistributionCatalog.All.Count),
             "text/html; charset=utf-8"))
     .WithName("GetLandingPage")
     .ExcludeFromDescription();
@@ -182,6 +194,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 var api = app.MapGroup("/api/v1");
 api.MapAnalysesEndpoints();
 api.MapDistributionEndpoints();
+api.MapDataEndpoints();
 api.MapMetaEndpoints();
 if (engineOptions.RateLimit.Enabled) api.RequireRateLimiting("api");
 

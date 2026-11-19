@@ -1,0 +1,639 @@
+{
+ "module": "remuestreo",
+ "sigmaCommit": "5c378d709e3df54b7df99dc2ead578c31a3ed346",
+ "python": "3.13.14",
+ "numpy": "2.5.3",
+ "pandas": "3.0.6",
+ "scipy": "1.18.1",
+ "statsmodels": "0.15.0",
+ "sklearn": "1.9.1",
+ "cases": [
+  {
+   "kind": "example",
+   "id": "bootstrap",
+   "sigma_id": "bootstrap",
+   "deterministic": false,
+   "roles": {
+    "var": "y"
+   },
+   "params": {
+    "statistic": "median",
+    "resamples": 2000
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Bootstrap: Mediana de y",
+    "subtitle": "2 000 réplicas · IC 95 % (BCa) · semilla 12345",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Estimación",
+        8.065985108557221
+       ],
+       [
+        "Error estándar bootstrap",
+        0.39082396159938293
+       ],
+       [
+        "Límite inferior",
+        7.419728521607759
+       ],
+       [
+        "Límite superior",
+        8.818207863004307
+       ]
+      ]
+     },
+     {
+      "type": "table",
+      "title": "Intervalo de confianza bootstrap",
+      "columns": [
+       "Estadístico",
+       "Estimación",
+       "Error estándar",
+       "Sesgo",
+       "Límite inf.",
+       "Límite sup."
+      ],
+      "rows": [
+       [
+        "Mediana de y",
+        8.065985108557221,
+        0.39082396159938293,
+        0.0263817899774601,
+        7.419728521607759,
+        8.818207863004307
+       ]
+      ],
+      "note": "Sesgo = media de las réplicas − estimación original."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "estimate": 8.065985108557221,
+     "se": 0.39082396159938293,
+     "low": 7.419728521607759,
+     "high": 8.818207863004307,
+     "bias": 0.0263817899774601
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "bootstrap",
+   "sigma_id": "bootstrap",
+   "roles": {},
+   "params": {
+    "statistic": "median",
+    "resamples": 2000
+   },
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "bootstrap",
+   "sigma_id": "bootstrap",
+   "roles": {
+    "var": "y"
+   },
+   "params": {
+    "statistic": "__valor_invalido__",
+    "resamples": 2000
+   },
+   "error": "Valor no válido para «Estadístico»."
+  },
+  {
+   "kind": "example",
+   "id": "permutation",
+   "sigma_id": "permutation",
+   "deterministic": false,
+   "roles": {
+    "var": "y",
+    "group": "h"
+   },
+   "params": {
+    "resamples": 2000
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de permutación: media de no − si",
+    "subtitle": "2 000 permutaciones · semilla 12345",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Estadístico observado",
+        -0.07093032677187949
+       ],
+       [
+        "Valor p",
+        0.8755622188905547
+       ],
+       [
+        "Permutaciones",
+        2000
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.8756 ≥ α = 0.05: no se rechaza la hipótesis de que el estadístico no difiere de lo esperado por azar."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "Estadístico",
+       "Observado",
+       "Media bajo H₀",
+       "Desv. est. bajo H₀",
+       "Valor p"
+      ],
+      "rows": [
+       [
+        "media de no − si",
+        -0.07093032677187949,
+        0.005914713363502031,
+        0.5718133175109237,
+        0.8755622188905547
+       ]
+      ],
+      "note": "El valor p es la proporción de permutaciones con un estadístico tan o más extremo que el observado (incluye la observada)."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "observed": -0.07093032677187949,
+     "p": 0.8755622188905547,
+     "permutations": 2000
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "permutation",
+   "sigma_id": "permutation",
+   "roles": {
+    "group": "h"
+   },
+   "params": {
+    "resamples": 2000
+   },
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "permutation",
+   "sigma_id": "permutation",
+   "roles": {
+    "var": "y",
+    "group": "h"
+   },
+   "params": {
+    "resamples": 2000,
+    "design": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Qué se compara»."
+  },
+  {
+   "kind": "example",
+   "id": "monte-carlo",
+   "sigma_id": "monte_carlo",
+   "deterministic": false,
+   "roles": {},
+   "params": {
+    "distribution": "expon",
+    "a": 2.0,
+    "n": 25,
+    "replications": 4000
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Simulación Monte Carlo: media muestral",
+    "subtitle": "Exponencial · n = 25 · 4 000 réplicas · semilla 12345",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Media simulada",
+        1.9953727847268883
+       ],
+       [
+        "Error estándar simulado",
+        0.39621214401133037
+       ],
+       [
+        "Percentil 2.5 %",
+        1.2950554703388317
+       ],
+       [
+        "Percentil 97.5 %",
+        2.8340615808287883
+       ]
+      ]
+     },
+     {
+      "type": "table",
+      "title": "Distribución muestral simulada",
+      "columns": [
+       "Estadístico",
+       "Media",
+       "Desv. est. (error estándar)",
+       "2.5 %",
+       "25 %",
+       "Mediana",
+       "75 %",
+       "97.5 %",
+       "Asimetría"
+      ],
+      "rows": [
+       [
+        "Media",
+        1.9953727847268883,
+        0.39621214401133037,
+        1.2950554703388317,
+        1.714847042639929,
+        1.9748584491625376,
+        2.243089335456602,
+        2.8340615808287883,
+        0.3187918803746233
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "table",
+      "title": "Contraste con la teoría",
+      "columns": [
+       "",
+       "Teórico",
+       "Simulado"
+      ],
+      "rows": [
+       [
+        "Media de la media muestral",
+        2.0,
+        1.9953727847268883
+       ],
+       [
+        "Error estándar (σ/√n)",
+        0.4,
+        0.39621214401133037
+       ]
+      ],
+      "note": "La media muestral tiende a una normal al crecer n (teorema central del límite)."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "mean": 1.9953727847268883,
+     "se": 0.39621214401133037,
+     "quantiles": [
+      1.2950554703388317,
+      1.714847042639929,
+      1.9748584491625376,
+      2.243089335456602,
+      2.8340615808287883
+     ]
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "monte-carlo",
+   "sigma_id": "monte_carlo",
+   "roles": {},
+   "params": {
+    "distribution": "__valor_invalido__",
+    "a": 2.0,
+    "n": 25,
+    "replications": 4000
+   },
+   "error": "Valor no válido para «Distribución de la población»."
+  },
+  {
+   "kind": "example",
+   "id": "random-data",
+   "sigma_id": "random_data",
+   "deterministic": false,
+   "roles": {},
+   "params": {
+    "distribution": "norm",
+    "a": 10,
+    "b": 2,
+    "n": 50,
+    "columns": 3
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Datos aleatorios",
+    "subtitle": "Normal · 50 filas × 3 columnas · semilla 12345",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Filas",
+        50
+       ],
+       [
+        "Columnas",
+        3
+       ],
+       [
+        "Media teórica",
+        10.0
+       ],
+       [
+        "Media simulada",
+        9.936929366096425
+       ]
+      ]
+     },
+     {
+      "type": "table",
+      "title": "Primeras filas",
+      "columns": [
+       "x1",
+       "x2",
+       "x3"
+      ],
+      "rows": [
+       [
+        7.152349927090738,
+        10.867309074105739,
+        9.510894935476928
+       ],
+       [
+        12.52745691625822,
+        10.554967319741802,
+        6.008286777834046
+       ],
+       [
+        8.258676524081828,
+        11.060504773280242,
+        9.689504766327689
+       ],
+       [
+        9.481653530131204,
+        11.07344193823739,
+        12.127661749334465
+       ],
+       [
+        9.849313385978958,
+        11.236700029601657,
+        9.449656865320724
+       ],
+       [
+        8.518230695828782,
+        8.40996508770666,
+        6.293328139698437
+       ],
+       [
+        7.264414596434113,
+        10.600061892573233,
+        9.751316144303336
+       ],
+       [
+        11.29778560438608,
+        6.794596815672537,
+        11.569949044619136
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {
+     "resultado": {
+      "label": "Datos aleatorios",
+      "columns": [
+       {
+        "name": "x1",
+        "kind": "numeric",
+        "values": [
+         7.152349927090738,
+         12.52745691625822,
+         8.258676524081828,
+         9.481653530131204,
+         9.849313385978958,
+         8.518230695828782,
+         7.264414596434113,
+         11.29778560438608,
+         10.72211622610979,
+         6.09427387397562,
+         14.694819308757705,
+         11.936993811503847,
+         8.481225639150987,
+         11.804396548424503,
+         9.0660936533589,
+         9.878620962525945,
+         11.577688689038402,
+         7.486663733720647,
+         11.151715028791857,
+         12.797957989447438,
+         12.644596121465572,
+         9.400602969401788,
+         11.80583868285012,
+         6.7568345316355884,
+         9.683621478646257,
+         10.89896786421335,
+         7.31279785502721,
+         9.836624818606333,
+         13.44947986463266,
+         15.23631885273568,
+         11.554722687621537,
+         11.657266391134682,
+         8.082023373963978,
+         7.581223426051368,
+         7.175415973051763,
+         11.083093659810105,
+         11.503878791115374,
+         8.682479360865095,
+         7.5426500287094465,
+         10.515115536825745,
+         10.6258058368694,
+         9.73837661955312,
+         12.539966240935865,
+         9.814075084533432,
+         9.867698221996676,
+         7.783571065813859,
+         10.271913701101047,
+         12.694155528594536,
+         10.122288041952016,
+         10.141829200569418
+        ]
+       },
+       {
+        "name": "x2",
+        "kind": "numeric",
+        "values": [
+         10.867309074105739,
+         10.554967319741802,
+         11.060504773280242,
+         11.07344193823739,
+         11.236700029601657,
+         8.40996508770666,
+         10.600061892573233,
+         6.794596815672537,
+         10.533597659486793,
+         7.476752436557241,
+         9.85745838761644,
+         10.94809946050009,
+         9.17029247785734,
+         10.195433000029892,
+         6.719164326028253,
+         8.285482352231,
+         11.376563576274084,
+         7.690940833509911,
+         11.300904778181975,
+         7.223280094640511,
+         8.185235085256311,
+         7.809149385351246,
+         10.014291389880086,
+         11.068719805911414,
+         7.868384306753099,
+         9.637054519571105,
+         13.243903597021749,
+         9.365216108677842,
+         8.368370066224147,
+         10.773158034695204,
+         9.552722148102841,
+         8.59661838258528,
+         6.408573647887419,
+         11.636651243040705,
+         8.85793419641282,
+         10.001571050125175,
+         7.872714566225651,
+         12.603429000139148,
+         11.495745884281092,
+         11.961751818389086,
+         9.779162623748379,
+         10.935837061267396,
+         11.781214299389623,
+         12.046018731279954,
+         10.624766778832795,
+         9.876190628671589,
+         9.28104070540336,
+         8.502712031402238,
+         8.069042185050192,
+         10.720069314759828
+        ]
+       },
+       {
+        "name": "x3",
+        "kind": "numeric",
+        "values": [
+         9.510894935476928,
+         6.008286777834046,
+         9.689504766327689,
+         12.127661749334465,
+         9.449656865320724,
+         6.293328139698437,
+         9.751316144303336,
+         11.569949044619136,
+         10.403997193494062,
+         9.143851114403647,
+         13.696577791268279,
+         13.799905785223979,
+         9.803149930439439,
+         11.626890879584842,
+         10.784988777103573,
+         11.562885800923441,
+         12.906543034627923,
+         11.64037209066823,
+         10.175410689127414,
+         8.692988703567242,
+         8.376226241444325,
+         9.948923655200673,
+         12.316369086396595,
+         10.601041739404469,
+         10.106113292206544,
+         10.514543047625086,
+         10.071485724805722,
+         11.09447337178897,
+         7.754076841256142,
+         6.049504664255187,
+         9.149699900745395,
+         7.701852357961924,
+         13.230276108371333,
+         9.683046279544294,
+         9.494253309350148,
+         6.9236919309953375,
+         10.564172065720427,
+         8.752775731442886,
+         12.243644526477732,
+         11.682442062029372,
+         8.448207798907692,
+         10.82143288034104,
+         4.555167791336561,
+         8.653390402452231,
+         12.492443058322202,
+         11.580416056403799,
+         10.350681776926349,
+         9.941410796709304,
+         7.1609714852969155,
+         7.2800673519501675
+        ]
+       }
+      ]
+     }
+    },
+    "result": {
+     "n": 50,
+     "columns": 3
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "random-data",
+   "sigma_id": "random_data",
+   "roles": {},
+   "params": {
+    "distribution": "__valor_invalido__",
+    "a": 10,
+    "b": 2,
+    "n": 50,
+    "columns": 3
+   },
+   "error": "Valor no válido para «Distribución»."
+  }
+ ]
+}

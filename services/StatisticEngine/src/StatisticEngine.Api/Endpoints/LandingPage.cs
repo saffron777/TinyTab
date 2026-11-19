@@ -7,7 +7,12 @@ namespace StatisticEngine.Api.Endpoints;
 /// </summary>
 public static class LandingPage
 {
-    public static string Render(string version, bool scalarEnabled)
+    public static string Render(
+        string version,
+        bool scalarEnabled,
+        int analysisCount,
+        int dataCount,
+        int distributionCount)
     {
         var scalarCard = scalarEnabled
             ? "<a class=\"card\" href=\"scalar/v1\"><strong>Documentación interactiva</strong>"
@@ -52,17 +57,19 @@ public static class LandingPage
 </head>
 <body>
 <main>
-  <h1>StatisticEngine <span style="color: var(--muted); font-weight: 400">v{{version}}</span></h1>
-  <p class="sub">Motor estadístico de TinyTab como microservicio: 21 distribuciones y 60 análisis con
-  paridad verificada. API base <code>/api/v1</code>.</p>
+  <h1>StatisticEngine <span style="color: var(--muted); font-weight: 400">v{{{version}}}</span></h1>
+  <p class="sub">Motor estadístico de TinyTab como microservicio: {{{distributionCount}}} distribuciones,
+  {{{analysisCount}}} análisis (60 con paridad TinyTab + extensiones Sigma) y {{{dataCount}}} operaciones
+  de datos. API base <code>/api/v1</code>.</p>
 
   <h2>Explorar</h2>
   <div class="grid">
     {{{scalarCard}}}
     <a class="card" href="openapi/v1.json"><strong>OpenAPI 3.1 (JSON)</strong><span>Contrato completo para clientes</span></a>
     <a class="card" href="api/v1/endpoints"><strong>Inventario de endpoints</strong><span>Rutas reales publicadas por el servicio</span></a>
-    <a class="card" href="api/v1/analyses"><strong>Catálogo de análisis</strong><span>60 análisis con columnas y parámetros</span></a>
-    <a class="card" href="api/v1/distributions"><strong>Distribuciones</strong><span>21 distribuciones y sus parámetros</span></a>
+    <a class="card" href="api/v1/analyses"><strong>Catálogo de análisis</strong><span>{{{analysisCount}}} análisis con columnas y parámetros</span></a>
+    <a class="card" href="api/v1/data"><strong>Operaciones de datos</strong><span>{{{dataCount}}} transformaciones sobre frames tipados</span></a>
+    <a class="card" href="api/v1/distributions"><strong>Distribuciones</strong><span>{{{distributionCount}}} distribuciones y sus parámetros</span></a>
     <a class="card" href="api/v1/meta"><strong>Metadatos</strong><span>Versión, límites y tiempo en marcha</span></a>
     <a class="card" href="health/ready"><strong>Estado</strong><span>Readiness con autotest numérico</span></a>
     <a class="card" href="health/live"><strong>Vivo</strong><span>Liveness del proceso</span></a>
@@ -72,15 +79,19 @@ public static class LandingPage
   <table>
     <thead><tr><th>Método</th><th>Ruta</th><th>Qué hace</th></tr></thead>
     <tbody>
-      <tr><td class="method">GET</td><td><code>/api/v1/analyses</code></td><td>Catálogo completo; filtrable con <code>?category=</code></td></tr>
+      <tr><td class="method">GET</td><td><code>/api/v1/analyses</code></td><td>Catálogo completo; filtrable con <code>?category=</code> y <code>?origin=</code></td></tr>
       <tr><td class="method">GET</td><td><code>/api/v1/analyses/{id}</code></td><td>Definición de un análisis: columnas, parámetros y descripción</td></tr>
       <tr><td class="method">POST</td><td><code>/api/v1/analyses/{id}/run</code></td><td>Ejecuta el análisis; <code>?format=text</code> devuelve la sesión en texto</td></tr>
       <tr><td class="method">POST</td><td><code>/api/v1/analyses/{id}/validate</code></td><td>Valida la entrada sin ejecutar: <code>200 { valid, error? }</code></td></tr>
-      <tr><td class="method">GET</td><td><code>/api/v1/distributions</code></td><td>Las 21 distribuciones con sus parámetros</td></tr>
+      <tr><td class="method">GET</td><td><code>/api/v1/data</code></td><td>Catálogo de operaciones de datos</td></tr>
+      <tr><td class="method">GET</td><td><code>/api/v1/data/{id}</code></td><td>Definición de una operación de datos</td></tr>
+      <tr><td class="method">POST</td><td><code>/api/v1/data/{id}/run</code></td><td>Ejecuta la operación sobre un frame y devuelve el dataset resultante</td></tr>
+      <tr><td class="method">POST</td><td><code>/api/v1/data/{id}/validate</code></td><td>Valida el frame y los parámetros sin ejecutar</td></tr>
+      <tr><td class="method">GET</td><td><code>/api/v1/distributions</code></td><td>Las distribuciones con sus parámetros</td></tr>
       <tr><td class="method">GET</td><td><code>/api/v1/distributions/{id}</code></td><td>Una distribución</td></tr>
       <tr><td class="method">POST</td><td><code>/api/v1/distributions/{id}/evaluate</code></td><td>PDF/PMF, CDF, inversa, media, desviación y soporte</td></tr>
       <tr><td class="method">POST</td><td><code>/api/v1/distributions/{id}/sample</code></td><td>Muestreo determinista con semilla</td></tr>
-      <tr><td class="method">GET</td><td><code>/api/v1/meta</code></td><td>Versión, baseline de paridad y límites efectivos</td></tr>
+      <tr><td class="method">GET</td><td><code>/api/v1/meta</code></td><td>Versión, baselines de paridad y límites efectivos</td></tr>
       <tr><td class="method">GET</td><td><code>/api/v1/endpoints</code></td><td>Inventario de rutas vivas (esta misma tabla, siempre al día)</td></tr>
       <tr><td class="method">GET</td><td><code>/health/live</code> · <code>/health/ready</code></td><td>Probes de salud en JSON</td></tr>
     </tbody>

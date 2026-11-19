@@ -1,0 +1,2052 @@
+{
+ "module": "pruebas",
+ "sigmaCommit": "5c378d709e3df54b7df99dc2ead578c31a3ed346",
+ "python": "3.13.14",
+ "numpy": "2.5.3",
+ "pandas": "3.0.6",
+ "scipy": "1.18.1",
+ "statsmodels": "0.15.0",
+ "sklearn": "1.9.1",
+ "cases": [
+  {
+   "kind": "example",
+   "id": "anderson-darling",
+   "sigma_id": "anderson",
+   "deterministic": true,
+   "roles": {
+    "var": "y"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de Anderson-Darling de y",
+    "subtitle": "distribución Normal",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "n",
+        240
+       ],
+       [
+        "A²",
+        0.18257246401321936
+       ],
+       [
+        "Valor p",
+        0.15
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.1500 ≥ α = 0.05: no se rechaza H₀ (los datos siguen una distribución normal)."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "Estadístico A²",
+       "Valor p",
+       "n"
+      ],
+      "rows": [
+       [
+        0.18257246401321936,
+        0.15,
+        240
+       ]
+      ],
+      "note": "El valor p se interpola de tablas con los parámetros estimados; queda entre 0.01 y 0.15 (los extremos indican «menor» o «mayor» que eso)."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "statistic": 0.18257246401321936,
+     "p": 0.15,
+     "n": 240
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "anderson-darling",
+   "sigma_id": "anderson",
+   "roles": {},
+   "params": {},
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "anderson-darling",
+   "sigma_id": "anderson",
+   "roles": {
+    "var": "y"
+   },
+   "params": {
+    "dist": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Distribución»."
+  },
+  {
+   "kind": "example",
+   "id": "lilliefors",
+   "sigma_id": "lilliefors",
+   "deterministic": true,
+   "roles": {
+    "var": "y"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de Lilliefors de y",
+    "subtitle": "distribución normal con parámetros estimados",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "n",
+        240
+       ],
+       [
+        "D de Kolmogorov-Smirnov",
+        0.03703267653216569
+       ],
+       [
+        "Valor p",
+        0.6428658750010773
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.6429 ≥ α = 0.05: no se rechaza H₀ (los datos siguen una distribución normal)."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "Estadístico D",
+       "Valor p",
+       "n"
+      ],
+      "rows": [
+       [
+        0.03703267653216569,
+        0.6428658750010773,
+        240
+       ]
+      ],
+      "note": "Corrige la prueba de Kolmogorov-Smirnov porque los parámetros se estiman con los mismos datos; el valor p se obtiene de tablas (entre 0.001 y 0.2)."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "statistic": 0.03703267653216569,
+     "p": 0.6428658750010773,
+     "n": 240
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "lilliefors",
+   "sigma_id": "lilliefors",
+   "roles": {},
+   "params": {},
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "lilliefors",
+   "sigma_id": "lilliefors",
+   "roles": {
+    "var": "y"
+   },
+   "params": {
+    "dist": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Distribución»."
+  },
+  {
+   "kind": "example",
+   "id": "ks-one-sample",
+   "sigma_id": "ks_one",
+   "deterministic": true,
+   "roles": {
+    "var": "y"
+   },
+   "params": {
+    "dist": "norm",
+    "loc": 8,
+    "scale": 4.5
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Kolmogorov-Smirnov de y",
+    "subtitle": "frente a una distribución completamente especificada",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "n",
+        240
+       ],
+       [
+        "D",
+        0.03781392047329879
+       ],
+       [
+        "Valor p",
+        0.8693653198009493
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.8694 ≥ α = 0.05: no se rechaza H₀ (los datos provienen de esa distribución)."
+     },
+     {
+      "type": "table",
+      "title": "Distribución de referencia",
+      "columns": [
+       "Distribución",
+       "Ubicación",
+       "Escala"
+      ],
+      "rows": [
+       [
+        "Normal",
+        8.0,
+        4.5
+       ]
+      ],
+      "note": "Si los parámetros se estimaron de estos datos, use la prueba de Lilliefors o Anderson-Darling."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "statistic": 0.03781392047329879,
+     "p": 0.8693653198009493
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "ks-one-sample",
+   "sigma_id": "ks_one",
+   "roles": {},
+   "params": {
+    "dist": "norm",
+    "loc": 8,
+    "scale": 4.5
+   },
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "ks-one-sample",
+   "sigma_id": "ks_one",
+   "roles": {
+    "var": "y"
+   },
+   "params": {
+    "dist": "__valor_invalido__",
+    "loc": 8,
+    "scale": 4.5
+   },
+   "error": "Valor no válido para «Distribución»."
+  },
+  {
+   "kind": "example",
+   "id": "jarque-bera",
+   "sigma_id": "jarque_bera",
+   "deterministic": true,
+   "roles": {
+    "var": "y"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de Jarque-Bera de y",
+    "subtitle": "normalidad según asimetría y curtosis",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "n",
+        240
+       ],
+       [
+        "JB",
+        0.15278567540800436
+       ],
+       [
+        "Valor p",
+        0.9264521897132177
+       ],
+       [
+        "Asimetría",
+        -0.03127963457456766
+       ],
+       [
+        "Curtosis",
+        2.8933936897537187
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.9265 ≥ α = 0.05: no se rechaza H₀ (asimetría = 0 y curtosis = 3, como la normal)."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "JB",
+       "Valor p",
+       "Asimetría",
+       "Curtosis (normal = 3)"
+      ],
+      "rows": [
+       [
+        0.15278567540800436,
+        0.9264521897132177,
+        -0.03127963457456766,
+        2.8933936897537187
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "statistic": 0.15278567540800436,
+     "p": 0.9264521897132177,
+     "skew": -0.03127963457456766,
+     "kurtosis": 2.8933936897537187
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "jarque-bera",
+   "sigma_id": "jarque_bera",
+   "roles": {},
+   "params": {},
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "example",
+   "id": "ks-two-samples",
+   "sigma_id": "ks_two",
+   "deterministic": true,
+   "roles": {
+    "var": "y",
+    "group": "h"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Kolmogorov-Smirnov de dos muestras: y",
+    "subtitle": "no frente a si",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "n (no)",
+        129
+       ],
+       [
+        "n (si)",
+        111
+       ],
+       [
+        "D",
+        0.10307982401005655
+       ],
+       [
+        "Valor p",
+        0.5072285820753497
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.5072 ≥ α = 0.05: no se rechaza H₀ (las dos muestras provienen de la misma distribución)."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     },
+     {
+      "type": "table",
+      "title": "Resumen",
+      "columns": [
+       "Grupo",
+       "n",
+       "Media",
+       "Mediana",
+       "Desv. est."
+      ],
+      "rows": [
+       [
+        "no",
+        129,
+        8.045026737895633,
+        8.041506378636228,
+        4.342396968360653
+       ],
+       [
+        "si",
+        111,
+        8.115957064667512,
+        8.090463838478215,
+        4.463267894512797
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "statistic": 0.10307982401005655,
+     "p": 0.5072285820753497
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "ks-two-samples",
+   "sigma_id": "ks_two",
+   "roles": {
+    "group": "h"
+   },
+   "params": {},
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "ks-two-samples",
+   "sigma_id": "ks_two",
+   "roles": {
+    "var": "y"
+   },
+   "params": {},
+   "error": "Elija la columna de «Grupos (2 categorías)»."
+  },
+  {
+   "kind": "error",
+   "id": "ks-two-samples",
+   "sigma_id": "ks_two",
+   "roles": {
+    "var": "y",
+    "group": "h"
+   },
+   "params": {
+    "alternative": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Hipótesis alternativa»."
+  },
+  {
+   "kind": "example",
+   "id": "variance-equality-tests",
+   "sigma_id": "variances",
+   "deterministic": true,
+   "roles": {
+    "var": "y",
+    "group": "g"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Igualdad de varianzas de y",
+    "subtitle": "3 grupos de «g»",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Grupos",
+        3
+       ],
+       [
+        "n total",
+        240
+       ],
+       [
+        "Razón máx/mín de varianzas",
+        1.9091321258853744
+       ]
+      ]
+     },
+     {
+      "type": "table",
+      "title": "Pruebas de homogeneidad de varianzas",
+      "columns": [
+       "Prueba",
+       "Estadístico",
+       "gl",
+       "Valor p"
+      ],
+      "rows": [
+       [
+        "Bartlett (supone normalidad)",
+        8.143120664219538,
+        "2",
+        0.017050762887652327
+       ],
+       [
+        "Levene (centrada en la media)",
+        5.568050182566268,
+        "2, 237",
+        0.004334306381622921
+       ],
+       [
+        "Brown-Forsythe / Levene (mediana)",
+        4.342312969839839,
+        "2, 237",
+        0.014056858854504292
+       ],
+       [
+        "Fligner-Killeen (robusta)",
+        8.608963113988064,
+        "2",
+        0.013507886796204653
+       ]
+      ],
+      "note": "Con datos no normales prefiera Brown-Forsythe o Fligner-Killeen."
+     },
+     {
+      "type": "alert",
+      "severity": "warning",
+      "message": "p = 0.0141 < α = 0.05: se rechaza H₀ (todas las varianzas son iguales (Brown-Forsythe))."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     },
+     {
+      "type": "table",
+      "title": "Desviaciones estándar por grupo",
+      "columns": [
+       "Grupo",
+       "n",
+       "Varianza",
+       "Desv. est.",
+       "IC inf.",
+       "IC sup."
+      ],
+      "rows": [
+       [
+        "A",
+        74,
+        24.426951036261116,
+        4.942362900097596,
+        4.120103688031884,
+        6.143444788795754
+       ],
+       [
+        "B",
+        85,
+        12.794793354039303,
+        3.5769810390941834,
+        3.0160443922120743,
+        4.375316561132809
+       ],
+       [
+        "C",
+        81,
+        17.498309037264452,
+        4.183098019083996,
+        3.513438832114024,
+        5.144617006215531
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "levene_p": 0.004334306381622921,
+     "brown_forsythe_p": 0.014056858854504292,
+     "bartlett_p": 0.017050762887652327,
+     "fligner_p": 0.013507886796204653
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "variance-equality-tests",
+   "sigma_id": "variances",
+   "roles": {
+    "group": "g"
+   },
+   "params": {},
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "variance-equality-tests",
+   "sigma_id": "variances",
+   "roles": {
+    "var": "y"
+   },
+   "params": {},
+   "error": "Elija la columna de «Grupos»."
+  },
+  {
+   "kind": "example",
+   "id": "mood-median",
+   "sigma_id": "mood_median",
+   "deterministic": true,
+   "roles": {
+    "var": "y",
+    "group": "g"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de la mediana de Mood de y",
+    "subtitle": "3 grupos de «g»",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Mediana global",
+        8.065985108557221
+       ],
+       [
+        "χ²",
+        15.702259121866966
+       ],
+       [
+        "Valor p",
+        0.00038931196820588335
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "warning",
+      "message": "p = 0.0004 < α = 0.05: se rechaza H₀ (todos los grupos tienen la misma mediana)."
+     },
+     {
+      "type": "table",
+      "title": "Datos por encima y por debajo de la mediana global",
+      "columns": [
+       "Grupo",
+       "n",
+       "Mediana",
+       "> mediana global",
+       "≤ mediana global"
+      ],
+      "rows": [
+       [
+        "A",
+        74,
+        6.532584182066808,
+        32,
+        42
+       ],
+       [
+        "B",
+        85,
+        9.29360273267907,
+        57,
+        28
+       ],
+       [
+        "C",
+        81,
+        7.299261758889852,
+        31,
+        50
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "statistic": 15.702259121866966,
+     "p": 0.00038931196820588335,
+     "grand_median": 8.065985108557221
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "mood-median",
+   "sigma_id": "mood_median",
+   "roles": {
+    "group": "g"
+   },
+   "params": {},
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "mood-median",
+   "sigma_id": "mood_median",
+   "roles": {
+    "var": "y"
+   },
+   "params": {},
+   "error": "Elija la columna de «Grupos»."
+  },
+  {
+   "kind": "example",
+   "id": "friedman",
+   "sigma_id": "friedman",
+   "deterministic": true,
+   "roles": {
+    "vars": [
+     "r1",
+     "r2",
+     "r3"
+    ]
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de Friedman",
+    "subtitle": "3 tratamientos en 240 bloques (filas completas)",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Bloques",
+        240
+       ],
+       [
+        "Tratamientos",
+        3
+       ],
+       [
+        "χ²",
+        1.0406249999998634
+       ],
+       [
+        "Valor p",
+        0.5943347893252942
+       ],
+       [
+        "W de Kendall",
+        0.0021679687499997153
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.5943 ≥ α = 0.05: no se rechaza H₀ (los tratamientos no difieren)."
+     },
+     {
+      "type": "table",
+      "title": "Rangos medios por tratamiento",
+      "columns": [
+       "Tratamiento",
+       "Mediana",
+       "Rango medio",
+       "Suma de rangos"
+      ],
+      "rows": [
+       [
+        "r1",
+        3.0,
+        1.98125,
+        475.5
+       ],
+       [
+        "r2",
+        3.0,
+        1.975,
+        474.0
+       ],
+       [
+        "r3",
+        3.0,
+        2.04375,
+        490.5
+       ]
+      ],
+      "note": "W de Kendall = concordancia entre bloques (0 a 1)."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "statistic": 1.0406249999998634,
+     "p": 0.5943347893252942,
+     "kendall_w": 0.0021679687499997153
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "friedman",
+   "sigma_id": "friedman",
+   "roles": {},
+   "params": {},
+   "error": "Elija al menos una columna para «Tratamientos (columnas)»."
+  },
+  {
+   "kind": "example",
+   "id": "mcnemar",
+   "sigma_id": "mcnemar",
+   "deterministic": true,
+   "roles": {
+    "a": "h",
+    "b": "b"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de McNemar",
+    "subtitle": "h frente a b (positivo = si / 1)",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Pares",
+        240
+       ],
+       [
+        "Discordantes",
+        133
+       ],
+       [
+        "Valor p",
+        0.7287085285558319
+       ],
+       [
+        "Método",
+        "χ² con corrección"
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.7287 ≥ α = 0.05: no se rechaza H₀ (las dos mediciones tienen la misma proporción de positivos)."
+     },
+     {
+      "type": "table",
+      "title": "Tabla de pares",
+      "columns": [
+       "",
+       "b positivo",
+       "b negativo"
+      ],
+      "rows": [
+       [
+        "h positivo",
+        42,
+        69
+       ],
+       [
+        "h negativo",
+        64,
+        65
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "table",
+      "title": "Proporciones de positivos",
+      "columns": [
+       "Medición",
+       "Proporción"
+      ],
+      "rows": [
+       [
+        "h",
+        0.4625
+       ],
+       [
+        "b",
+        0.44166666666666665
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "p": 0.7287085285558319,
+     "discordant": 133
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "mcnemar",
+   "sigma_id": "mcnemar",
+   "roles": {
+    "b": "b"
+   },
+   "params": {},
+   "error": "Elija la columna de «Medición A (2 valores)»."
+  },
+  {
+   "kind": "error",
+   "id": "mcnemar",
+   "sigma_id": "mcnemar",
+   "roles": {
+    "a": "h"
+   },
+   "params": {},
+   "error": "Elija la columna de «Medición B (2 valores)»."
+  },
+  {
+   "kind": "error",
+   "id": "mcnemar",
+   "sigma_id": "mcnemar",
+   "roles": {
+    "a": "h",
+    "b": "b"
+   },
+   "params": {
+    "method": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Método»."
+  },
+  {
+   "kind": "example",
+   "id": "cochran-q",
+   "sigma_id": "cochran_q",
+   "deterministic": true,
+   "roles": {
+    "vars": [
+     "c1",
+     "c2",
+     "c3"
+    ]
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Q de Cochran",
+    "subtitle": "3 mediciones binarias en 240 sujetos",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Sujetos",
+        240
+       ],
+       [
+        "Q",
+        3.196261682242991
+       ],
+       [
+        "gl",
+        2
+       ],
+       [
+        "Valor p",
+        0.20227424757212642
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.2023 ≥ α = 0.05: no se rechaza H₀ (la proporción de éxitos es la misma en todas las mediciones)."
+     },
+     {
+      "type": "table",
+      "title": "Éxitos por medición",
+      "columns": [
+       "Medición",
+       "Éxitos",
+       "Proporción"
+      ],
+      "rows": [
+       [
+        "c1",
+        100,
+        0.4166666666666667
+       ],
+       [
+        "c2",
+        109,
+        0.45416666666666666
+       ],
+       [
+        "c3",
+        115,
+        0.4791666666666667
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "statistic": 3.196261682242991,
+     "p": 0.20227424757212642
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "cochran-q",
+   "sigma_id": "cochran_q",
+   "roles": {},
+   "params": {},
+   "error": "Elija al menos una columna para «Mediciones 0/1»."
+  },
+  {
+   "kind": "example",
+   "id": "poisson-rate",
+   "sigma_id": "poisson_rate",
+   "deterministic": true,
+   "roles": {},
+   "params": {
+    "design": "two"
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Comparación de dos tasas de Poisson",
+    "subtitle": "10/10 frente a 15/12",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Tasa 1",
+        1.0
+       ],
+       [
+        "Tasa 2",
+        1.25
+       ],
+       [
+        "Razón de tasas",
+        0.8
+       ],
+       [
+        "Valor p",
+        0.6895384075392774
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.6895 ≥ α = 0.05: no se rechaza H₀ (la razón de tasas es 1)."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "Muestra",
+       "Eventos",
+       "Exposición",
+       "Tasa"
+      ],
+      "rows": [
+       [
+        "1",
+        10,
+        10.0,
+        1.0
+       ],
+       [
+        "2",
+        15,
+        12.0,
+        1.25
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "table",
+      "title": "Razón de tasas (1 / 2)",
+      "columns": [
+       "Razón",
+       "IC 95 % (score) inf.",
+       "sup.",
+       "Razón H₀",
+       "Valor p"
+      ],
+      "rows": [
+       [
+        0.8,
+        0.3666471718191667,
+        1.7455473319929853,
+        1.0,
+        0.6895384075392774
+       ]
+      ],
+      "note": "Prueba: exact-cond."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "ratio": 0.8,
+     "p": 0.6895384075392774
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "poisson-rate",
+   "sigma_id": "poisson_rate",
+   "roles": {},
+   "params": {
+    "design": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Diseño»."
+  },
+  {
+   "kind": "example",
+   "id": "odds-ratio",
+   "sigma_id": "odds_ratio",
+   "deterministic": true,
+   "roles": {
+    "exposure": "h",
+    "outcome": "b"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Odds ratio y riesgo relativo: b según h",
+    "subtitle": "expuesto = si · evento = 1",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Odds ratio",
+        0.6182065217391305
+       ],
+       [
+        "Riesgo relativo",
+        0.762668918918919
+       ],
+       [
+        "Diferencia de riesgos",
+        -0.11774565262937353
+       ],
+       [
+        "p (Fisher)",
+        0.06988276401441548
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.0699 ≥ α = 0.05: no se rechaza H₀ (no hay asociación entre la exposición y el evento)."
+     },
+     {
+      "type": "table",
+      "title": "Tabla 2×2",
+      "columns": [
+       "",
+       "b = 1",
+       "Sin el evento",
+       "Total",
+       "Riesgo"
+      ],
+      "rows": [
+       [
+        "h = si",
+        42,
+        69,
+        111,
+        0.3783783783783784
+       ],
+       [
+        "No expuestos",
+        64,
+        65,
+        129,
+        0.49612403100775193
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "table",
+      "title": "Medidas de asociación",
+      "columns": [
+       "Medida",
+       "Estimación",
+       "IC 95 % inf.",
+       "IC 95 % sup."
+      ],
+      "rows": [
+       [
+        "Odds ratio",
+        0.6182065217391305,
+        0.36900857543583343,
+        1.0356922005658111
+       ],
+       [
+        "Riesgo relativo",
+        0.762668918918919,
+        0.5677593126687078,
+        1.0244902494877406
+       ]
+      ],
+      "note": "Si hay celdas en cero se suma 0.5 a todas (corrección de Haldane)."
+     },
+     {
+      "type": "table",
+      "title": "Pruebas de asociación",
+      "columns": [
+       "Prueba",
+       "Estadístico",
+       "Valor p"
+      ],
+      "rows": [
+       [
+        "Exacta de Fisher (razón de odds)",
+        0.6182065217391305,
+        0.06988276401441548
+       ],
+       [
+        "χ² de Pearson",
+        3.354308707402824,
+        0.06702934885523827
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "odds_ratio": 0.6182065217391305,
+     "risk_ratio": 0.762668918918919,
+     "fisher_p": 0.06988276401441548
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "odds-ratio",
+   "sigma_id": "odds_ratio",
+   "roles": {
+    "outcome": "b"
+   },
+   "params": {},
+   "error": "Elija la columna de «Exposición (2 valores; el mayor es «expuesto»)»."
+  },
+  {
+   "kind": "error",
+   "id": "odds-ratio",
+   "sigma_id": "odds_ratio",
+   "roles": {
+    "exposure": "h"
+   },
+   "params": {},
+   "error": "Elija la columna de «Evento (2 valores; el mayor es «evento»)»."
+  },
+  {
+   "kind": "example",
+   "id": "mantel-haenszel",
+   "sigma_id": "cmh",
+   "deterministic": true,
+   "roles": {
+    "exposure": "h",
+    "outcome": "b",
+    "stratum": "g"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Cochran-Mantel-Haenszel: b según h",
+    "subtitle": "estratificado por g (3 estratos)",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Odds ratio común",
+        0.6285792918982086
+       ],
+       [
+        "χ² de CMH",
+        3.1298557263837443
+       ],
+       [
+        "p (CMH)",
+        0.07687054299678586
+       ],
+       [
+        "p (Breslow-Day)",
+        0.14961197583075236
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.0769 ≥ α = 0.05: no se rechaza H₀ (la exposición y el evento son independientes en todos los estratos)."
+     },
+     {
+      "type": "table",
+      "title": "Odds ratio por estrato",
+      "columns": [
+       "g",
+       "n",
+       "Odds ratio"
+      ],
+      "rows": [
+       [
+        "A",
+        74,
+        1.3076923076923077
+       ],
+       [
+        "B",
+        85,
+        0.525
+       ],
+       [
+        "C",
+        81,
+        0.37037037037037035
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "table",
+      "title": "Resultado combinado",
+      "columns": [
+       "Medida",
+       "Estimación",
+       "IC 95 % inf.",
+       "IC 95 % sup.",
+       "Valor p"
+      ],
+      "rows": [
+       [
+        "Odds ratio común (Mantel-Haenszel)",
+        0.6285792918982086,
+        0.3752459330943604,
+        1.0529412616016212,
+        0.07687054299678586
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Homogeneidad de los odds ratio (Breslow-Day): p = 0.1496. No hay evidencia de que difieran entre estratos."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "pooled_or": 0.6285792918982086,
+     "cmh_p": 0.07687054299678586,
+     "breslow_day_p": 0.14961197583075236
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "mantel-haenszel",
+   "sigma_id": "cmh",
+   "roles": {
+    "outcome": "b",
+    "stratum": "g"
+   },
+   "params": {},
+   "error": "Elija la columna de «Exposición (2 valores)»."
+  },
+  {
+   "kind": "error",
+   "id": "mantel-haenszel",
+   "sigma_id": "cmh",
+   "roles": {
+    "exposure": "h",
+    "stratum": "g"
+   },
+   "params": {},
+   "error": "Elija la columna de «Evento (2 valores)»."
+  },
+  {
+   "kind": "error",
+   "id": "mantel-haenszel",
+   "sigma_id": "cmh",
+   "roles": {
+    "exposure": "h",
+    "outcome": "b"
+   },
+   "params": {},
+   "error": "Elija la columna de «Estrato»."
+  },
+  {
+   "kind": "example",
+   "id": "kappa",
+   "sigma_id": "kappa",
+   "deterministic": true,
+   "roles": {
+    "raters": [
+     "r1",
+     "r2"
+    ]
+   },
+   "params": {
+    "weights": "quadratic"
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Acuerdo entre evaluadores (kappa)",
+    "subtitle": "2 evaluadores · 240 sujetos · 5 categorías",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Kappa",
+        0.5530913978494625
+       ],
+       [
+        "IC 95 %",
+        "0.469 a 0.638"
+       ],
+       [
+        "Acuerdo observado",
+        0.38333333333333336
+       ],
+       [
+        "Valor p",
+        9.65771945885924e-18
+       ]
+      ]
+     },
+     {
+      "type": "table",
+      "title": "Tabla de calificaciones",
+      "columns": [
+       "r1 \\ r2",
+       "1",
+       "2",
+       "3",
+       "4",
+       "5"
+      ],
+      "rows": [
+       [
+        "1",
+        11,
+        8,
+        7,
+        1,
+        0
+       ],
+       [
+        "2",
+        11,
+        27,
+        21,
+        7,
+        0
+       ],
+       [
+        "3",
+        3,
+        20,
+        27,
+        19,
+        4
+       ],
+       [
+        "4",
+        0,
+        7,
+        19,
+        20,
+        6
+       ],
+       [
+        "5",
+        0,
+        1,
+        6,
+        8,
+        7
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "El kappa ponderado supone categorías ordinales, en el orden en que aparecen arriba."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "Medida",
+       "Valor",
+       "Interpretación (Landis y Koch)"
+      ],
+      "rows": [
+       [
+        "Kappa de Cohen ponderado (quadratic)",
+        0.5530913978494625,
+        "moderado"
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "kappa": 0.5530913978494625,
+     "agreement": 0.38333333333333336,
+     "n": 240
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "kappa",
+   "sigma_id": "kappa",
+   "roles": {},
+   "params": {
+    "weights": "quadratic"
+   },
+   "error": "Elija al menos una columna para «Evaluadores (una columna cada uno)»."
+  },
+  {
+   "kind": "error",
+   "id": "kappa",
+   "sigma_id": "kappa",
+   "roles": {
+    "raters": [
+     "r1",
+     "r2"
+    ]
+   },
+   "params": {
+    "weights": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Ponderación (2 evaluadores, categorías ordenadas)»."
+  },
+  {
+   "kind": "example",
+   "id": "icc",
+   "sigma_id": "icc",
+   "deterministic": true,
+   "roles": {
+    "raters": [
+     "r1",
+     "r2",
+     "r3"
+    ]
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Coeficiente de correlación intraclase",
+    "subtitle": "3 evaluadores · 240 sujetos",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "ICC(2,1)",
+        0.546919431279621
+       ],
+       [
+        "ICC(3,1)",
+        0.546412295065796
+       ],
+       [
+        "ICC(2,k)",
+        0.783612494341331
+       ]
+      ]
+     },
+     {
+      "type": "table",
+      "title": "Las seis formas del ICC",
+      "columns": [
+       "Forma",
+       "Modelo",
+       "ICC",
+       "F",
+       "gl1",
+       "gl2",
+       "Valor p",
+       "IC 95 % inf.",
+       "IC 95 % sup."
+      ],
+      "rows": [
+       [
+        "ICC(1,1)",
+        "Un factor aleatorio, una medición",
+        0.5470595589832002,
+        4.623387377963738,
+        239.0,
+        480.0,
+        3.0144189827415025e-46,
+        0.4760859379275138,
+        0.614592818389747
+       ],
+       [
+        "ICC(2,1)",
+        "Dos factores aleatorios, una medición (acuerdo absoluto)",
+        0.546919431279621,
+        4.613935887956157,
+        239.0,
+        478.0,
+        5.0465548099147274e-46,
+        0.4758775370982187,
+        0.6145054151788609
+       ],
+       [
+        "ICC(3,1)",
+        "Evaluadores fijos, una medición (consistencia)",
+        0.546412295065796,
+        4.613935887956157,
+        239.0,
+        478.0,
+        5.0465548099147274e-46,
+        0.47533004390972267,
+        0.6140454902116739
+       ],
+       [
+        "ICC(1,k)",
+        "Un factor aleatorio, promedio de k mediciones",
+        0.7837083682915563,
+        4.623387377963738,
+        239.0,
+        480.0,
+        3.0144189827415025e-46,
+        0.7316250333526508,
+        0.8271085300158979
+       ],
+       [
+        "ICC(2,k)",
+        "Dos factores aleatorios, promedio de k",
+        0.783612494341331,
+        4.613935887956157,
+        239.0,
+        478.0,
+        5.0465548099147274e-46,
+        0.7314609451610781,
+        0.8270557596351952
+       ],
+       [
+        "ICC(3,k)",
+        "Evaluadores fijos, promedio de k",
+        0.7832653022747198,
+        4.613935887956157,
+        239.0,
+        478.0,
+        5.0465548099147274e-46,
+        0.731029532327807,
+        0.8267779398689578
+       ]
+      ],
+      "note": "Elija según el diseño: ICC(2,·) si los evaluadores son una muestra de una población de evaluadores, ICC(3,·) si son los únicos de interés. Menos de 0.5 pobre, 0.5–0.75 moderada, 0.75–0.9 buena, más de 0.9 excelente (Koo y Li, 2016)."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "icc": {
+      "ICC(1,1)": 0.5470595589832002,
+      "ICC(2,1)": 0.546919431279621,
+      "ICC(3,1)": 0.546412295065796,
+      "ICC(1,k)": 0.7837083682915563,
+      "ICC(2,k)": 0.783612494341331,
+      "ICC(3,k)": 0.7832653022747198
+     }
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "icc",
+   "sigma_id": "icc",
+   "roles": {},
+   "params": {},
+   "error": "Elija al menos una columna para «Evaluadores (una columna cada uno; una fila por sujeto)»."
+  },
+  {
+   "kind": "example",
+   "id": "hotelling-t2",
+   "sigma_id": "hotelling",
+   "deterministic": true,
+   "roles": {
+    "vars": [
+     "x1",
+     "x2",
+     "x3"
+    ],
+    "group": "h"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "T² de Hotelling (dos muestras)",
+    "subtitle": "no (n = 129) frente a si (n = 111)",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "T²",
+        0.5489609470172365
+       ],
+       [
+        "F",
+        0.181449276605137
+       ],
+       [
+        "gl",
+        "3, 236"
+       ],
+       [
+        "Valor p",
+        0.9089285355894221
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "p = 0.9089 ≥ α = 0.05: no se rechaza H₀ (los vectores de medias son iguales)."
+     },
+     {
+      "type": "table",
+      "title": "Medias",
+      "columns": [
+       "Variable",
+       "Media no",
+       "Media si"
+      ],
+      "rows": [
+       [
+        "x1",
+        9.68587022728541,
+        9.722345374580845
+       ],
+       [
+        "x2",
+        4.828762923253497,
+        4.891889337537319
+       ],
+       [
+        "x3",
+        4.738414694110987,
+        4.972057397043331
+       ]
+      ],
+      "note": null
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "t2": 0.5489609470172365,
+     "f": 0.181449276605137,
+     "p": 0.9089285355894221
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "hotelling-t2",
+   "sigma_id": "hotelling",
+   "roles": {
+    "group": "h"
+   },
+   "params": {},
+   "error": "Elija al menos una columna para «Variables (2 o más)»."
+  },
+  {
+   "kind": "error",
+   "id": "hotelling-t2",
+   "sigma_id": "hotelling",
+   "roles": {
+    "vars": [
+     "x1",
+     "x2",
+     "x3"
+    ],
+    "group": "h"
+   },
+   "params": {
+    "design": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Diseño»."
+  },
+  {
+   "kind": "example",
+   "id": "partial-correlation",
+   "sigma_id": "partial_corr",
+   "deterministic": true,
+   "roles": {
+    "x": "x1",
+    "y": "y",
+    "covars": [
+     "x2"
+    ]
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Correlación parcial de x1 y y",
+    "subtitle": "controlando por x2 · Pearson",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Correlación parcial",
+        0.6984868793889274
+       ],
+       [
+        "Correlación simple",
+        0.5228158623916773
+       ],
+       [
+        "Valor p",
+        2.680521266413268e-36
+       ],
+       [
+        "n",
+        240
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "warning",
+      "message": "p  < 0.0001 < α = 0.05: se rechaza H₀ (la correlación parcial es 0)."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "Correlación parcial",
+       "gl",
+       "t",
+       "Valor p",
+       "IC 95 % inf.",
+       "IC sup."
+      ],
+      "rows": [
+       [
+        0.6984868793889274,
+        237,
+        15.026167289667335,
+        2.680521266413268e-36,
+        0.6271818042542715,
+        0.758180912423874
+       ]
+      ],
+      "note": "El intervalo usa la transformación z de Fisher con n − 3 − (covariables) grados de libertad."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "partial": 0.6984868793889274,
+     "simple": 0.5228158623916773,
+     "p": 2.680521266413268e-36,
+     "n": 240
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "partial-correlation",
+   "sigma_id": "partial_corr",
+   "roles": {
+    "y": "y",
+    "covars": [
+     "x2"
+    ]
+   },
+   "params": {},
+   "error": "Elija la columna de «Variable X»."
+  },
+  {
+   "kind": "error",
+   "id": "partial-correlation",
+   "sigma_id": "partial_corr",
+   "roles": {
+    "x": "x1",
+    "covars": [
+     "x2"
+    ]
+   },
+   "params": {},
+   "error": "Elija la columna de «Variable Y»."
+  },
+  {
+   "kind": "error",
+   "id": "partial-correlation",
+   "sigma_id": "partial_corr",
+   "roles": {
+    "x": "x1",
+    "y": "y"
+   },
+   "params": {},
+   "error": "Elija al menos una columna para «Covariables a controlar»."
+  },
+  {
+   "kind": "error",
+   "id": "partial-correlation",
+   "sigma_id": "partial_corr",
+   "roles": {
+    "x": "x1",
+    "y": "y",
+    "covars": [
+     "x2"
+    ]
+   },
+   "params": {
+    "method": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Coeficiente»."
+  },
+  {
+   "kind": "example",
+   "id": "confidence-interval",
+   "sigma_id": "ci_one",
+   "deterministic": true,
+   "roles": {
+    "var": "y"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Intervalos de confianza de y",
+    "subtitle": "nivel 95 % · n = 240",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Media",
+        8.077832014027626
+       ],
+       [
+        "Mediana",
+        8.065985108557221
+       ],
+       [
+        "Desv. estándar",
+        4.389605668768984
+       ]
+      ]
+     },
+     {
+      "type": "table",
+      "title": "Intervalos de confianza",
+      "columns": [
+       "Parámetro",
+       "Estimación",
+       "Límite inf.",
+       "Límite sup."
+      ],
+      "rows": [
+       [
+        "Media (t de Student)",
+        8.077832014027626,
+        7.519653963003199,
+        8.636010065052053
+       ],
+       [
+        "Desviación estándar (χ²)",
+        4.389605668768984,
+        4.028885705753705,
+        4.8218234994766425
+       ],
+       [
+        "Varianza (χ²)",
+        19.268637927288797,
+        16.23192003002653,
+        23.249981860105173
+       ],
+       [
+        "Mediana (signos, confianza 95.5 %)",
+        8.065985108557221,
+        7.410199212938556,
+        8.824753864617643
+       ]
+      ],
+      "note": "La media y las desviaciones suponen datos aproximadamente normales; el de la mediana no."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "mean": 8.077832014027626,
+     "sd": 4.389605668768984,
+     "mean_ci": [
+      7.519653963003199,
+      8.636010065052053
+     ]
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "confidence-interval",
+   "sigma_id": "ci_one",
+   "roles": {},
+   "params": {},
+   "error": "Elija la columna de «Variable»."
+  }
+ ]
+}

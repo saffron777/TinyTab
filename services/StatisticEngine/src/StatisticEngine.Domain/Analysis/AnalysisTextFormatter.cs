@@ -19,19 +19,26 @@ public static class AnalysisTextFormatter
 
         foreach (var section in result.Sections)
         {
-            lines.Add($"{Rule} {section.Title}");
-            lines.Add(section switch
+            if (section is HeadingSection heading)
             {
-                TextSection text => text.Text,
-                TableSection table => FormatTable(table.Headers, table.Rows),
-                _ => string.Empty
-            });
+                lines.Add(heading.Title);
+                lines.Add(string.Empty);
+                continue;
+            }
+
+            lines.Add($"{Rule} {section.Title}");
+            lines.Add(RenderSection(section));
             lines.Add(string.Empty);
         }
 
         if (result.Charts is { Count: > 0 } charts)
         {
             lines.Add($"Gráficos generados: {charts.Count} ({string.Join(", ", charts.Select(DescribeKind))})");
+        }
+
+        if (result.Datasets is { Count: > 0 } datasets)
+        {
+            lines.Add($"Datasets generados: {string.Join(", ", datasets.Select(pair => pair.Value.Label))}");
         }
 
         return TrimEnd(string.Join('\n', lines));
@@ -62,8 +69,35 @@ public static class AnalysisTextFormatter
         {
             TextSection text => $"{text.Title}\n{text.Text}",
             TableSection table => $"{table.Title}\n{FormatTable(table.Headers, table.Rows)}",
+            HeadingSection heading => heading.Title,
+            TilesSection tiles => $"{tiles.Title}\n{RenderTiles(tiles)}",
+            AlertSection alert => $"{alert.Title}\n[{alert.Severity}] {alert.Message}",
             _ => section.Title
         };
+
+    private static string RenderSection(AnalysisSection section) =>
+        section switch
+        {
+            TextSection text => text.Text,
+            TableSection table => FormatTable(table.Headers, table.Rows) + NoteLine(table.Note),
+            TilesSection tiles => RenderTiles(tiles),
+            AlertSection alert => $"[{alert.Severity}] {alert.Message}",
+            _ => string.Empty
+        };
+
+    private static string RenderTiles(TilesSection tiles)
+    {
+        var builder = new StringBuilder();
+        foreach (var item in tiles.Items)
+        {
+            if (builder.Length > 0) builder.Append('\n');
+            builder.Append(item.Label).Append(": ").Append(item.Value);
+            if (item.Hint is not null) builder.Append(" (").Append(item.Hint).Append(')');
+        }
+        return builder.ToString();
+    }
+
+    private static string NoteLine(string? note) => note is null ? string.Empty : $"\n{note}";
 
     private static string RenderRow(IReadOnlyList<string> row, int[] widths)
     {
@@ -97,6 +131,16 @@ public static class AnalysisTextFormatter
             Charts.BarChart => "bar",
             Charts.ParetoChart => "pareto",
             Charts.PcaChart => "pca",
+            Charts.SeriesChart => "series",
+            Charts.ScatterGroupsChart => "scatter-groups",
+            Charts.HeatmapChart => "heatmap",
+            Charts.ContourChart => "contour",
+            Charts.Scatter3DChart => "scatter3d",
+            Charts.SplomChart => "splom",
+            Charts.PieChart => "pie",
+            Charts.IntervalChart => "interval",
+            Charts.StemChart => "stem",
+            Charts.GroupedBarChart => "grouped-bar",
             _ => "unknown"
         };
 }

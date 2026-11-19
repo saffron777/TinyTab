@@ -6,7 +6,8 @@ namespace StatisticEngine.Application.UseCases;
 
 /// <summary>
 /// Casos de uso del catálogo de análisis: ejecutar, validar y listar.
-/// Portado de <c>application/usecases/analysis-runner.ts</c>.
+/// Portado de <c>application/usecases/analysis-runner.ts</c>. Los análisis extendidos validan
+/// roles y parámetros con <see cref="AnalysisValidator"/> antes de ejecutarse.
 /// </summary>
 public sealed class AnalysisService : IAnalysisRunner
 {
@@ -17,16 +18,31 @@ public sealed class AnalysisService : IAnalysisRunner
         {
             return Result<AnalysisResult>.Err(DomainErrorCode.InvalidInput, $"Análisis desconocido: {analysisId}");
         }
+
+        if (analysis.Origin == AnalysisCategories.SigmaOrigin)
+        {
+            var validation = AnalysisValidator.Validate(analysis, input);
+            if (validation.IsError)
+            {
+                return Result<AnalysisResult>.Err(validation.Error.Code, validation.Error.Message);
+            }
+        }
+
         return analysis.Run(input);
     }
 
-    /// <summary>Paridad con <c>validateInput</c>: sólo comprueba requisitos obligatorios de columnas.</summary>
+    /// <summary>Paridad con <c>validateInput</c>: los 60 baseline sólo comprueban columnas obligatorias.</summary>
     public static Result<Unit> Validate(string analysisId, AnalysisInput input)
     {
         var analysis = AnalysisCatalog.Find(analysisId);
         if (analysis is null)
         {
             return Result<Unit>.Err(DomainErrorCode.InvalidInput, "Análisis desconocido.");
+        }
+
+        if (analysis.Origin == AnalysisCategories.SigmaOrigin)
+        {
+            return AnalysisValidator.Validate(analysis, input);
         }
 
         foreach (var requirement in analysis.NumericColumns)

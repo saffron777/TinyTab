@@ -48,6 +48,24 @@ public sealed class LimitsOptions
 
     public int MaxSampleCount { get; set; } = 100_000;
 
+    /// <summary>Máximo de filas de un frame tipado (análisis extendidos y operaciones de datos).</summary>
+    public int MaxDataRows { get; set; } = 250_000;
+
+    /// <summary>Máximo de valores totales de un frame (incluidos los datasets auxiliares).</summary>
+    public long MaxDatasetValues { get; set; } = 4_000_000;
+
+    /// <summary>Máximo de filas de una tabla de salida antes de recortarla.</summary>
+    public int MaxTableRows { get; set; } = 20_000;
+
+    /// <summary>Máximo de puntos de una serie de un gráfico de salida.</summary>
+    public int MaxChartPoints { get; set; } = 10_000;
+
+    /// <summary>Longitud máxima de una expresión del lenguaje de fórmulas.</summary>
+    public int MaxExpressionLength { get; set; } = 1_000;
+
+    /// <summary>Tiempo máximo de los análisis marcados como pesados.</summary>
+    public int HeavyRequestTimeoutSeconds { get; set; } = 300;
+
     /// <summary>
     /// Tamaño máximo del cuerpo. Coherente con 1.000.000 de valores numéricos en JSON
     /// (≈ 10-24 bytes por valor): 32 MiB deja margen sobre el peor caso realista.

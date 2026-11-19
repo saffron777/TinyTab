@@ -1,0 +1,414 @@
+{
+ "module": "potencia",
+ "sigmaCommit": "5c378d709e3df54b7df99dc2ead578c31a3ed346",
+ "python": "3.13.14",
+ "numpy": "2.5.3",
+ "pandas": "3.0.6",
+ "scipy": "1.18.1",
+ "statsmodels": "0.15.0",
+ "sklearn": "1.9.1",
+ "cases": [
+  {
+   "kind": "example",
+   "id": "power-correlation",
+   "sigma_id": "corr_power",
+   "deterministic": true,
+   "roles": {},
+   "params": {
+    "r": 0.3
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Potencia y tamaño de muestra: correlación",
+    "subtitle": "α = 0.05 · Bilateral (≠)",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Tamaño de muestra",
+        85
+       ],
+       [
+        "Potencia",
+        0.8003462498997718
+       ],
+       [
+        "Correlación r",
+        0.3
+       ],
+       [
+        "α",
+        0.05
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Se necesitan 85 pares de observaciones para alcanzar una potencia de 0.8003."
+     },
+     {
+      "type": "table",
+      "title": "Parámetros",
+      "columns": [
+       "Parámetro",
+       "Valor"
+      ],
+      "rows": [
+       [
+        "Tamaño de muestra",
+        85
+       ],
+       [
+        "Potencia",
+        0.8003462498997718
+       ],
+       [
+        "Correlación r",
+        0.3
+       ],
+       [
+        "α",
+        0.05
+       ],
+       [
+        "Transformación z de Fisher",
+        0.30951960420311175
+       ]
+      ],
+      "note": "Usa la transformación z de Fisher: n = ((z_α + z_β) / atanh r)² + 3."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "n": 85,
+     "power": 0.8003462498997718,
+     "r": 0.3
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "power-correlation",
+   "sigma_id": "corr_power",
+   "roles": {},
+   "params": {
+    "r": 0.3,
+    "solve_for": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Calcular»."
+  },
+  {
+   "kind": "example",
+   "id": "power-tost",
+   "sigma_id": "tost_power",
+   "deterministic": true,
+   "roles": {},
+   "params": {
+    "margin": 2.0,
+    "difference": 0.5,
+    "sd": 3.0
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Potencia y tamaño de muestra: equivalencia de dos medias (TOST)",
+    "subtitle": "α = 0.05 · límites ±2 · σ = 3",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Tamaño de muestra por grupo",
+        51
+       ],
+       [
+        "Potencia",
+        0.8002693842376407
+       ],
+       [
+        "Diferencia verdadera",
+        0.5
+       ],
+       [
+        "Margen",
+        2.0
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Se necesitan 51 observaciones por grupo para demostrar equivalencia con potencia 0.8003."
+     },
+     {
+      "type": "table",
+      "title": "Parámetros",
+      "columns": [
+       "Parámetro",
+       "Valor"
+      ],
+      "rows": [
+       [
+        "Tamaño por grupo",
+        51
+       ],
+       [
+        "Potencia",
+        0.8002693842376407
+       ],
+       [
+        "Diferencia verdadera entre medias",
+        0.5
+       ],
+       [
+        "Límite de equivalencia (±)",
+        2.0
+       ],
+       [
+        "Desviación estándar σ",
+        3.0
+       ],
+       [
+        "α",
+        0.05
+       ]
+      ],
+      "note": "Potencia exacta de las dos pruebas t unilaterales con varianzas iguales."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "n": 51,
+     "power": 0.8002693842376407
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "power-tost",
+   "sigma_id": "tost_power",
+   "roles": {},
+   "params": {
+    "margin": 2.0,
+    "difference": 0.5,
+    "sd": 3.0,
+    "solve_for": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Calcular»."
+  },
+  {
+   "kind": "example",
+   "id": "power-paired-t",
+   "sigma_id": "t_power",
+   "deterministic": true,
+   "roles": {},
+   "params": {
+    "design": "paired",
+    "solve_for": "n",
+    "effect_size": 0.5,
+    "power": 0.8
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Potencia y tamaño de muestra: prueba t (muestras pareadas)",
+    "subtitle": "α = 0.05 · Bilateral (≠)",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Tamaño de muestra",
+        "34"
+       ],
+       [
+        "Potencia",
+        0.8077775012792737
+       ],
+       [
+        "Efecto (d)",
+        0.5
+       ],
+       [
+        "α",
+        0.05
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Se necesitan 34 observaciones para detectar d = 0.5 con potencia ≥ 0.8 (potencia real: 0.8078)."
+     },
+     {
+      "type": "table",
+      "title": "Parámetros",
+      "columns": [
+       "Parámetro",
+       "Valor"
+      ],
+      "rows": [
+       [
+        "Diseño",
+        "Muestras pareadas"
+       ],
+       [
+        "Efecto estandarizado d",
+        0.5
+       ],
+       [
+        "Tamaño de muestra",
+        34
+       ],
+       [
+        "Potencia",
+        0.8077775012792737
+       ],
+       [
+        "α",
+        0.05
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "design": "paired",
+     "solve_for": "n",
+     "n": 34,
+     "power": 0.8077775012792737,
+     "effect_size": 0.5,
+     "alpha": 0.05
+    }
+   },
+   "catalog": false
+  },
+  {
+   "kind": "example",
+   "id": "power-prop2",
+   "sigma_id": "prop_power",
+   "deterministic": true,
+   "roles": {},
+   "params": {
+    "design": "two",
+    "p0": 0.5,
+    "p1": 0.6,
+    "solve_for": "n",
+    "power": 0.8
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Potencia y tamaño de muestra: dos proporciones",
+    "subtitle": "α = 0.05 · Bilateral (≠)",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Tamaño de muestra por grupo",
+        388
+       ],
+       [
+        "Potencia",
+        0.8008414708058487
+       ],
+       [
+        "Proporción alternativa",
+        0.6
+       ],
+       [
+        "α",
+        0.05
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Se necesitan 388 observaciones por grupo para alcanzar una potencia de 0.8008."
+     },
+     {
+      "type": "table",
+      "title": "Parámetros",
+      "columns": [
+       "Parámetro",
+       "Valor"
+      ],
+      "rows": [
+       [
+        "Tamaño de muestra por grupo",
+        388
+       ],
+       [
+        "Potencia",
+        0.8008414708058487
+       ],
+       [
+        "Proporción alternativa",
+        0.6
+       ],
+       [
+        "α",
+        0.05
+       ],
+       [
+        "Proporción de referencia",
+        0.5
+       ],
+       [
+        "Diferencia",
+        0.09999999999999998
+       ],
+       [
+        "Efecto h de Cohen",
+        0.20135792079033066
+       ]
+      ],
+      "note": "Usa la aproximación normal con la transformación arcoseno (h de Cohen)."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "n": 388,
+     "power": 0.8008414708058487,
+     "p1": 0.6,
+     "p0": 0.5
+    }
+   },
+   "catalog": false
+  }
+ ]
+}

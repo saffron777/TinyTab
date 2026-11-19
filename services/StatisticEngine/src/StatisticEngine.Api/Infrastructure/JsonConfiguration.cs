@@ -18,5 +18,6 @@ public static class JsonConfiguration
         options.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
         options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        options.Converters.Add(new DataColumnJsonConverter());
     }
 }

@@ -20,3 +20,15 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+
+  statisticengine:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build StatisticEngine
+        run: dotnet build services/StatisticEngine/StatisticEngine.slnx -c Release -warnaserror
+      - name: Test StatisticEngine
+        run: dotnet test services/StatisticEngine/StatisticEngine.slnx -c Release

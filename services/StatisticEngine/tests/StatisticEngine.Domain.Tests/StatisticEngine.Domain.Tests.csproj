@@ -12,9 +12,13 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\StatisticEngine.Domain\StatisticEngine.Domain.csproj" />
+    <ProjectReference Include="..\..\src\StatisticEngine.Application\StatisticEngine.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Parity\vectors\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Extensions\vectors\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -30,18 +30,20 @@ public static class AnalysesEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status413PayloadTooLarge)
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .WithRequestTimeout("heavy");
 
         group.MapPost("/analyses/{id}/validate", Validate)
             .WithName("ValidateAnalysis")
             .WithSummary("Valida la entrada sin ejecutar el análisis")
             .Produces<ValidateResponse>()
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .WithRequestTimeout("heavy");
 
         return group;
     }
 
-    private static IResult GetCatalog(string? category)
+    private static IResult GetCatalog(string? category, string? origin)
     {
         IReadOnlyList<AnalysisDefinition> analyses = AnalysisCatalog.All;
         if (!string.IsNullOrWhiteSpace(category))
@@ -50,16 +52,22 @@ public static class AnalysesEndpoints
                 .Where(analysis => string.Equals(analysis.Category, category, StringComparison.OrdinalIgnoreCase))
                 .ToArray();
         }
+        if (!string.IsNullOrWhiteSpace(origin))
+        {
+            analyses = analyses
+                .Where(analysis => string.Equals(analysis.Origin, origin, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+        }
 
         var response = new CatalogResponse(
             AnalysisMapping.Engine(),
             AnalysisCatalog.Categories,
             AnalysisMapping.ToDtos(analyses),
             AnalysisCatalog.Categories
-                .Select(category => new CategoryGroupDto(
-                    category,
-                    analyses.Where(analysis => analysis.Category == category).Select(analysis => analysis.Id).ToArray()))
-                .Where(group => group.Ids.Count > 0)
+                .Select(categoryName => new CategoryGroupDto(
+                    categoryName,
+                    analyses.Where(analysis => analysis.Category == categoryName).Select(analysis => analysis.Id).ToArray()))
+                .Where(categoryGroup => categoryGroup.Ids.Count > 0)
                 .ToArray());
 
         return Results.Ok(response);
@@ -81,7 +89,8 @@ public static class AnalysesEndpoints
         IAnalysisRunner runner,
         IOptions<StatisticEngineOptions> options)
     {
-        if (AnalysisCatalog.Find(id) is null) return ApiErrors.UnknownAnalysis(id, context);
+        var definition = AnalysisCatalog.Find(id);
+        if (definition is null) return ApiErrors.UnknownAnalysis(id, context);
 
         var limitError = RequestLimits.CheckAnalysis(body, options.Value.Limits);
         if (limitError is not null)
@@ -94,7 +103,10 @@ public static class AnalysesEndpoints
                 id);
         }
 
-        var result = runner.Run(id, AnalysisMapping.ToInput(body));
+        var inputResult = AnalysisMapping.ToInput(body);
+        if (inputResult.IsError) return ApiErrors.FromDomain(inputResult.Error, context, id);
+
+        var result = runner.Run(id, inputResult.Value);
         if (result.IsError) return ApiErrors.FromDomain(result.Error, context, id);
 
         return string.Equals(format, "text", StringComparison.OrdinalIgnoreCase)
@@ -106,7 +118,15 @@ public static class AnalysesEndpoints
     {
         if (AnalysisCatalog.Find(id) is null) return ApiErrors.UnknownAnalysis(id, context);
 
-        var result = AnalysisService.Validate(id, AnalysisMapping.ToInput(body));
+        var inputResult = AnalysisMapping.ToInput(body);
+        if (inputResult.IsError)
+        {
+            return Results.Ok(new ValidateResponse(
+                false,
+                new ValidationErrorDto(inputResult.Error.WireCode, inputResult.Error.Message)));
+        }
+
+        var result = AnalysisService.Validate(id, inputResult.Value);
         return Results.Ok(new ValidateResponse(
             result.IsOk,
             result.IsOk ? null : new ValidationErrorDto(result.Error.WireCode, result.Error.Message)));

@@ -1,0 +1,189 @@
+{
+ "module": "doe",
+ "sigmaCommit": "5c378d709e3df54b7df99dc2ead578c31a3ed346",
+ "python": "3.13.14",
+ "numpy": "2.5.3",
+ "pandas": "3.0.6",
+ "scipy": "1.18.1",
+ "statsmodels": "0.15.0",
+ "sklearn": "1.9.1",
+ "cases": [
+  {
+   "kind": "example",
+   "id": "factorial",
+   "sigma_id": "factorial",
+   "deterministic": false,
+   "roles": {},
+   "params": {
+    "factors": 3,
+    "center_points": 0
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Diseño factorial 2^k",
+    "subtitle": "8 corridas · 3 factores a dos niveles",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Factores",
+        3
+       ],
+       [
+        "Corridas",
+        8
+       ],
+       [
+        "Réplicas en el centro",
+        0
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Diseño codificado en −1 (nivel bajo) y +1 (nivel alto); guárdelo como dataset y añada la columna de respuesta al ejecutar los experimentos."
+     }
+    ],
+    "datasets": {
+     "diseño": {
+      "label": "Diseño factorial",
+      "columns": [
+       {
+        "name": "A",
+        "kind": "numeric",
+        "values": [
+         -1.0,
+         -1.0,
+         -1.0,
+         -1.0,
+         1.0,
+         1.0,
+         1.0,
+         1.0
+        ]
+       },
+       {
+        "name": "B",
+        "kind": "numeric",
+        "values": [
+         -1.0,
+         -1.0,
+         1.0,
+         1.0,
+         -1.0,
+         -1.0,
+         1.0,
+         1.0
+        ]
+       },
+       {
+        "name": "C",
+        "kind": "numeric",
+        "values": [
+         -1.0,
+         1.0,
+         -1.0,
+         1.0,
+         -1.0,
+         1.0,
+         -1.0,
+         1.0
+        ]
+       }
+      ]
+     }
+    },
+    "result": {
+     "factors": 3,
+     "runs": 8
+    }
+   }
+  },
+  {
+   "kind": "example",
+   "id": "response-surface",
+   "sigma_id": "response_surface",
+   "deterministic": false,
+   "roles": {},
+   "params": {
+    "factors": 2,
+    "center_points": 2
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Diseño de superficie de respuesta (compuesto central)",
+    "subtitle": "10 corridas · 2 factores · axial a ±1.41421",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Factores",
+        2
+       ],
+       [
+        "Corridas",
+        10
+       ],
+       [
+        "Distancia axial α",
+        1.4142135623730951
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Diseño compuesto central (factorial + puntos axiales + centro) para ajustar un modelo cuadrático."
+     }
+    ],
+    "datasets": {
+     "diseño": {
+      "label": "Diseño compuesto central",
+      "columns": [
+       {
+        "name": "A",
+        "kind": "numeric",
+        "values": [
+         -1.0,
+         -1.0,
+         1.0,
+         1.0,
+         -1.4142135623730951,
+         1.4142135623730951,
+         0.0,
+         0.0,
+         0.0,
+         0.0
+        ]
+       },
+       {
+        "name": "B",
+        "kind": "numeric",
+        "values": [
+         -1.0,
+         1.0,
+         -1.0,
+         1.0,
+         0.0,
+         0.0,
+         -1.4142135623730951,
+         1.4142135623730951,
+         0.0,
+         0.0
+        ]
+       }
+      ]
+     }
+    },
+    "result": {
+     "factors": 2,
+     "runs": 10,
+     "axial": 1.4142135623730951
+    }
+   }
+  }
+ ]
+}

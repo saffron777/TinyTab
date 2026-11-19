@@ -1,13 +1,14 @@
 # StatisticEngine
 
 Microservicio HTTP en **C# / ASP.NET Core 10** que expone el **motor estadístico de TinyTab**
-(21 distribuciones y 60 análisis) como API REST versionada, con paridad numérica verificada
-contra el motor TypeScript original mediante **vectores dorados**.
+como API REST versionada: 21 distribuciones, los **60 análisis baseline** con paridad numérica
+verificada contra el motor TypeScript y una ampliación creciente de análisis y operaciones de
+datos portados desde **Sigma Algebra** (origen `sigma`, ver [EXTENSIONS-NOTES.md](EXTENSIONS-NOTES.md)).
 
 - **Autónomo y sin estado:** no usa Node, base de datos ni estado en memoria entre peticiones.
-- **Puerto nativo:** reimplementación 1:1 en C#; no invoca el motor TypeScript en ejecución.
-- **Paridad verificada:** 29 pruebas de dominio comparan funciones, distribuciones y los 60
-  análisis (secciones, gráficos, formato de texto y errores) contra el motor original.
+- **Puerto nativo:** reimplementación 1:1 en C#; no invoca el motor TypeScript ni Python en ejecución.
+- **Paridad verificada:** el baseline se compara con el motor TypeScript; las extensiones, con
+  vectores generados desde Sigma (ver `tools/sigma-golden`).
 - **Licencia:** GPL-3.0-or-later (heredada de TinyTab).
 
 ## 1. Estructura
@@ -17,12 +18,14 @@ services/StatisticEngine/
   src/StatisticEngine.Domain/        motor puro: sin HTTP, sin I/O
     Numerics/ Random/ Distributions/ Descriptive/ Tables/ Inference/
     Models/ Quality/ Msa/ Doe/ TimeSeries/ Reliability/ Power/ Multivariate/
-    Charts/ Analysis/
-  src/StatisticEngine.Application/   casos de uso (ejecutar, validar, catálogo, distribuciones)
+    Charts/ Analysis/ Data/ Statistics/
+    Analysis/Analyses/Extensions/    análisis portados desde Sigma
+  src/StatisticEngine.Application/   casos de uso (ejecutar, validar, catálogo, distribuciones, datos)
   src/StatisticEngine.Api/           host HTTP: endpoints, contratos, límites, middleware
-  tests/StatisticEngine.Domain.Tests/  29 pruebas de paridad y unitarias
-  tests/StatisticEngine.Api.Tests/     19 pruebas de contrato HTTP
+  tests/StatisticEngine.Domain.Tests/  paridad baseline y extensiones (Sigma) + unitarias
+  tests/StatisticEngine.Api.Tests/     pruebas de contrato HTTP
   tools/golden/                      generador de vectores dorados (ejecuta el motor TS)
+  tools/sigma-golden/                generador de vectores desde Sigma (sólo desarrollo)
 ```
 
 Regla de dependencia: `Api → Application → Domain`. `Domain` no conoce ASP.NET, ni Kestrel, ni I/O.
@@ -35,7 +38,7 @@ Requisitos: .NET SDK 10.0.402 (fijado por `global.json`).
 cd services/StatisticEngine
 dotnet run --project src/StatisticEngine.Api      # perfil "StatisticEngine.Api": https://localhost:54236
 dotnet run --project src/StatisticEngine.Api --launch-profile "StatisticEngine.Api (HTTP)"   # http://localhost:5080
-dotnet test                                       # 48 pruebas (29 dominio + 19 API)
+dotnet test                                       # suite de dominio + API (62 pruebas en la fase 1)
 ```
 
 La URL no se fija en `appsettings.json` a propósito: la controlan el perfil de lanzamiento
@@ -59,10 +62,10 @@ Probes y documentación:
 | Liveness | `GET /health/live` |
 | Readiness (autotest numérico) | `GET /health/ready` |
 
-- **[API.md](API.md)**: guía completa con ejemplos ejecutables de los 9 endpoints, los 60 análisis
-  y las 21 distribuciones (generada desde el propio servicio).
+- **[API.md](API.md)**: guía completa con ejemplos ejecutables de los endpoints, los análisis
+  publicados y las 21 distribuciones (generada desde el propio servicio).
 - **[examples/StatisticEngine.postman_collection.json](examples/StatisticEngine.postman_collection.json)**:
-  colección **Postman v2.1** con 128 peticiones (descubrimiento, catálogo, los 60 análisis por
+  colección **Postman v2.1** con peticiones (descubrimiento, catálogo, los análisis por
   categoría, las 21 distribuciones × `evaluate`/`sample`, errores y un flujo encadenado) y tests
   automáticos en cada una. Importar con *File → Import* y ajustar la variable `baseUrl`.
 - **[examples/statisticengine.http](examples/statisticengine.http)**: colección lista para el
@@ -120,6 +123,23 @@ curl -X POST http://127.0.0.1:5080/api/v1/distributions/normal/sample `
 
 El muestreo es **determinista** para la misma semilla (xoshiro128** idéntico al motor).
 
+### Operaciones de datos
+
+`GET /api/v1/data` publica las operaciones sobre frames tipados. El cuerpo usa `columns`
+(`{name, kind, values}` con `kind` = `numeric`, `text` o `datetime`), `datasets` auxiliares y
+`params`; la respuesta incluye las secciones del informe y los `datasets` resultantes:
+
+```powershell
+curl -X POST http://127.0.0.1:5080/api/v1/data/data-standardize/run `
+  -H "Content-Type: application/json" `
+  -d '{"columns":[{"name":"x1","kind":"numeric","values":[1,2,3,null,5]}],
+       "roles":{"cols":["x1"]},"params":{"method":"zscore"}}'
+```
+
+`POST /api/v1/data/{id}/validate` valida sin ejecutar. Los análisis extendidos aceptan además
+`columns`, `roles` (rol → columna(s)) y `datetime`, y publican `sections` con los tipos
+`heading`, `tiles` y `alert`, más `datasets` y `keyResults`.
+
 ### Operación
 
 `GET /api/v1/meta` devuelve versión, baseline de paridad y límites efectivos.
@@ -153,6 +173,12 @@ Sección `StatisticEngine` de `appsettings.json` o variables de entorno
 | `Limits:MaxParameters` | 50 | Parámetros por petición |
 | `Limits:MaxDistributionPoints` | 10 000 | Puntos en `evaluate` |
 | `Limits:MaxSampleCount` | 100 000 | Muestras por petición |
+| `Limits:MaxDataRows` | 250 000 | Filas de un frame tipado |
+| `Limits:MaxDatasetValues` | 4 000 000 | Valores totales de un frame o dataset |
+| `Limits:MaxTableRows` | 20 000 | Filas máximas de una tabla de salida |
+| `Limits:MaxChartPoints` | 10 000 | Puntos máximos de una serie de gráfico |
+| `Limits:MaxExpressionLength` | 1 000 | Longitud máxima de una expresión |
+| `Limits:HeavyRequestTimeoutSeconds` | 300 | Tiempo máximo de los análisis marcados como pesados |
 | `Limits:MaxRequestBodyBytes` | 33 554 432 | Cuerpo máximo (32 MiB, coherente con 1 M de valores) |
 | `RateLimit:Enabled` / `PermitLimit` / `WindowSeconds` | `true` / 60 / 60 | Ventana fija por IP |
 | `Auth:ApiKey` | vacío | Si se define, exige `X-Api-Key` (probes exentos) |
@@ -162,18 +188,23 @@ Sección `StatisticEngine` de `appsettings.json` o variables de entorno
 | `RequestTimeoutSeconds` | 30 | Responde 504 al superarlo |
 | *(sin `Urls` en appsettings)* | — | La URL la fija el perfil de lanzamiento, `--urls` o `ASPNETCORE_URLS` (en contenedor: `http://+:8080`) |
 
-## 6. Paridad con el motor TypeScript
+## 6. Paridad con el motor TypeScript y con Sigma
 
-Los vectores dorados (`tests/StatisticEngine.Domain.Tests/Parity/vectors/*.json`) se generan
-ejecutando el motor TypeScript original:
+Los vectores dorados del **baseline** (`tests/StatisticEngine.Domain.Tests/Parity/vectors/*.json`)
+se generan ejecutando el motor TypeScript original:
 
 ```powershell
 npx vitest run --config services/StatisticEngine/tools/golden/vitest.config.ts
 ```
 
+Los vectores de las **extensiones Sigma** (`tests/StatisticEngine.Domain.Tests/Extensions/vectors/*.json`)
+se generan con `tools/sigma-golden/generate.py` y el venv de Sigma; incluyen los ejemplos declarados
+de cada análisis, los casos de error de validación y los metadatos. Detalles, tolerancias y
+desviaciones: [EXTENSIONS-NOTES.md](EXTENSIONS-NOTES.md).
+
 Las pruebas comparan: textos exactos (tablas y formato de sesión), claves exactas, errores
-exactos, RNG bit a bit y dobles con tolerancia `1e-12` (`1e-9` en ajustes iterativos).
-Detalles, defectos reproducidos y desviaciones documentadas: [PARITY-NOTES.md](PARITY-NOTES.md).
+exactos, RNG bit a bit y dobles con tolerancia `1e-12` (`1e-9` en ajustes iterativos). Detalles,
+defectos reproducidos y desviaciones documentadas: [PARITY-NOTES.md](PARITY-NOTES.md).
 
 ## 7. Regenerar la documentación del API
 
@@ -188,9 +219,9 @@ dotnet run --project src/StatisticEngine.Api --launch-profile "StatisticEngine.A
 pwsh ./tools/docs/generate-api-docs.ps1 -BaseUrl http://localhost:5080
 ```
 
-El script ejecuta una petición real por cada uno de los 60 análisis y de las 21 distribuciones,
-y deja constancia de los que devuelven error (hoy sólo `gage-rr`, por un defecto heredado del
-motor; ver `PARITY-NOTES.md`).
+El script ejecuta una petición real por cada análisis publicado y por cada distribución, y deja
+constancia de los que devuelven error. La regeneración de la colección Postman con las
+operaciones de datos se hará al cerrar la fase 5 (ver `EXTENSIONS-NOTES.md`).
 
 ## 8. Verificación
 
@@ -205,6 +236,8 @@ los comandos anteriores deben ejecutarse con acceso completo (`danger-full-acces
 
 ## 9. Alcance
 
-Incluye el motor estadístico y su catálogo. **No** incluye hoja de trabajo, proyectos `.ttab`,
-importación/exportación CSV, HTML de sesión ni el lenguaje de comandos: son capas de la
-aplicación de escritorio, no del motor.
+Incluye el motor estadístico y su catálogo, incluidas las extensiones portadas desde Sigma y sus
+operaciones de datos. **No** incluye hoja de trabajo, proyectos `.ttab`, importación/exportación
+CSV, HTML de sesión ni el lenguaje de comandos: son capas de la aplicación de escritorio, no del
+motor. Machine learning y ecuaciones estructurales de Sigma quedan fuera de esta ampliación
+(ver `EXTENSIONS-NOTES.md`).

@@ -22,11 +22,11 @@ public class AnalysisParityTests
     public void ElCatalogoCoincideConElMotor()
     {
         var expected = GoldenDocument.Load("catalog");
-        var actual = AnalysisCatalog.All.Select(Project).ToArray();
+        var actual = AnalysisCatalog.Baseline.Select(Project).ToArray();
         ParityAssert.Matches(expected.Cases("ALL_ANALYSES")[0].Expected, actual, 0, "ALL_ANALYSES");
-        ParityAssert.Matches(expected.Cases("ANALYSIS_CATEGORIES")[0].Expected, AnalysisCatalog.Categories, 0, "ANALYSIS_CATEGORIES");
+        ParityAssert.Matches(expected.Cases("ANALYSIS_CATEGORIES")[0].Expected, AnalysisCatalog.BaselineCategories, 0, "ANALYSIS_CATEGORIES");
 
-        var groups = AnalysisCatalog.ByCategory()
+        var groups = AnalysisCatalog.BaselineByCategory()
             .Select(group => new { category = group.Category, ids = group.Analyses.Select(analysis => analysis.Id).ToArray() })
             .ToArray();
         ParityAssert.Matches(expected.Cases("analysesByCategory")[0].Expected, groups, 0, "analysesByCategory");

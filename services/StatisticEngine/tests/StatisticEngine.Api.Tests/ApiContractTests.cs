@@ -41,10 +41,14 @@ public class ApiContractTests : IClassFixture<StatisticEngineFactory>
     {
         using var document = await GetJson("/api/v1/analyses");
         var root = document.RootElement;
-        Assert.Equal(60, root.GetProperty("analyses").GetArrayLength());
-        Assert.Equal(15, root.GetProperty("categories").GetArrayLength());
+        var analyses = root.GetProperty("analyses").EnumerateArray().ToArray();
+        Assert.True(analyses.Length >= 60, $"Se esperaban al menos 60 análisis y hay {analyses.Length}.");
+        Assert.Contains(analyses, analysis => analysis.GetProperty("id").GetString() == "describe");
+        Assert.Contains(analyses, analysis => analysis.GetProperty("origin").GetString() == "tinytab");
+        Assert.True(root.GetProperty("categories").GetArrayLength() >= 15);
         Assert.Equal("StatisticEngine", root.GetProperty("engine").GetProperty("name").GetString());
-        Assert.Equal("1.0.0", root.GetProperty("engine").GetProperty("version").GetString());
+        Assert.Equal("2.0.0", root.GetProperty("engine").GetProperty("version").GetString());
+        Assert.Equal("sigma@5c378d7", root.GetProperty("engine").GetProperty("extensionsBaseline").GetString());
     }
 
     [Fact]
@@ -208,7 +212,7 @@ public class ApiContractTests : IClassFixture<StatisticEngineFactory>
     {
         var response = await _client.GetAsync("/api/v1/meta");
         Assert.True(response.Headers.TryGetValues("X-StatisticEngine-Version", out var values));
-        Assert.Equal("1.0.0", values!.Single());
+        Assert.Equal("2.0.0", values!.Single());
     }
 
     [Fact]
@@ -265,6 +269,56 @@ public class ApiContractTests : IClassFixture<StatisticEngineFactory>
     {
         var response = await _client.GetAsync("/scalar/v1");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task EjecutaUnAnalisisExtendidoConRolesYColumnasTipadas()
+    {
+        var response = await _client.PostAsJsonAsync(
+            "/api/v1/analyses/jarque-bera/run",
+            new
+            {
+                columns = new[] { new { name = "y", kind = "numeric", values = new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } } },
+                roles = new Dictionary<string, string> { ["var"] = "y" }
+            });
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var root = document.RootElement;
+        Assert.Equal("jarque-bera", root.GetProperty("id").GetString());
+        Assert.Equal("sigma", root.GetProperty("origin").GetString());
+        Assert.Contains(root.GetProperty("sections").EnumerateArray(), section => section.GetProperty("kind").GetString() == "tiles");
+        Assert.True(root.GetProperty("keyResults").GetProperty("statistic").GetDouble() > 0);
+    }
+
+    [Fact]
+    public async Task ElCatalogoDeDatosPublicaLaOperacionDeTipificar()
+    {
+        using var document = await GetJson("/api/v1/data");
+        var operations = document.RootElement.GetProperty("operations").EnumerateArray().ToArray();
+        Assert.Contains(operations, operation => operation.GetProperty("id").GetString() == "data-standardize");
+    }
+
+    [Fact]
+    public async Task EjecutaUnaOperacionDeDatosYDevuelveElDataset()
+    {
+        var response = await _client.PostAsJsonAsync(
+            "/api/v1/data/data-standardize/run",
+            new
+            {
+                columns = new[] { new { name = "x1", kind = "numeric", values = new double?[] { 1, 2, 3, null, 5 } } },
+                roles = new Dictionary<string, string[]> { ["cols"] = ["x1"] },
+                @params = new { method = "zscore" }
+            });
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var root = document.RootElement;
+        Assert.Equal("data-standardize", root.GetProperty("id").GetString());
+        var dataset = root.GetProperty("datasets").GetProperty("resultado");
+        var columns = dataset.GetProperty("columns").EnumerateArray().ToArray();
+        Assert.Contains(columns, column => column.GetProperty("name").GetString() == "x1_z");
+        Assert.Contains(root.GetProperty("sections").EnumerateArray(), section => section.GetProperty("kind").GetString() == "tiles");
     }
 
     private async Task<JsonDocument> GetJson(string url)
