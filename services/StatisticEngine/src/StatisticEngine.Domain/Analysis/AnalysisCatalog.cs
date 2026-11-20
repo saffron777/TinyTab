@@ -57,10 +57,12 @@ public static class AnalysisCatalog
     private static IReadOnlyList<string> BuildCategories()
     {
         var used = All.Select(analysis => analysis.Category).ToHashSet(StringComparer.Ordinal);
+        var known = AnalysisCategories.All.Concat(AnalysisCategories.Extensions).ToHashSet(StringComparer.Ordinal);
         return
         [
             .. AnalysisCategories.All.Where(used.Contains),
-            .. AnalysisCategories.Extensions.Where(used.Contains)
+            .. AnalysisCategories.Extensions.Where(used.Contains),
+            .. All.Select(analysis => analysis.Category).Distinct(StringComparer.Ordinal).Where(category => !known.Contains(category))
         ];
     }
 }

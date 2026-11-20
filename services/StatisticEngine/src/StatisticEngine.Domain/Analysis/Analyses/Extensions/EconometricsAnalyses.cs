@@ -12,6 +12,9 @@ internal static class EconometricsAnalyses
         CopulaAnalyses.Copula,
         GrangerAnalyses.Granger,
         BaiPerronAnalyses.BaiPerron,
-        QuandtAndrewsAnalyses.QaBreak
+        QuandtAndrewsAnalyses.QaBreak,
+        MarkovAnalyses.Markov,
+        UcmAnalyses.Ucm,
+        GarchAnalyses.Garch
     ];
 }

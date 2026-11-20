@@ -71206,7 +71206,7 @@
    "kind": "example",
    "id": "regression-mixed",
    "sigma_id": "mixed",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "response": "yc",
     "predictors": [
@@ -79833,7 +79833,7 @@
    "kind": "example",
    "id": "regression-diagnostics",
    "sigma_id": "diagnostics",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "response": "y",
     "predictors": [

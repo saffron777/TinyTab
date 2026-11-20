@@ -84,11 +84,34 @@ function Get-TextSeries {
     }
 }
 
+$vectorExamples = @{}
+$fixtureColumns = @{}
+$vectorDirectory = Join-Path $PSScriptRoot '..\..\tests\StatisticEngine.Domain.Tests\Extensions\vectors'
+if (Test-Path $vectorDirectory) {
+    foreach ($file in Get-ChildItem $vectorDirectory -Filter '*.json' | Where-Object { $_.Name -notin @('extensions-catalog.json', 'fixtures.json') }) {
+        $module = Get-Content -Raw $file.FullName | ConvertFrom-Json
+        foreach ($case in @($module.cases)) {
+            if ($case.kind -eq 'example' -and -not $vectorExamples.ContainsKey($case.id)) {
+                $vectorExamples[$case.id] = $case
+            }
+        }
+    }
+    $fixturePath = Join-Path $vectorDirectory 'fixtures.json'
+    if (Test-Path $fixturePath) {
+        $fixture = Get-Content -Raw $fixturePath | ConvertFrom-Json
+        foreach ($column in @($fixture.standard.columns)) {
+            $fixtureColumns[$column.name] = $column
+        }
+    }
+}
+
 function New-SampleBody {
     param($Analysis)
     $numeric = [ordered]@{}
     $text = [ordered]@{}
     $parameters = [ordered]@{}
+    $roles = [ordered]@{}
+    $datetime = [ordered]@{}
 
     switch ($Analysis.id) {
         'doe-analyze' {
@@ -172,24 +195,51 @@ function New-SampleBody {
             $parameters['method'] = 'normal'
         }
         default {
-            $numericColumns = @($Analysis.numericColumns)
-            $textColumns = @($Analysis.textColumns)
-            for ($index = 0; $index -lt $numericColumns.Count; $index++) {
-                $column = $numericColumns[$index]
-                if (-not $column.required) { continue }
-                if ($column.multiple) {
-                    $numeric[$column.key] = $var1
-                    $numeric['x1'] = $var2
-                    $numeric['x2'] = $var3
-                    $numeric['x3'] = $var4
+            if ($vectorExamples.ContainsKey($Analysis.id)) {
+                $example = $vectorExamples[$Analysis.id]
+                foreach ($property in $example.roles.PSObject.Properties) {
+                    $roles[$property.Name] = @($property.Value)
+                    foreach ($column in @($property.Value)) {
+                        if ($column -isnot [string] -or -not $fixtureColumns.ContainsKey($column)) { continue }
+                        $source = $fixtureColumns[$column]
+                        if ($source.kind -eq 'numeric') {
+                            $numeric[$column] = @($source.values)
+                        }
+                        elseif ($source.kind -eq 'datetime') {
+                            $datetime[$column] = @($source.values | ForEach-Object { "$_" })
+                        }
+                        else {
+                            $values = @($source.values | ForEach-Object { if ($null -eq $_) { $null } else { "$_" } })
+                            $text[$column] = $values
+                        }
+                    }
                 }
-                else {
-                    $numeric[$column.key] = Get-Series -Key $column.key
+                foreach ($property in $example.params.PSObject.Properties) {
+                    if ($null -ne $property.Value -and "$($property.Value)" -ne '') {
+                        $parameters[$property.Name] = $property.Value
+                    }
                 }
             }
-            foreach ($column in $textColumns) {
-                if (-not $column.required) { continue }
-                $text[$column.key] = Get-TextSeries -Key $column.key
+            if ($numeric.Count -eq 0 -and $text.Count -eq 0) {
+                $numericColumns = @($Analysis.numericColumns)
+                $textColumns = @($Analysis.textColumns)
+                for ($index = 0; $index -lt $numericColumns.Count; $index++) {
+                    $column = $numericColumns[$index]
+                    if (-not $column.required) { continue }
+                    if ($column.multiple) {
+                        $numeric[$column.key] = $var1
+                        $numeric['x1'] = $var2
+                        $numeric['x2'] = $var3
+                        $numeric['x3'] = $var4
+                    }
+                    else {
+                        $numeric[$column.key] = Get-Series -Key $column.key
+                    }
+                }
+                foreach ($column in $textColumns) {
+                    if (-not $column.required) { continue }
+                    $text[$column.key] = Get-TextSeries -Key $column.key
+                }
             }
         }
     }
@@ -203,6 +253,8 @@ function New-SampleBody {
     $body = [ordered]@{}
     if ($numeric.Count -gt 0) { $body['numeric'] = $numeric }
     if ($text.Count -gt 0) { $body['text'] = $text }
+    if ($roles.Count -gt 0) { $body['roles'] = $roles }
+    if ($datetime.Count -gt 0) { $body['datetime'] = $datetime }
     if ($parameters.Count -gt 0) { $body['params'] = $parameters }
     return $body
 }
@@ -253,6 +305,8 @@ foreach ($analysis in $catalog.analyses) {
 $distributionProbes = [ordered]@{}
 foreach ($distribution in $distributions.distributions) {
     $parameters = [ordered]@{}
+    $roles = [ordered]@{}
+    $datetime = [ordered]@{}
     foreach ($parameter in $distribution.params) { $parameters[$parameter.key] = $parameter.defaultValue }
     $body = [ordered]@{ params = $parameters; x = @(0, 1); probabilities = @(0.5, 0.975) }
     $json = $body | ConvertTo-Json -Depth 6 -Compress
@@ -282,7 +336,7 @@ $add = { param($text) $out.Add($text) }
 # API de StatisticEngine — guía completa con ejemplos
 
 Motor estadístico de TinyTab expuesto como microservicio HTTP: **21 distribuciones** y
-**60 análisis** con paridad numérica verificada. Esta guía enumera **todos** los endpoints y
+**162 análisis** (60 baseline y 102 Sigma; 96 con paridad exacta y 6 validados por propiedades). Esta guía enumera **todos** los endpoints y
 muestra una petición real por cada análisis y cada distribución.
 
 > Documento generado con `tools/docs/generate-api-docs.ps1` consultando el propio servicio en
@@ -396,7 +450,7 @@ foreach ($group in $catalog.byCategory) {
 }
 
 & $add @'
-## 6. Los 60 análisis, uno por uno
+## 6. Los 162 análisis, uno por uno
 
 Cada apartado incluye la definición exacta (extraída del catálogo del servicio) y una petición
 real con su resultado observado.
@@ -575,7 +629,7 @@ En `examples/` hay dos colecciones listas para ejecutar:
 
 - `statisticengine.http`: REST Client de Visual Studio 2022/2026, JetBrains o VS Code.
 - `StatisticEngine.postman_collection.json`: colección Postman v2.1 con todos los endpoints,
-  los 60 análisis y las 21 distribuciones (evaluate y sample), con tests automáticos.
+  los 162 análisis y las 21 distribuciones (evaluate y sample), con tests automáticos.
 '@
 
 $markdown = ($out -join [Environment]::NewLine) + [Environment]::NewLine
@@ -752,10 +806,10 @@ $postmanItems.Add([ordered]@{ name = '00 · Descubrimiento'; item = @($discovery
 
 # 01 · Catálogo
 $catalogItems = [System.Collections.Generic.List[object]]::new()
-$catalogItems.Add((New-PostmanRequest -Name 'Catálogo completo (60 análisis)' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses' -Description 'Definiciones con columnas, parámetros y opciones.' -Tests @(
+$catalogItems.Add((New-PostmanRequest -Name 'Catálogo completo (162 análisis)' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses' -Description 'Definiciones con columnas, parámetros y opciones.' -Tests @(
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
             "const body = pm.response.json();",
-            "pm.test('60 análisis y 15 categorías', () => { pm.expect(body.analyses).to.have.lengthOf(60); pm.expect(body.categories).to.have.lengthOf(15); });",
+            "pm.test('162 análisis y 49 categorías', () => { pm.expect(body.analyses).to.have.lengthOf(162); pm.expect(body.categories).to.have.lengthOf(49); });",
             "pm.collectionVariables.set('totalAnalisis', String(body.analyses.length));"
         )))
 $catalogItems.Add((New-PostmanRequest -Name 'Catálogo filtrado por categoría' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses?category=ANOVA' -Description 'Filtro por categoría; byCategory se filtra igual.' -Tests @(
@@ -806,7 +860,7 @@ $postmanItems.Add([ordered]@{ name = '02 · Análisis (60)'; item = @($analysisF
 $distributionItems = [System.Collections.Generic.List[object]]::new()
 $distributionItems.Add((New-PostmanRequest -Name 'Catálogo de distribuciones (21)' -Method 'GET' -Url '{{baseUrl}}/api/v1/distributions' -Tests @(
             "pm.test('200 OK', () => pm.response.to.have.status(200));",
-            "pm.test('21 distribuciones', () => pm.expect(pm.response.json().distributions).to.have.lengthOf(21));"
+            "pm.test('21 distribuciones', () => pm.expect(pm.response.json().distributions).to.have.lengthOf(49));"
         )))
 foreach ($id in @('normal', 'binomial', 'weibull')) {
     $distribution = $distributions.distributions | Where-Object { $_.id -eq $id }
@@ -831,6 +885,8 @@ $distributionItems.Add([ordered]@{ name = 'Evaluar (21)'; item = @($evaluateItem
 $sampleItems = [System.Collections.Generic.List[object]]::new()
 foreach ($distribution in $distributions.distributions) {
     $parameters = [ordered]@{}
+    $roles = [ordered]@{}
+    $datetime = [ordered]@{}
     foreach ($parameter in $distribution.params) { $parameters[$parameter.key] = $parameter.defaultValue }
     $sampleBody = ([ordered]@{ params = $parameters; count = 5; seed = 20261023 } | ConvertTo-Json -Depth 5 -Compress)
     $sampleItems.Add((New-PostmanRequest -Name "$($distribution.label) · $($distribution.id)" -Method 'POST' -Url "{{baseUrl}}/api/v1/distributions/$($distribution.id)/sample" -Description 'Muestreo determinista: la misma semilla produce la misma serie.' -JsonBody $sampleBody -Tests @(
@@ -865,7 +921,7 @@ $postmanItems.Add([ordered]@{ name = '04 · Errores y validación'; item = @($er
 $describeBody = '{"numeric":{"x":[9.8,10.4,9.1,11.2,10.0,9.6,10.9,9.3,10.7,10.2]},"params":{"confidence":0.95}}'
 $flowItems = [System.Collections.Generic.List[object]]::new()
 $flowItems.Add((New-PostmanRequest -Name '1 · Descubrir el catálogo' -Method 'GET' -Url '{{baseUrl}}/api/v1/analyses' -Tests @(
-            "pm.test('60 análisis y 15 categorías', () => { pm.expect(pm.response.json().analyses).to.have.lengthOf(60); });",
+            "pm.test('162 análisis y 49 categorías', () => { pm.expect(pm.response.json().analyses).to.have.lengthOf(162); });",
             "pm.collectionVariables.set('totalAnalisis', String(pm.response.json().analyses.length));"
         )))
 $flowItems.Add((New-PostmanRequest -Name '2 · Validar la entrada' -Method 'POST' -Url '{{baseUrl}}/api/v1/analyses/describe/validate' -JsonBody $describeBody -Tests @(
@@ -897,7 +953,7 @@ $flowItems.Add((New-PostmanRequest -Name '7 · Repetir: debe ser idéntico' -Met
 $postmanItems.Add([ordered]@{ name = '05 · Flujo completo (encadenado)'; item = @($flowItems) })
 
 $collectionDescription = @'
-Colección completa del microservicio **StatisticEngine**: catálogo y ejecución de los 60 análisis,
+Colección completa del microservicio **StatisticEngine**: catálogo y ejecución de los 162 análisis,
 las 21 distribuciones (evaluación y muestreo), descubrimiento (página de inicio, inventario de rutas,
 OpenAPI, salud), errores de dominio y un flujo encadenado.
 

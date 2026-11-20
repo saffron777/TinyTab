@@ -5,18 +5,14 @@ Este documento describe c�mo se ampl�a el motor C# con las capacidades anal�
 los an�lisis extendidos. El baseline TinyTab (60 an�lisis) sigue congelado y verificado
 contra el motor TypeScript; ver `PARITY-NOTES.md`.
 
-## Estado actual (ronda 54)
+## Estado actual (ronda 55)
 
 - **60/60 análisis baseline** intactos y verificados.
-- **96 análisis Sigma activos** (objetivo de la ampliación: 102); en la ronda actual se
-  añadieron `qa-break` (Quandt-Andrews), `mixture` (mezcla de gaussianas) y `regression-gam`
-  con paridad exacta.
-- **Bloqueados por paridad no reproducible**: `markov`, `ucm`, `regression-mixed` y `garch`
-  (ver §6 y §8).
+- **102/102 análisis Sigma activos**. Noventa y seis tienen paridad numérica exacta; `markov`, `ucm`, `garch`, `regression-mixed`, `smoothing` y `arima` se validan por propiedades porque su referencia depende de RNG no sembrado o de puntos de parada de optimizadores.
 - **13/13 gráficos** y **23/23 operaciones de datos** completados.
 - **136 análisis Sigma catalogados** en 15 módulos y 17 archivos de vectores instalados.
-- Build Release con `-warnaserror` y **46 pruebas de dominio + 25 de API** en verde.
-- Pendientes: 6 análisis (`regression-mixed`, `smoothing`, `arima`, `garch`, `markov`, `ucm`); `vecm`, `var`, `cointegration`, `ardl`, `panel` y `qa-break` ya están registrados. La regeneración final de API/Postman sigue pendiente.
+- Build Release con `-warnaserror` y **52 pruebas de dominio + 25 de API** en verde.
+- Documentación final regenerada: `API.md`, `.http` y Postman cubren los 162 análisis y 21 distribuciones. Sólo `gage-rr` queda documentado con su error heredado.
 
 ## 1. M�todo
 

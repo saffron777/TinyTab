@@ -639,6 +639,122 @@
   },
   {
    "kind": "example",
+   "id": "sign-test",
+   "sigma_id": "sign_test",
+   "deterministic": true,
+   "roles": {
+    "var": "x1"
+   },
+   "params": {
+    "median0": 10
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de los signos",
+    "subtitle": "mediana de x1",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "n",
+        240
+       ],
+       [
+        "Por encima",
+        101
+       ],
+       [
+        "Por debajo",
+        139
+       ],
+       [
+        "Empates",
+        0
+       ],
+       [
+        "Valor p",
+        0.01674443210915598
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "warning",
+      "message": "p = 0.0167 < α = 0.05: se rechaza H₀ (la mediana de x1 es 10)."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "Mediana de la muestra",
+       "Valor de referencia",
+       "Por encima",
+       "Por debajo",
+       "Valor p (exacto)"
+      ],
+      "rows": [
+       [
+        9.76061973103585,
+        10.0,
+        101,
+        139,
+        0.01674443210915598
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "table",
+      "title": "Intervalo de confianza para la mediana",
+      "columns": [
+       "Confianza lograda",
+       "Inferior",
+       "Superior"
+      ],
+      "rows": [
+       [
+        0.954837582245507,
+        9.508393857236156,
+        9.971940539738005
+       ]
+      ],
+      "note": "Basado en estadísticos de orden: la confianza solo puede tomar ciertos valores discretos."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "positive": 101,
+     "negative": 139,
+     "p": 0.01674443210915598
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "sign-test",
+   "sigma_id": "sign_test",
+   "roles": {},
+   "params": {
+    "median0": 10
+   },
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "sign-test",
+   "sigma_id": "sign_test",
+   "roles": {
+    "var": "x1"
+   },
+   "params": {
+    "median0": 10,
+    "alternative": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Hipótesis alternativa»."
+  },
+  {
+   "kind": "example",
    "id": "mood-median",
    "sigma_id": "mood_median",
    "deterministic": true,
@@ -833,6 +949,109 @@
    "roles": {},
    "params": {},
    "error": "Elija al menos una columna para «Tratamientos (columnas)»."
+  },
+  {
+   "kind": "example",
+   "id": "runs",
+   "sigma_id": "runs",
+   "deterministic": true,
+   "roles": {
+    "var": "s"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de rachas de s",
+    "subtitle": "aleatoriedad respecto a 67.9491",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Rachas observadas",
+        12
+       ],
+       [
+        "Rachas esperadas",
+        121.0
+       ],
+       [
+        "Z",
+        -14.101371191050433
+       ],
+       [
+        "Valor p",
+        3.72461622332782e-45
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "warning",
+      "message": "p  < 0.0001 < α = 0.05: se rechaza H₀ (la secuencia es aleatoria)."
+     },
+     {
+      "type": "table",
+      "title": "Resultado",
+      "columns": [
+       "Corte",
+       "Por encima",
+       "Por debajo / igual",
+       "Rachas",
+       "Esperadas",
+       "Z",
+       "Valor p"
+      ],
+      "rows": [
+       [
+        67.94907713144599,
+        120,
+        120,
+        12,
+        121.0,
+        -14.101371191050433,
+        3.72461622332782e-45
+       ]
+      ],
+      "note": "Pocas rachas indican tendencia o agrupamiento; demasiadas, oscilación sistemática. Los datos iguales al corte se omiten."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "runs": 12,
+     "expected": 121.0,
+     "z": -14.101371191050433,
+     "p": 3.72461622332782e-45
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "runs",
+   "sigma_id": "runs",
+   "roles": {},
+   "params": {},
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "runs",
+   "sigma_id": "runs",
+   "roles": {
+    "var": "s"
+   },
+   "params": {
+    "cutoff": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Corte»."
   },
   {
    "kind": "example",
@@ -1721,6 +1940,141 @@
    "roles": {},
    "params": {},
    "error": "Elija al menos una columna para «Evaluadores (una columna cada uno; una fila por sujeto)»."
+  },
+  {
+   "kind": "example",
+   "id": "tost",
+   "sigma_id": "tost",
+   "deterministic": true,
+   "roles": {
+    "var": "y",
+    "group": "h"
+   },
+   "params": {
+    "design": "two",
+    "low": -2,
+    "upp": 2
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Prueba de equivalencia (TOST)",
+    "subtitle": "no − si · límites [-2, 2]",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Diferencia",
+        -0.07093032677187949
+       ],
+       [
+        "Valor p de TOST",
+        0.00042481407090988916
+       ],
+       [
+        "Decisión",
+        "Equivalentes"
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "success",
+      "message": "El IC del 90 % [-1.013, 0.8715] queda dentro de los límites [-2, 2]: se concluye equivalencia."
+     },
+     {
+      "type": "table",
+      "title": "Dos pruebas unilaterales",
+      "columns": [
+       "Hipótesis nula",
+       "Estadístico t",
+       "gl",
+       "Valor p"
+      ],
+      "rows": [
+       [
+        "diferencia ≤ -2",
+        3.380484999801951,
+        230.66063504816904,
+        0.00042481407090988916
+       ],
+       [
+        "diferencia ≥ 2",
+        -3.629080381307422,
+        230.66063504816904,
+        0.00017513970322285705
+       ]
+      ],
+      "note": "La equivalencia se declara si las dos hipótesis nulas se rechazan (el mayor de los dos valores p es menor que α)."
+     },
+     {
+      "type": "table",
+      "title": "Diferencia e intervalo",
+      "columns": [
+       "Diferencia",
+       "Error estándar",
+       "IC 90 % inf.",
+       "IC sup."
+      ],
+      "rows": [
+       [
+        -0.07093032677187949,
+        0.5706487895497648,
+        -1.0133491040504166,
+        0.8714884505066577
+       ]
+      ],
+      "note": null
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "difference": -0.07093032677187949,
+     "p": 0.00042481407090988916,
+     "equivalent": true,
+     "ci": [
+      -1.0133491040504166,
+      0.8714884505066577
+     ]
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "tost",
+   "sigma_id": "tost",
+   "roles": {
+    "group": "h"
+   },
+   "params": {
+    "design": "two",
+    "low": -2,
+    "upp": 2
+   },
+   "error": "Elija la columna de «Variable»."
+  },
+  {
+   "kind": "error",
+   "id": "tost",
+   "sigma_id": "tost",
+   "roles": {
+    "var": "y",
+    "group": "h"
+   },
+   "params": {
+    "design": "__valor_invalido__",
+    "low": -2,
+    "upp": 2
+   },
+   "error": "Valor no válido para «Diseño»."
   },
   {
    "kind": "example",

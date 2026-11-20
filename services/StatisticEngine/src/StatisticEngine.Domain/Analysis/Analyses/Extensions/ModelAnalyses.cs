@@ -22,6 +22,7 @@ public static class ModelAnalyses
         NonlinearAnalyses.Nonlinear,
         OrdinalAnalyses.Ordinal,
         RegularizedAnalyses.Regularized,
-        GamAnalyses.Gam
+        GamAnalyses.Gam,
+        MixedModelAnalyses.Mixed
     ];
 }

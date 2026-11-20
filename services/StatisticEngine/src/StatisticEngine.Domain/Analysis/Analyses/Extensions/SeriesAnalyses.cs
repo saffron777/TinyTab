@@ -6,6 +6,8 @@ internal static class SeriesAnalyses
     [
         TsPlotAnalyses.TsPlot,
         TrendAnalyses.Trend,
+        SmoothingAnalyses.Smoothing,
+        ArimaAnalyses.Arima,
         CcfAnalyses.Ccf,
         MannKendallAnalyses.MannKendall,
         PeriodogramAnalyses.Periodogram,

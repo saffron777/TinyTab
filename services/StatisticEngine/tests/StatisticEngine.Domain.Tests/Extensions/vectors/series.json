@@ -3593,7 +3593,7 @@
    "kind": "example",
    "id": "smoothing",
    "sigma_id": "smoothing",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "series": "s",
     "time": "t"
@@ -4769,7 +4769,7 @@
    "kind": "example",
    "id": "arima",
    "sigma_id": "arima",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "series": "s",
     "time": "t"
@@ -6024,7 +6024,7 @@
    "kind": "example",
    "id": "backtest",
    "sigma_id": "backtest",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "series": "s",
     "time": "t"

@@ -2228,7 +2228,7 @@
    "kind": "example",
    "id": "garch",
    "sigma_id": "garch",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "series": "ret",
     "time": "t"
@@ -3761,7 +3761,7 @@
    "kind": "example",
    "id": "markov",
    "sigma_id": "markov",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "series": "rg",
     "time": "t"
@@ -5195,7 +5195,7 @@
    "kind": "example",
    "id": "ardl",
    "sigma_id": "ardl",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "y": "yp",
     "x": [
@@ -5455,7 +5455,7 @@
    "kind": "example",
    "id": "ucm",
    "sigma_id": "ucm",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "series": "s",
     "time": "t"
@@ -6876,7 +6876,7 @@
    "kind": "example",
    "id": "panel",
    "sigma_id": "panel",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "response": "yp",
     "predictors": [
@@ -7207,7 +7207,7 @@
    "kind": "example",
    "id": "qa-break",
    "sigma_id": "qa_break",
-   "deterministic": true,
+   "deterministic": false,
    "roles": {
     "series": "rg",
     "time": "t"
