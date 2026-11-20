@@ -12,6 +12,7 @@ internal static class SeriesAnalyses
         FiltersAnalyses.Filters,
         DecomposeAnalyses.Decompose,
         AcfPacfAnalyses.AcfPacf,
-        BacktestAnalyses.Backtest
+        BacktestAnalyses.Backtest,
+        UnitRootAnalyses.UnitRoot
     ];
 }

@@ -53,7 +53,26 @@ public static class DataCatalog
         Standardize,
         RowOperations.Sort,
         RowOperations.SelectColumns,
-        RowOperations.Duplicates
+        RowOperations.Duplicates,
+        CleaningOperations.Missing,
+        CleaningOperations.Outliers,
+        TransformOperations.Compute,
+        TransformOperations.Filter,
+        TransformOperations.Recode,
+        TransformOperations.Bin,
+        TransformOperations.Dummies,
+        TransformOperations.MathTransform,
+        TransformOperations.TimeOps,
+        TransformOperations.DateParts,
+        TransformOperations.TextOps,
+        StructureOperations.Sample,
+        StructureOperations.Partition,
+        StructureOperations.Aggregate,
+        StructureOperations.Melt,
+        StructureOperations.Pivot,
+        StructureOperations.Merge,
+        StructureOperations.Append,
+        StructureOperations.ImputeModel
     ];
 
     public static AnalysisDefinition? Find(string id) =>

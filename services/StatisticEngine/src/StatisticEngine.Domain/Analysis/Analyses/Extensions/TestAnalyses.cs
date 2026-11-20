@@ -13,6 +13,9 @@ public static class TestAnalyses
         .. ContingencyAnalyses.All,
         .. AgreementAnalyses.All,
         .. EstimationAnalyses.All,
-        .. PowerDesignAnalyses.All
+        .. PowerDesignAnalyses.All,
+        AdditionalTestAnalyses.SignTest,
+        AdditionalTestAnalyses.RunsTest,
+        AdditionalTestAnalyses.Tost
     ];
 }

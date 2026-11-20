@@ -12,6 +12,7 @@ public static class ModelAnalyses
         CountAnalyses.Count,
         SurveyAnalyses.SurveyOls,
         SurveyLogisticAnalyses.SurveyLogistic,
+        MultinomialAnalyses.Multinomial,
         QuantileAnalyses.Quantile,
         DiagnosticsAnalyses.Diagnostics,
         LoglinearAnalyses.Loglinear,
@@ -20,6 +21,7 @@ public static class ModelAnalyses
         ProbitAnalyses.Probit,
         NonlinearAnalyses.Nonlinear,
         OrdinalAnalyses.Ordinal,
-        RegularizedAnalyses.Regularized
+        RegularizedAnalyses.Regularized,
+        GamAnalyses.Gam
     ];
 }

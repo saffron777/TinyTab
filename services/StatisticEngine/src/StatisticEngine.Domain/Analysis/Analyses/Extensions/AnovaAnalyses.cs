@@ -6,6 +6,8 @@ internal static class AnovaAnalyses
     [
         AnovaPosthocAnalyses.Posthoc,
         NestedAnovaAnalyses.Nested,
-        RepeatedMeasuresAnalyses.Repeated
+        RepeatedMeasuresAnalyses.Repeated,
+        AnovaFactorialAnalyses.Factorial,
+        ManovaAnalyses.Manova
     ];
 }

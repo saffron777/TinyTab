@@ -7,6 +7,9 @@ internal static class MultivariateAnalyses
         MahalanobisAnalyses.Mahalanobis,
         MdsAnalyses.Mds,
         HierarchicalAnalyses.Hierarchical,
-        ReliabilityAnalyses.Reliability
+        ReliabilityAnalyses.Reliability,
+        CorrespondenceAnalyses.Correspondence,
+        CcaAnalyses.Cca,
+        MixtureAnalyses.Mixture
     ];
 }

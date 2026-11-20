@@ -83,9 +83,6 @@ CSHARP_IDS = {
 
 # Capacidades de Sigma ya cubiertas por un análisis baseline (no se duplican).
 COVERED = {
-    ("pruebas", "sign_test"),
-    ("pruebas", "runs"),
-    ("pruebas", "tost"),
     ("potencia", "t_power"),
     ("potencia", "prop_power"),
     ("potencia", "anova_power"),
@@ -136,6 +133,7 @@ EXAMPLE_OVERRIDES = {
     ("econometria", "copula"): {"family": "gaussian", "simulate": 0},
     ("multivariado", "mahalanobis"): {"method": "classical"},
     ("graficos", "heatmap"): {"method": "spearman", "cluster": False},
+    ("graficos", "contour"): {"interpolation": "nearest"},
 }
 
 

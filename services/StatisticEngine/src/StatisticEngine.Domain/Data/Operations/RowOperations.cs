@@ -11,7 +11,7 @@ public static class RowOperations
     public const string ResultKey = "resultado";
 
     public static readonly AnalysisDefinition Sort = new(
-        "data-sort",
+        "sort",
         "Ordenar filas",
         "Datos",
         "Ordena el dataset por una o varias columnas, de forma ascendente o descendente.",
@@ -28,7 +28,7 @@ public static class RowOperations
         NeedsDataFrame: true);
 
     public static readonly AnalysisDefinition SelectColumns = new(
-        "data-select-columns",
+        "select-columns",
         "Seleccionar columnas",
         "Datos",
         "Conserva sólo las columnas elegidas, en el orden indicado, y opcionalmente les cambia el nombre.",
@@ -43,7 +43,7 @@ public static class RowOperations
         NeedsDataFrame: true);
 
     public static readonly AnalysisDefinition Duplicates = new(
-        "data-duplicates",
+        "duplicates",
         "Detectar y quitar duplicados",
         "Datos",
         "Marca las filas duplicadas según las columnas clave y conserva la primera aparición.",
@@ -74,7 +74,7 @@ public static class RowOperations
             }
             return left.CompareTo(right);
         });
-        return Build("data-sort", "Datos ordenados", frame, frame.SubsetRows(indices), "Ordenado por " + string.Join(", ", names));
+        return Build("sort", "Datos ordenados", frame, frame.SubsetRows(indices), "Ordenado por " + string.Join(", ", names));
     }
 
     private static Result<AnalysisResult> RunSelect(AnalysisInput input)
@@ -83,7 +83,7 @@ public static class RowOperations
         var names = input.RoleNames("cols", true);
         if (names.Count == 0) return Result.Err<AnalysisResult>(DomainErrorCode.InsufficientData, "Elija al menos una columna.");
         var selected = frame.Subset(names);
-        return Build("data-select-columns", "Datos seleccionados", frame, selected, $"Se conservan {names.Count} de {frame.ColumnCount} columnas.");
+        return Build("select-columns", "Datos seleccionados", frame, selected, $"Se conservan {names.Count} de {frame.ColumnCount} columnas.");
     }
 
     private static Result<AnalysisResult> RunDuplicates(AnalysisInput input)
@@ -100,7 +100,7 @@ public static class RowOperations
             if (seen.Add(key)) keep.Add(row);
             else removed++;
         }
-        return Build("data-duplicates", "Datos sin duplicados", frame, frame.SubsetRows(keep), $"{removed} fila(s) duplicada(s) eliminada(s).");
+        return Build("duplicates", "Datos sin duplicados", frame, frame.SubsetRows(keep), $"{removed} fila(s) duplicada(s) eliminada(s).");
     }
 
     private static int Compare(DataColumn column, int left, int right)

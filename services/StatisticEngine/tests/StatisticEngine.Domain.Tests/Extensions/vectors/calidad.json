@@ -1,0 +1,314 @@
+{
+ "module": "calidad",
+ "sigmaCommit": "5c378d709e3df54b7df99dc2ead578c31a3ed346",
+ "python": "3.13.14",
+ "numpy": "2.5.3",
+ "pandas": "3.0.6",
+ "scipy": "1.18.1",
+ "statsmodels": "0.15.0",
+ "sklearn": "1.9.1",
+ "cases": [
+  {
+   "kind": "example",
+   "id": "control-chart",
+   "sigma_id": "control_chart",
+   "deterministic": true,
+   "roles": {
+    "measure": "x1"
+   },
+   "params": {
+    "chart": "imr"
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Individual y rango móvil (I-MR)",
+    "subtitle": "n = 240 mediciones",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Media",
+        9.70273998290955
+       ],
+       [
+        "Rango móvil medio",
+        2.091866389712968
+       ],
+       [
+        "Límites X",
+        "4.138 a 15.27"
+       ]
+      ]
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Límites X = media ± 2.66·MR̄ = 9.703 ± 5.564."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "mean": 9.70273998290955,
+     "mr_bar": 2.091866389712968,
+     "ucl": 15.267104579546046,
+     "lcl": 4.138375386273055
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "control-chart",
+   "sigma_id": "control_chart",
+   "roles": {},
+   "params": {
+    "chart": "imr"
+   },
+   "error": "Elija la columna de «Mediciones»."
+  },
+  {
+   "kind": "error",
+   "id": "control-chart",
+   "sigma_id": "control_chart",
+   "roles": {
+    "measure": "x1"
+   },
+   "params": {
+    "chart": "__valor_invalido__"
+   },
+   "error": "Valor no válido para «Carta»."
+  },
+  {
+   "kind": "example",
+   "id": "capability",
+   "sigma_id": "capability",
+   "deterministic": true,
+   "roles": {
+    "measure": "x1"
+   },
+   "params": {
+    "usl": 16,
+    "lsl": 4
+   },
+   "frame": "standard",
+   "expected": {
+    "title": "Capacidad del proceso",
+    "subtitle": "n = 240 · dentro de subgrupos σ = 1.854 · global σ = 1.799",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "Cp",
+        1.0784627599038736
+       ],
+       [
+        "Cpk",
+        1.0250321168304672
+       ],
+       [
+        "Pp",
+        1.1116184749021585
+       ],
+       [
+        "Ppk",
+        1.056545187094246
+       ],
+       [
+        "PPM esperado",
+        995.7145941868209
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "warning",
+      "message": "Proceso no capaz (Cpk < 1.33): hay producción fuera de especificación."
+     },
+     {
+      "type": "chart",
+      "caption": null,
+      "spec": {
+       "title": null,
+       "traces": []
+      }
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "cp": 1.0784627599038736,
+     "cpk": 1.0250321168304672,
+     "pp": 1.1116184749021585,
+     "ppk": 1.056545187094246,
+     "ppm": 995.7145941868209,
+     "mean": 9.70273998290955,
+     "within_sigma": 1.8544914802419932,
+     "overall_sigma": 1.79917844580267
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "capability",
+   "sigma_id": "capability",
+   "roles": {},
+   "params": {
+    "usl": 16,
+    "lsl": 4
+   },
+   "error": "Elija la columna de «Mediciones»."
+  },
+  {
+   "kind": "example",
+   "id": "gage-rr",
+   "sigma_id": "gage_rr",
+   "deterministic": true,
+   "roles": {
+    "measure": "yc",
+    "part": "cl",
+    "operator": "g"
+   },
+   "params": {},
+   "frame": "standard",
+   "expected": {
+    "title": "Estudio R&R (sistema de medición)",
+    "subtitle": "12 piezas × 3 operadores × 7 réplica(s)",
+    "blocks": [
+     {
+      "type": "tiles",
+      "items": [
+       [
+        "%GRR (de la variación total)",
+        86.04768445845977
+       ],
+       [
+        "ndc (categorías distintas)",
+        0
+       ],
+       [
+        "Repetibilidad (EV)",
+        21.767523629992706
+       ],
+       [
+        "Reproducibilidad (AV)",
+        4.582386589161955
+       ]
+      ]
+     },
+     {
+      "type": "alert",
+      "severity": "danger",
+      "message": "Sistema de medición inaceptable (%GRR = 86.0 %)."
+     },
+     {
+      "type": "table",
+      "title": "Componentes de varianza",
+      "columns": [
+       "Fuente",
+       "Varianza (σ²)",
+       "Desviación (5.15σ)",
+       "% de la variación total"
+      ],
+      "rows": [
+       [
+        "Repetibilidad (equipo)",
+        17.865023469970428,
+        21.767523629992706,
+        84.20213804407011
+       ],
+       [
+        "Reproducibilidad (operadores)",
+        0.7917152173637982,
+        4.582386589161955,
+        17.7257989797363
+       ],
+       [
+        "GRR total",
+        18.656738687334226,
+        22.24462523475777,
+        86.04768445845977
+       ],
+       [
+        "Piezas",
+        6.540755446626006,
+        13.171073848898512,
+        50.948954840480674
+       ],
+       [
+        "Variación total",
+        25.197494133960234,
+        25.851509398252947,
+        100.0
+       ]
+      ],
+      "note": "5.15σ cubre el 99 % de la variación. ndc < 5 indica que el sistema no distingue bien las piezas."
+     },
+     {
+      "type": "alert",
+      "severity": "info",
+      "message": "Diseño no balanceado (distinto número de réplicas por celda): se usa el número medio de réplicas."
+     }
+    ],
+    "datasets": {},
+    "result": {
+     "percent_grr": 86.04768445845977,
+     "ndc": 0,
+     "ev": 21.767523629992706,
+     "av": 4.582386589161955,
+     "grr": 22.24462523475777,
+     "pv": 13.171073848898512,
+     "tv": 25.851509398252947
+    }
+   }
+  },
+  {
+   "kind": "error",
+   "id": "gage-rr",
+   "sigma_id": "gage_rr",
+   "roles": {
+    "part": "cl",
+    "operator": "g"
+   },
+   "params": {},
+   "error": "Elija la columna de «Mediciones»."
+  },
+  {
+   "kind": "error",
+   "id": "gage-rr",
+   "sigma_id": "gage_rr",
+   "roles": {
+    "measure": "yc",
+    "operator": "g"
+   },
+   "params": {},
+   "error": "Elija la columna de «Pieza (o unidad)»."
+  },
+  {
+   "kind": "error",
+   "id": "gage-rr",
+   "sigma_id": "gage_rr",
+   "roles": {
+    "measure": "yc",
+    "part": "cl"
+   },
+   "params": {},
+   "error": "Elija la columna de «Operador (o instrumento)»."
+  }
+ ]
+}

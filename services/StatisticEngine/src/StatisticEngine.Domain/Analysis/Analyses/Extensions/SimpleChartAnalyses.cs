@@ -126,6 +126,59 @@ internal static class SimpleChartAnalyses
             new ColumnRole("group", "Grupos (opcional)", ColumnKinds.Categorical, Optional: true)
         ]);
 
+    public static readonly AnalysisDefinition Bar = new(
+        "bar",
+        "Gráfico de barras",
+        "Categorías",
+        "Cantidades, porcentajes o estadísticos (media, mediana, suma…) por categoría, con grupos y barras de error.",
+        [],
+        [],
+        [
+            new(
+                "stat",
+                "Medida",
+                AnalysisParamKinds.Select,
+                "count",
+                [
+                    new("count", "Cantidad de filas"), new("percent", "Porcentaje de las filas"),
+                    new("mean", "Media"), new("median", "Mediana"), new("sum", "Suma"),
+                    new("min", "Mínimo"), new("max", "Máximo")
+                ],
+                false),
+            new(
+                "error",
+                "Barras de error (solo medias)",
+                AnalysisParamKinds.Select,
+                "none",
+                [new("none", "Sin barras de error"), new("sd", "± 1 desviación estándar"), new("se", "± 1 error estándar"), new("ci", "IC 95 % de la media")],
+                false),
+            new(
+                "sort",
+                "Orden de las categorías",
+                AnalysisParamKinds.Select,
+                "none",
+                [new("none", "El natural"), new("desc", "De mayor a menor"), new("asc", "De menor a mayor")],
+                false),
+            new(
+                "orientation",
+                "Orientación",
+                AnalysisParamKinds.Select,
+                "v",
+                [new("v", "Verticales"), new("h", "Horizontales")],
+                false),
+            new("stacked", "Apiladas (con subgrupos)", AnalysisParamKinds.Boolean, false, [], false),
+            new("top", "Máximo de categorías", AnalysisParamKinds.Integer, 30.0, [], false, Minimum: 2, Maximum: 100)
+        ],
+        RunBar,
+        Origin: AnalysisCategories.SigmaOrigin,
+        Group: "Categorías",
+        Roles:
+        [
+            new ColumnRole("category", "Categoría", ColumnKinds.Categorical),
+            new ColumnRole("value", "Valor numérico (según la medida)", ColumnKinds.Numeric, Optional: true),
+            new ColumnRole("group", "Subgrupos (opcional)", ColumnKinds.Categorical, Optional: true)
+        ]);
+
     private static Result<AnalysisResult> RunLine(AnalysisInput input)
     {
         var frame = input.AsFrame();
@@ -190,6 +243,80 @@ internal static class SimpleChartAnalyses
             result[index] = values[start..(index + 1)].Average();
         }
         return result;
+    }
+
+    private static Result<AnalysisResult> RunBar(AnalysisInput input)
+    {
+        var frame = input.AsFrame();
+        var category = ExtendedHelpers.FirstRole(input, "category", "Categoría");
+        var valueName = ExtendedHelpers.FirstRole(input, "value", "Valor numérico");
+        var group = ExtendedHelpers.FirstRole(input, "group", "Subgrupos");
+        var names = new List<string> { category };
+        if (valueName.Length > 0) names.Add(valueName);
+        if (group.Length > 0) names.Add(group);
+        var complete = frame.CompleteCases(names);
+        var categories = complete.Levels(category);
+        var groups = group.Length > 0 ? complete.Levels(group) : [string.Empty];
+        var stat = input.Pstr("stat", "count");
+        var categoryTexts = complete.Texts(category);
+        var groupTexts = group.Length > 0 ? complete.Texts(group) : Enumerable.Repeat(string.Empty, complete.RowCount).ToArray();
+        var values = valueName.Length > 0 ? complete.Numeric(valueName) : Enumerable.Repeat(1.0, complete.RowCount).ToArray();
+        double Aggregate(IEnumerable<int> rows)
+        {
+            var selected = rows.Select(index => values[index]).ToArray();
+            if (selected.Length == 0) return double.NaN;
+            return stat switch
+            {
+                "count" => selected.Length,
+                "percent" => 100.0 * selected.Length / complete.RowCount,
+                "sum" => selected.Sum(),
+                "median" => NumericMath.Quantile(selected, 0.5),
+                "min" => selected.Min(),
+                "max" => selected.Max(),
+                _ => selected.Average()
+            };
+        }
+        var rows = new List<IReadOnlyList<string>>();
+        foreach (var level in categories)
+        {
+            var row = new List<string> { level };
+            row.AddRange(groups.Select(groupLevel => ModelHelpers.N(Aggregate(Enumerable.Range(0, complete.RowCount)
+                .Where(index => categoryTexts[index] == level && groupTexts[index] == groupLevel)))));
+            rows.Add(row);
+        }
+        var order = input.Pstr("sort", "none");
+        if (order != "none")
+        {
+            var sorted = rows.OrderBy(row => double.Parse(row[1], System.Globalization.CultureInfo.InvariantCulture));
+            rows = (order == "desc" ? sorted.Reverse() : sorted).ToList();
+        }
+        var statLabel = stat switch
+        {
+            "count" => "Cantidad",
+            "percent" => "Porcentaje",
+            "mean" => "Media",
+            "median" => "Mediana",
+            "sum" => "Suma",
+            "min" => "Mínimo",
+            _ => "Máximo"
+        };
+        var title = $"Gráfico de barras: {statLabel}" + (valueName.Length > 0 ? $" de {valueName}" : string.Empty) + $" por {category}";
+        var points = Enumerable.Range(0, rows.Count).Select(index => new ScatterPoint(index + 1, double.TryParse(rows[index][1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : 0)).ToList();
+        return Result.Ok(new AnalysisResult(
+            "bar",
+            title,
+            [
+                new TilesSection("Resumen",
+                [
+                    new TileItem("Categorías", JsNumber.ToString(categories.Length)),
+                    new TileItem("Filas", JsNumber.ToString(complete.RowCount))
+                ]),
+                new TableSection("Valores", [category, .. groups.Select(label => label.Length > 0 ? label : "Valor")], rows)
+            ],
+            Subtitle: group.Length > 0 ? $"por {group}" : "sin subgrupos",
+            Charts: [new ScatterChart("Valores", points, category, statLabel)],
+            KeyResults: new Dictionary<string, object?>(StringComparer.Ordinal) { ["categories"] = categories.Length },
+            Origin: AnalysisCategories.SigmaOrigin));
     }
 
     private static Result<AnalysisResult> RunPie(AnalysisInput input)
@@ -299,8 +426,7 @@ internal static class SimpleChartAnalyses
                     new TileItem("Celdas de la rejilla", JsNumber.ToString(grid * grid)),
                     new TileItem("Mínimo", ModelHelpers.N(zValues.Min())),
                     new TileItem("Máximo", ModelHelpers.N(zValues.Max()))
-                ]),
-                new AlertSection("Aviso", "info", "Las celdas fuera de la nube de puntos quedan en blanco: no se extrapola.")
+                ])
             ],
             Subtitle: $"según {xName} y {yName}" + (string.IsNullOrEmpty(zName) ? " (densidad conjunta)" : string.Empty),
             Charts: [new ScatterChart("Contornos", points, xName, yName)],
