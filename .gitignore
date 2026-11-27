@@ -20,3 +20,4 @@ services/**/.artifacts/
 services/**/.vs/
 TestResults/
 *.user
+services/StatisticEngine/deploy/**/.env

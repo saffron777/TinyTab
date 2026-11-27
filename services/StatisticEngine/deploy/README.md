@@ -18,7 +18,7 @@ loopback**, de modo que la única entrada pública es Apache.
 | --- | --- | --- |
 | **A. Subdominio** (recomendada) | `https://stats.tudominio.com/` → API completa, Scalar y OpenAPI | [apache/statisticengine.conf](apache/statisticengine.conf) |
 | **B. Subruta** (un solo vhost ya usado) | `https://app.tudominio.com/statisticengine/api/...` | [apache/statisticengine-subruta.conf](apache/statisticengine-subruta.conf) |
-| **C. Contenedores** | Host Linux con Docker: Apache + servicio en redes separadas | [docker/](docker/) |
+| **C. Contenedores** | Host Linux con Docker: Apache + servicio en redes separadas | [docker/](docker/) (variables en [docker/.env.example](docker/.env.example)) |
 
 > **Aviso sobre la topología B:** el servicio monta Swagger/Scalar y el documento OpenAPI en rutas
 > **absolutas** (`/scalar/v1`, `/openapi/v1.json`). Colgados de una subruta no funcionan sin
@@ -127,6 +127,27 @@ curl.exe -H "X-Api-Key: TU_CLAVE" https://stats.tudominio.com/api/v1/data
 # a través de Apache (topología B)
 curl.exe -H "X-Api-Key: TU_CLAVE" https://app.tudominio.com/statisticengine/api/v1/analyses
 ```
+
+## Estado de verificación
+
+Comprobado con Docker Desktop (contenedores Linux) e `httpd:2.4`:
+
+- **`docker build` de la imagen**: el `Dockerfile` copia `.editorconfig`; sin él, `TreatWarningsAsErrors`
+  convierte CA1859 en error dentro del contenedor y el build falla (nos pasó y está corregido).
+- **Contenedor del servicio**: `/health/*` sin clave, `401` sin `X-Api-Key`, `200` con ella;
+  162 análisis, 23 operaciones de datos y 21 distribuciones; análisis y `evaluate` correctos.
+- **Stack Apache + servicio**: `httpd -t` → `Syntax OK`; `/health/ready`, catálogo, Scalar,
+  OpenAPI, `404` en `problem+json`, ejecución de un análisis y de una operación de datos
+  (`data-standardize`, 106 ms) y líneas de acceso en `docker compose logs apache`.
+- **Rate limit por IP real detrás del proxy**: con `Proxy.Enabled=true`, 60 peticiones de la
+  IP A → `200` y las siguientes `429`; una IP B distinta → `200`. Sin el flag todas comparten la
+  IP de Apache.
+- **`.env` autoload**: el compose arranca solo con `deploy/docker/.env` y falla a propósito si
+  falta `STATISTICENGINE_API_KEY`.
+- **Healthchecks**: el servicio reporta `healthy` y Apache arranca con `condition: service_healthy`.
+
+No verificable en la máquina de desarrollo: TLS real (los vhosts ya traen `X-Forwarded-Proto`),
+`install` con NSSM (requiere administrador) y la unidad systemd (host Linux).
 
 ## Problemas típicos
 

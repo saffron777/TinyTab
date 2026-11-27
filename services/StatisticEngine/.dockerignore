@@ -10,3 +10,5 @@ tools
 README.md
 PARITY-NOTES.md
 docker-compose.yml
+deploy
+**/.env

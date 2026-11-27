@@ -5,7 +5,9 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Se copian primero los archivos de configuración y los csproj para aprovechar la caché de capas.
-COPY global.json Directory.Build.props Directory.Packages.props nuget.config ./
+# .editorconfig es necesario: define niveles de analizadores que, con TreatWarningsAsErrors,
+# cambiarían el resultado del build dentro del contenedor respecto al de la máquina.
+COPY global.json Directory.Build.props Directory.Packages.props nuget.config .editorconfig ./
 COPY src/StatisticEngine.Domain/StatisticEngine.Domain.csproj src/StatisticEngine.Domain/
 COPY src/StatisticEngine.Application/StatisticEngine.Application.csproj src/StatisticEngine.Application/
 COPY src/StatisticEngine.Api/StatisticEngine.Api.csproj src/StatisticEngine.Api/
@@ -21,10 +23,12 @@ RUN dotnet publish src/StatisticEngine.Api/StatisticEngine.Api.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-ENV ASPNETCORE_URLS=http://+:8080 \
-    ASPNETCORE_ENVIRONMENT=Production \
+ENV ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_EnableDiagnostics=0 \
     DOTNET_NOLOGO=1
+
+# La imagen de ASP.NET Core ya define HTTP_PORTS=8080, así que el servicio escucha ahí.
+# Si necesitas otra dirección, define ASPNETCORE_URLS al ejecutar el contenedor.
 
 COPY --from=build /app ./
 
