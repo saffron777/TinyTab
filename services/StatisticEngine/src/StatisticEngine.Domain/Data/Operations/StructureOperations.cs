@@ -67,7 +67,7 @@ public static class StructureOperations
                     new("count", "Cantidad de datos"), new("mean", "Media"), new("median", "Mediana"), new("sum", "Suma"),
                     new("min", "Mínimo"), new("max", "Máximo"), new("std", "Desv. estándar"), new("var", "Varianza"),
                     new("q1", "Primer cuartil"), new("q3", "Tercer cuartil"), new("nunique", "Valores distintos"),
-                    new("first", "Primer valor"), new("last", "�sltimo valor")
+                    new("first", "Primer valor"), new("last", "Último valor")
                 ], false),
             new("include_n", "Añadir el tamaño del grupo (n)", AnalysisParamKinds.Boolean, true, [], false),
             new("dropna", "Omitir el grupo de valores faltantes", AnalysisParamKinds.Boolean, true, [], false)
@@ -85,7 +85,7 @@ public static class StructureOperations
 
     public static readonly AnalysisDefinition Melt = new(
         "melt",
-        "Apilar columnas (ancho �?' largo)",
+        "Apilar columnas (ancho → largo)",
         "Datos",
         "Convierte varias columnas de medidas en dos columnas (nombre y valor).",
         [],
@@ -107,7 +107,7 @@ public static class StructureOperations
 
     public static readonly AnalysisDefinition Pivot = new(
         "pivot",
-        "Pivotar (largo �?' ancho)",
+        "Pivotar (largo → ancho)",
         "Datos",
         "Convierte las categorías de una columna en columnas, resumiendo los valores repetidos.",
         [],

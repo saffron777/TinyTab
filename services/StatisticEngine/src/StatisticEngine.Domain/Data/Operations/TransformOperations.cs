@@ -75,7 +75,7 @@ public static class TransformOperations
             new("method", "Método", AnalysisParamKinds.Select, "width", [new("width", "Igual ancho"), new("quantile", "Cuantiles (igual cantidad de filas)"), new("custom", "Puntos de corte propios")], false),
             new("bins", "Número de intervalos", AnalysisParamKinds.Integer, 5.0, [], false, Minimum: 2, Maximum: 100),
             new("cuts", "Puntos de corte", AnalysisParamKinds.Text, "", [], false),
-            new("labels", "Etiquetas", AnalysisParamKinds.Select, "interval", [new("interval", "El intervalo, p. ej. (10, 20]"), new("number", "El número del intervalo (1, 2, 3�?�)")], false),
+            new("labels", "Etiquetas", AnalysisParamKinds.Select, "interval", [new("interval", "El intervalo, p. ej. (10, 20]"), new("number", "El número del intervalo (1, 2, 3…)")], false),
             new("overwrite", "Reemplazar si ya existe", AnalysisParamKinds.Boolean, false, [], false)
         ],
         RunBin,
@@ -106,7 +106,7 @@ public static class TransformOperations
 
     public static readonly AnalysisDefinition MathTransform = new(
         "math",
-        "Transformaciones matemáticas (log, �^s, Box-Cox�?�)",
+        "Transformaciones matemáticas (log, √, Box-Cox…)",
         "Datos",
         "Aplica una función a columnas numéricas; Box-Cox y Yeo-Johnson estiman λ para reducir la asimetría.",
         [],
@@ -161,7 +161,7 @@ public static class TransformOperations
         "date-parts",
         "Extraer partes de una fecha",
         "Datos",
-        "Año, trimestre, mes, semana, día de la semana, fin de semana�?� como columnas nuevas.",
+        "Año, trimestre, mes, semana, día de la semana, fin de semana… como columnas nuevas.",
         [],
         [],
         [
@@ -316,7 +316,7 @@ public static class TransformOperations
             if (double.IsNaN(values[row])) continue;
             var index = Array.FindIndex(cuts, cut => values[row] <= cut);
             if (index < 0) index = cuts.Length - 1;
-            result[row] = labels ? JsNumber.ToString(Math.Max(1, index)) : index == 0 ? $"(-�^z, {ModelHelpers.N(cuts[0])}]" : index >= cuts.Length - 1 ? $"({ModelHelpers.N(cuts[^2])}, �^z)" : $"({ModelHelpers.N(cuts[index - 1])}, {ModelHelpers.N(cuts[index])}]";
+            result[row] = labels ? JsNumber.ToString(Math.Max(1, index)) : index == 0 ? $"(-∞, {ModelHelpers.N(cuts[0])}]" : index >= cuts.Length - 1 ? $"({ModelHelpers.N(cuts[^2])}, ∞)" : $"({ModelHelpers.N(cuts[index - 1])}, {ModelHelpers.N(cuts[index])}]";
         }
         var after = frame.With(DataColumn.Text(name, result));
         return CleaningOperations.Build("bin", "Datos discretizados", frame, after, [["Columna creada", name, JsNumber.ToString(bins)]], $"Se agruparon los valores de «{column}».");
