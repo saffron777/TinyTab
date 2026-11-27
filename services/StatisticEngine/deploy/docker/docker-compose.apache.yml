@@ -1,0 +1,40 @@
+# Apache como proxy inverso de StatisticEngine (topología C, host Linux con Docker).
+#
+#   STATISTICENGINE_API_KEY=una-clave-larga docker compose -f deploy/docker/docker-compose.apache.yml up -d --build
+#
+# La API queda en http://<host>:8081 y el servicio NO publica puerto: solo es alcanzable
+# desde la red de compose a través de Apache.
+name: statisticengine-apache
+
+services:
+  statisticengine:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: statisticengine:2.0.0
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      StatisticEngine__Proxy__Enabled: "true"
+      StatisticEngine__Auth__ApiKey: ${STATISTICENGINE_API_KEY:?define STATISTICENGINE_API_KEY}
+      # StatisticEngine__ApiExplorer__Enabled: "false"
+    expose:
+      - "8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  apache:
+    image: httpd:2.4
+    depends_on:
+      - statisticengine
+    ports:
+      - "${APACHE_PORT:-8081}:80"
+    volumes:
+      - ./apache.conf:/usr/local/apache2/conf/httpd.conf:ro
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped

@@ -70,6 +70,8 @@ Probes y documentación:
   automáticos en cada una. Importar con *File → Import* y ajustar la variable `baseUrl`.
 - **[examples/statisticengine.http](examples/statisticengine.http)**: colección lista para el
   REST Client de Visual Studio / JetBrains HTTP Client / VS Code.
+- **[deploy/README.md](deploy/README.md)**: despliegue detrás de **Apache** como proxy inverso,
+  servicio de Windows (NSSM), unidad de systemd y contenedores Apache + servicio.
 
 ## 3. API v1
 
@@ -223,7 +225,34 @@ El script ejecuta una petición real por cada análisis publicado y por cada dis
 constancia de los que devuelven error. La regeneración de la colección Postman con las
 operaciones de datos se hará al cerrar la fase 5 (ver `EXTENSIONS-NOTES.md`).
 
-## 8. Verificación
+## 8. Despliegue detrás de Apache
+
+Apache (`httpd`) no ejecuta ASP.NET Core; se usa como **proxy inverso** y el servicio escucha solo
+en loopback. Guía completa, vhosts y scripts en **[deploy/README.md](deploy/README.md)**:
+
+```powershell
+# 1) publicar e instalar como servicio de Windows (requiere NSSM y consola de administrador)
+.\deploy\windows\install-service.ps1 -Action install -ApiKey "una-clave-larga"
+
+# 2) Apache: copiar deploy\apache\statisticengine.conf a conf\extra y añadir el Include
+C:\Apache24\bin\httpd.exe -t
+Restart-Service Apache2.4
+```
+
+Lo que no debe faltar:
+
+| Ajuste | Valor | Motivo |
+| --- | --- | --- |
+| `StatisticEngine__Proxy__Enabled` | `true` | Sin esto el rate limit ve solo la IP de Apache y se ignoran `X-Forwarded-*` |
+| `ASPNETCORE_URLS` | `http://127.0.0.1:5080` | El servicio no se expone directamente |
+| `ProxyTimeout` (Apache) | `330` | Los análisis usan el timeout `heavy` (300 s) |
+| `LimitRequestBody` (Apache) | `33554432` | Coherente con `Limits:MaxRequestBodyBytes` (32 MiB) |
+| Topología | **subdominio** | Scalar/OpenAPI usan rutas absolutas; en subruta expón solo `/api` y `/health` |
+
+Servicio en Linux: [deploy/linux/statisticengine.service](deploy/linux/statisticengine.service).
+Contenedores con Apache delante: [deploy/docker/docker-compose.apache.yml](deploy/docker/docker-compose.apache.yml).
+
+## 9. Verificación
 
 ```powershell
 cd services/StatisticEngine
@@ -234,7 +263,7 @@ dotnet test StatisticEngine.slnx -c Release
 En Windows, el sandbox de archivos de este entorno falla al aplicar ACL sobre `E:\TinyTab`;
 los comandos anteriores deben ejecutarse con acceso completo (`danger-full-access`).
 
-## 9. Alcance
+## 10. Alcance
 
 Incluye el motor estadístico y su catálogo, incluidas las extensiones portadas desde Sigma y sus
 operaciones de datos. **No** incluye hoja de trabajo, proyectos `.ttab`, importación/exportación

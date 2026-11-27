@@ -1,0 +1,40 @@
+[Unit]
+Description=StatisticEngine (motor estadístico de TinyTab)
+Documentation=https://github.com/saffron777/TinyTab
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# El servicio escucha SOLO en loopback: Apache (o el ingress) es la única entrada pública.
+User=statisticengine
+Group=statisticengine
+WorkingDirectory=/opt/statisticengine
+ExecStart=/usr/bin/dotnet /opt/statisticengine/StatisticEngine.Api.dll
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+SyslogIdentifier=statisticengine
+
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5080
+Environment=StatisticEngine__Proxy__Enabled=true
+# Clave de API y demás secretos: /etc/statisticengine.env  (chmod 600, propietario root)
+#   StatisticEngine__Auth__ApiKey=una-clave-larga
+#   StatisticEngine__ApiExplorer__Enabled=false
+EnvironmentFile=-/etc/statisticengine.env
+
+# Endurecimiento: el proceso es stateless y no necesita escribir en disco.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
